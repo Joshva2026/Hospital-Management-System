@@ -6,7 +6,7 @@
   // ---------------------------------------------------------------------
   // GLOBAL CONFIG - change API_BASE_URL to your deployed backend URL.
   // ---------------------------------------------------------------------
-  app.constant('API_BASE_URL', 'http://localhost:5000/api');
+  app.constant('API_BASE_URL', 'https://hospital-management-system-meko.onrender.com/api');
 
   app.config(['$routeProvider', '$locationProvider', function ($routeProvider) {
     $routeProvider
@@ -30,15 +30,15 @@
       .otherwise({ redirectTo: '/' });
   }]);
 
-  app.run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
-    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+  app.run(['$rootScope', '$location', 'AuthService', function ($rootScope, $location, AuthService) {
+    $rootScope.$on('$routeChangeStart', function (event, next, current) {
       var isAuth = AuthService.isAuthenticated();
       var path = $location.path();
-      
+
       if (isAuth && (path === '/' || path === '/login')) {
         $location.path('/dashboard');
       }
-      
+
       if (!isAuth && path !== '/' && path !== '/login') {
         $location.path('/');
       }
