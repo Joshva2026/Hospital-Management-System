@@ -10,20 +10,35 @@ const router = express.Router();
 router.use(authenticate);
 
 router.get('/', asyncHandler(async (req, res) => {
-  const { admissionId = '', patientId = '' } = req.query;
+  const { admissionId = '', patientId = '', page = 1, limit = 25 } = req.query;
   const conditions = [];
   const params = [];
   if (admissionId) { params.push(admissionId); conditions.push(`r.admission_id = $${params.length}`); }
   if (patientId) { params.push(patientId); conditions.push(`r.patient_id = $${params.length}`); }
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
+  const pageNum = Math.max(1, parseInt(page, 10));
+  const limitNum = Math.min(1000, Math.max(1, parseInt(limit, 10)));
+  const offset = (pageNum - 1) * limitNum;
+
+  // Total count
+  const { rows: countRows } = await query(
+    `SELECT COUNT(*) FROM daily_patient_reports r ${where}`,
+    params
+  );
+  const total = parseInt(countRows[0].count, 10);
+  const totalPages = Math.ceil(total / limitNum);
+
+  // Pagination query
+  const queryParams = [...params, limitNum, offset];
   const { rows } = await query(
     `SELECT r.*, p.full_name AS patient_name FROM daily_patient_reports r
      JOIN patients p ON p.patient_id = r.patient_id
-     ${where} ORDER BY r.report_date DESC, r.day_number DESC`,
-    params
+     ${where} ORDER BY r.report_date DESC, r.day_number DESC
+     LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+    queryParams
   );
-  res.json({ success: true, data: rows });
+  res.json({ success: true, data: rows, page: pageNum, limit: limitNum, total, totalPages });
 }));
 
 const reportValidators = [
@@ -85,20 +100,47 @@ router.post(
 
 router.put(
   '/:id',
+  reportValidators,
   asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new AppError(errors.array()[0].msg, 422);
+
     const { id } = req.params;
-    const { temperature, bloodPressure, pulseRate, spo2, patientCondition, symptoms, treatmentGiven, doctorNotes, nextPlan } = req.body;
+    const { reportDate, temperature, bloodPressure, pulseRate, spo2, patientCondition, symptoms, treatmentGiven, doctorNotes, nextPlan } = req.body;
+    
+    const { rows: current } = await query('SELECT * FROM daily_patient_reports WHERE report_id = $1', [id]);
+    if (!current[0]) throw new AppError('Report not found.', 404);
+
+    const admissionResult = await query('SELECT * FROM admissions WHERE admission_id = $1', [current[0].admission_id]);
+    const admission = admissionResult.rows[0];
+
+    if (reportDate !== current[0].report_date) {
+      const dupCheck = await query(
+        'SELECT report_id FROM daily_patient_reports WHERE admission_id = $1 AND report_date = $2 AND report_id != $3',
+        [current[0].admission_id, reportDate, id]
+      );
+      if (dupCheck.rows[0]) {
+        throw new AppError(`A daily report for this admission on ${reportDate} already exists.`, 409);
+      }
+    }
+
+    const dayNumber = Math.floor(
+      (new Date(reportDate) - new Date(admission.admission_date)) / (1000 * 60 * 60 * 24)
+    ) + 1;
+    if (dayNumber < 1) throw new AppError('Report date cannot be before the admission date.', 422);
+
     const { rows } = await query(
       `UPDATE daily_patient_reports SET
-        temperature=COALESCE($1,temperature), blood_pressure=COALESCE($2,blood_pressure),
-        pulse_rate=COALESCE($3,pulse_rate), spo2=COALESCE($4,spo2),
-        patient_condition=COALESCE($5,patient_condition), symptoms=COALESCE($6,symptoms),
-        treatment_given=COALESCE($7,treatment_given), doctor_notes=COALESCE($8,doctor_notes),
-        next_plan=COALESCE($9,next_plan), updated_at=NOW()
-       WHERE report_id=$10 RETURNING *`,
-      [temperature, bloodPressure, pulseRate, spo2, patientCondition, symptoms, treatmentGiven, doctorNotes, nextPlan, id]
+        report_date=$1, day_number=$2,
+        temperature=$3, blood_pressure=$4,
+        pulse_rate=$5, spo2=$6,
+        patient_condition=$7, symptoms=$8,
+        treatment_given=$9, doctor_notes=$10,
+        next_plan=$11, updated_at=NOW()
+       WHERE report_id=$12 RETURNING *`,
+      [reportDate, dayNumber, temperature || null, bloodPressure || null, pulseRate || null, spo2 || null, patientCondition, symptoms || null, treatmentGiven || null, doctorNotes || null, nextPlan || null, id]
     );
-    if (!rows[0]) throw new AppError('Report not found.', 404);
+
     await writeAudit(null, { adminId: req.admin.adminId, action: 'UPDATE', entityType: 'DAILY_REPORT', entityId: id, description: `Updated daily report ${id}.` });
     res.json({ success: true, data: rows[0] });
   })

@@ -29,7 +29,10 @@
         </thead>
         <tbody>
           <tr ng-repeat="d in discharges" class="border-bottom">
-            <td class="py-3"><span class="font-monospace text-muted">{{d.discharge_id}}</span></td>
+            <td class="py-3">
+              <span class="font-monospace text-muted me-3">{{d.discharge_id}}</span>
+              <button class="btn btn-sm btn-light border text-secondary" ng-click="openEditDischarge(d)" title="Edit Discharge"><i class="fa-solid fa-pen"></i></button>
+            </td>
             <td class="py-3 fw-bold text-dark">{{d.patient_name}}</td>
             <td class="py-3 text-muted">{{d.discharge_date | date:'dd-MMM-yyyy'}}</td>
             <td class="py-3"><span class="badge bg-light text-dark border">{{d.discharge_type}}</span></td>
@@ -42,6 +45,15 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center" ng-if="!loading && discharges.length && pagination.totalPages > 1">
+      <span class="text-muted small">Showing Page {{filters.page}} of {{pagination.totalPages}} ({{pagination.total}} total)</span>
+      <div class="btn-group shadow-sm rounded-pill">
+        <button class="btn btn-sm btn-light border px-3" ng-click="prevPage()" ng-disabled="filters.page === 1">Previous</button>
+        <button class="btn btn-sm btn-light border px-3" ng-click="nextPage()" ng-disabled="filters.page === pagination.totalPages">Next</button>
+      </div>
+    </div>
     
     <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !discharges.length">
       <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
@@ -53,7 +65,7 @@
   </div>
 
   <!-- Discharge Modal -->
-  <div class="modal-backdrop-custom" ng-if="showModal">
+  <div class="modal-backdrop-custom" ng-if="showModal" body-scroll-lock>
     <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-white">
       <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
         <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-person-walking-arrow-right text-primary me-2"></i> Discharge Patient</h5>
@@ -70,13 +82,14 @@
           <div class="row g-3 mb-4">
             <div class="col-12 form-group">
               <label class="fw-medium text-dark mb-1">Active Admission <span class="text-danger">*</span></label>
-              <select name="admissionId" class="form-select shadow-sm" ng-model="form.admissionId" required>
+              <select name="admissionId" class="form-select shadow-sm" ng-model="form.admissionId" required ng-disabled="isEdit">
                 <option value="">Select Admission to Discharge</option>
-                <option ng-repeat="a in activeAdmissions" value="{{a.admission_id}}">{{a.admission_id}} - {{a.patient_name}} ({{a.ward_name}}/Bed {{a.bed_number}})</option>
+                <option ng-if="!isEdit" ng-repeat="a in activeAdmissions" value="{{a.admission_id}}">{{a.admission_id}} - {{a.patient_name}} ({{a.ward_name}}/Bed {{a.bed_number}})</option>
+                <option ng-if="isEdit" value="{{form.admissionId}}">{{form.admissionId}}</option>
               </select>
             </div>
             
-            <div class="col-12 form-group" ng-if="form.admissionId">
+            <div class="col-12 form-group" ng-if="form.admissionId && !isEdit">
               <div class="card bg-light border-0 shadow-sm">
                 <div class="card-body p-3">
                   <div class="row g-2">
@@ -129,7 +142,8 @@
         <div class="modal-footer-custom bg-light border-top px-4 py-3 rounded-bottom-4 d-flex justify-content-end gap-2">
           <button type="button" class="btn btn-white border shadow-sm px-4" ng-click="closeModal()" ng-disabled="saving">Cancel</button>
           <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold" ng-disabled="dischargeForm.$invalid || saving">
-            <span ng-if="!saving"><i class="fa-solid fa-check me-2"></i> Confirm Discharge</span>
+            <span ng-if="!saving && !isEdit"><i class="fa-solid fa-check me-2"></i> Confirm Discharge</span>
+            <span ng-if="!saving && isEdit"><i class="fa-solid fa-check me-2"></i> Save Changes</span>
             <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Processing...</span>
           </button>
         </div>

@@ -2,8 +2,8 @@
   'use strict';
 
   angular.module('hmsApp').controller('VisitsController', [
-    '$scope', 'ApiService', 'ToastService',
-    function ($scope, ApiService, ToastService) {
+    '$scope', 'ApiService', 'ToastService', 'DateTimeService',
+    function ($scope, ApiService, ToastService, DateTimeService) {
       $scope.visits = [];
       $scope.loading = true;
       $scope.pagination = { page: 1, limit: 10, total: 0, totalPages: 0 };
@@ -19,6 +19,7 @@
       function load() {
         $scope.loading = true;
         var params = angular.extend({}, $scope.filters, { page: $scope.pagination.page, limit: $scope.pagination.limit });
+        if (params.date) params.date = DateTimeService.formatLocalDate(params.date);
         ApiService.get('/visits', params).then(function (res) {
           $scope.visits = res.data; $scope.pagination = res.pagination;
         }).catch(function (err) { ToastService.error(err.message); })
@@ -41,18 +42,36 @@
       };
 
       $scope.openNewVisit = function () {
-        $scope.form = { patientId: '', doctorId: '', specialityId: '', visitDate: new Date().toISOString().slice(0, 10),
-          visitTime: new Date().toTimeString().slice(0, 5), visitType: 'OPD', complaint: '', diagnosis: '', treatment: '', notes: '' };
+        $scope.form = {
+          patientId:    '',
+          doctorId:     '',
+          specialityId: '',
+          visitDate:    DateTimeService.formatLocalDate(new Date()), // string "YYYY-MM-DD"
+          visitTime:    '09:00',                                     // string "HH:mm"
+          visitType:    'OPD',
+          complaint: '', diagnosis: '', treatment: '', notes: ''
+        };
         $scope.patientSearch = ''; $scope.patients = [];
         $scope.showModal = true;
       };
       $scope.closeModal = function () { $scope.showModal = false; };
       $scope.selectPatient = function (p) { $scope.form.patientId = p.patient_id; $scope.patientSearch = p.patient_id + ' - ' + p.full_name; $scope.patients = []; };
 
-      $scope.submitVisit = function () {
-        if (!$scope.visitForm.$valid || $scope.saving) return;
+      $scope.submitVisit = function (form) {
+        if (!form || !form.$valid || $scope.saving || !$scope.form.patientId) return;
         $scope.saving = true;
-        ApiService.post('/visits', $scope.form).then(function () {
+        
+        var payload = angular.copy($scope.form);
+        // type="date" gives "YYYY-MM-DD" string directly; type="time" gives "HH:mm" — normalize to HH:mm:ss
+        if (payload.visitDate && typeof payload.visitDate !== 'string') {
+          payload.visitDate = DateTimeService.formatLocalDate(payload.visitDate);
+        }
+        if (payload.visitTime) {
+          var t = payload.visitTime;
+          payload.visitTime = t.length === 5 ? t + ':00' : t.substring(0, 8);
+        }
+
+        ApiService.post('/visits', payload).then(function () {
           ToastService.success('Visit created successfully.');
           $scope.showModal = false; load();
         }).catch(function (err) { ToastService.error(err.message); })

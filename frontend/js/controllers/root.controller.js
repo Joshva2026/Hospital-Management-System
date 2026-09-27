@@ -8,6 +8,10 @@
 
       $rootScope.$on('$routeChangeSuccess', function (event, current) {
         $scope.pageTitle = (current && current.title) || 'Dashboard';
+        // Auto-close sidebar on mobile after navigation
+        document.getElementById('sidebar') && document.getElementById('sidebar').classList.remove('open');
+        var bd = document.getElementById('sidebarBackdrop');
+        if (bd) bd.classList.remove('show');
       });
 
       $scope.isActive = function (path) {
@@ -23,6 +27,13 @@
 
       $scope.toggleSidebar = function () {
         document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebarBackdrop') && document.getElementById('sidebarBackdrop').classList.toggle('show');
+      };
+      
+      $scope.closeSidebar = function() {
+        document.getElementById('sidebar').classList.remove('open');
+        var bd = document.getElementById('sidebarBackdrop');
+        if (bd) bd.classList.remove('show');
       };
     },
   ]);

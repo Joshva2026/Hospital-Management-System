@@ -1,21 +1,21 @@
 <div class="landing-page-v2" ng-controller="LandingController">
   
   <style>
-    .landing-page-v2 { font-family: 'Inter', sans-serif; background-color: #F5F8FA; color: #102A43; }
+    .landing-page-v2 { font-family: 'Inter', sans-serif; background-color: #F5F8FA; color: #1D1F1F; }
     
     /* Navigation */
     .cinematic-nav { position: fixed; top: 0; left: 0; right: 0; padding: 20px 40px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; transition: all 0.4s ease; background: rgba(255,255,255,0.0); backdrop-filter: blur(0px); }
     .cinematic-nav.scrolled { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); padding: 15px 40px; }
     .nav-brand { font-size: 1.25rem; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: color 0.3s; }
-    .cinematic-nav.scrolled .nav-brand { color: #0A4275; }
+    .cinematic-nav.scrolled .nav-brand { color: #007AFF; }
     .nav-links { display: none; }
     @media (min-width: 992px) {
       .nav-links { display: flex; gap: 32px; align-items: center; }
     }
     .nav-links a { color: #fff; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s; opacity: 0.9; }
     .nav-links a:hover { opacity: 1; }
-    .cinematic-nav.scrolled .nav-links a { color: #102A43; }
-    .btn-admin { background: #0A4275; color: #fff; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; transition: transform 0.2s, background 0.2s; cursor: pointer; }
+    .cinematic-nav.scrolled .nav-links a { color: #1D1F1F; }
+    .btn-admin { background: #007AFF; color: #fff; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; transition: transform 0.2s, background 0.2s; cursor: pointer; }
     .btn-admin:hover { transform: scale(1.02); background: #072a4b; }
     
     /* Hero */
@@ -30,20 +30,20 @@
     .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
     .btn-explore { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 14px 32px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; backdrop-filter: blur(4px); }
     .btn-explore:hover { background: rgba(255,255,255,0.1); border-color: #fff; color: #fff;}
-    .btn-primary-hero { background: #fff; color: #0A4275; padding: 14px 32px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s; border: none; cursor: pointer; }
+    .btn-primary-hero { background: #fff; color: #007AFF; padding: 14px 32px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s; border: none; cursor: pointer; }
     .btn-primary-hero:hover { transform: scale(1.03); }
     .scroll-indicator { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.6); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 12px; }
     
     /* Intro */
     .section-intro { padding: 160px 24px; background: #fff; text-align: center; }
     .section-label { font-size: 0.8rem; font-weight: 700; color: #0D7C78; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; display: block; }
-    .intro-statement { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; color: #102A43; max-width: 900px; margin: 0 auto 32px; line-height: 1.15; letter-spacing: -0.02em; }
+    .intro-statement { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; color: #1D1F1F; max-width: 900px; margin: 0 auto 32px; line-height: 1.15; letter-spacing: -0.02em; }
     .intro-desc { font-size: 1.2rem; color: #64748B; max-width: 600px; margin: 0 auto; line-height: 1.6; }
     
     /* Specialities */
     .section-specialities { padding: 120px 24px; background: #F5F8FA; }
     .speciality-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 1200px; margin: 64px auto 0; }
-    .spec-card { background: #fff; border-radius: 24px; overflow: hidden; text-decoration: none; color: #102A43; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
+    .spec-card { background: #fff; border-radius: 24px; overflow: hidden; text-decoration: none; color: #1D1F1F; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
     .spec-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(10,66,117,0.08); }
     .spec-img-wrap { height: 280px; overflow: hidden; position: relative; }
     .spec-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -59,9 +59,9 @@
     .journey-container { max-width: 1200px; margin: 80px auto 0; display: flex; justify-content: space-between; position: relative; }
     .journey-line { position: absolute; top: 40px; left: 40px; right: 40px; height: 1px; background: #e2e8f0; z-index: 1; }
     .journey-step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; }
-    .step-num { width: 80px; height: 80px; border-radius: 50%; background: #F5F8FA; color: #0A4275; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 8px solid #fff; transition: transform 0.3s; }
-    .journey-step:hover .step-num { transform: scale(1.1); background: #0A4275; color: #fff; }
-    .step-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; color: #102A43; }
+    .step-num { width: 80px; height: 80px; border-radius: 50%; background: #F5F8FA; color: #007AFF; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 8px solid #fff; transition: transform 0.3s; }
+    .journey-step:hover .step-num { transform: scale(1.1); background: #007AFF; color: #fff; }
+    .step-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; color: #1D1F1F; }
     @media (max-width: 992px) {
       .journey-container { flex-direction: column; gap: 48px; }
       .journey-line { top: 0; bottom: 0; left: 40px; width: 1px; height: auto; right: auto; }
@@ -70,10 +70,10 @@
     }
     
     /* CTA */
-    .section-cta { padding: 160px 24px; background: #0A4275; text-align: center; color: #fff; }
+    .section-cta { padding: 160px 24px; background: #007AFF; text-align: center; color: #fff; }
     
     /* Footer */
-    .landing-footer { background: #102A43; color: rgba(255,255,255,0.7); padding: 80px 40px 40px; text-align: center; }
+    .landing-footer { background: #1D1F1F; color: rgba(255,255,255,0.7); padding: 80px 40px 40px; text-align: center; }
     
     /* Reveal Animation Utility */
     .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -125,23 +125,35 @@
 
   <!-- Specialities -->
   <section id="specialities" class="section-specialities">
-    <div class="text-center">
+    <div class="text-center reveal">
       <span class="section-label">Centers of Excellence</span>
       <h2 class="intro-statement" style="font-size: clamp(2rem, 3vw, 3rem); margin-bottom: 16px;">Specialised medical care.</h2>
       <p class="intro-desc">Comprehensive care across a wide spectrum of medical disciplines.</p>
     </div>
     
     <div class="speciality-grid">
-      <a class="spec-card" ng-repeat="spec in specialities">
+      <div class="spec-card reveal" ng-repeat="spec in specialities" style="transition-delay: {{$index * 50}}ms">
         <div class="spec-img-wrap">
           <div class="spec-img" ng-style="{'background-image': 'url(' + spec.image + ')'}"></div>
         </div>
         <div class="spec-content">
           <h3 class="spec-title">{{spec.name}}</h3>
           <p class="spec-desc">{{spec.desc}}</p>
-          <div class="spec-link">Explore Department <i class="fa-solid fa-arrow-right"></i></div>
+          
+          <div ng-if="spec.doctors.length > 0" class="mt-4 pt-3 border-top">
+            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700;">Specialists</h6>
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex align-items-center gap-3" ng-repeat="doc in spec.doctors">
+                <img ng-src="{{doc.image}}" alt="{{doc.name}}" class="rounded-circle object-fit-cover shadow-sm" style="width: 48px; height: 48px; border: 2px solid #fff;">
+                <div>
+                  <div class="fw-bold" style="font-size: 0.95rem; color: #1D1F1F;">{{doc.name}}</div>
+                  <div class="text-muted" style="font-size: 0.8rem;">{{doc.qualification}} &bull; {{doc.experience}} yrs exp.</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </a>
+      </div>
     </div>
   </section>
 
@@ -191,16 +203,16 @@
   <section style="padding: 120px 24px; background: #F5F8FA; text-align: center;">
     <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 40px;">
       <div>
-        <i class="fa-solid fa-truck-medical" style="font-size: 2.5rem; color: #0A4275; margin-bottom: 24px;"></i>
-        <h4 style="font-weight: 700; color: #102A43;">24/7 Emergency Care</h4>
+        <i class="fa-solid fa-truck-medical" style="font-size: 2.5rem; color: #007AFF; margin-bottom: 24px;"></i>
+        <h4 style="font-weight: 700; color: #1D1F1F;">24/7 Emergency Care</h4>
       </div>
       <div>
-        <i class="fa-solid fa-stethoscope" style="font-size: 2.5rem; color: #0A4275; margin-bottom: 24px;"></i>
-        <h4 style="font-weight: 700; color: #102A43;">Advanced Diagnostics</h4>
+        <i class="fa-solid fa-stethoscope" style="font-size: 2.5rem; color: #007AFF; margin-bottom: 24px;"></i>
+        <h4 style="font-weight: 700; color: #1D1F1F;">Advanced Diagnostics</h4>
       </div>
       <div>
-        <i class="fa-solid fa-heart-pulse" style="font-size: 2.5rem; color: #0A4275; margin-bottom: 24px;"></i>
-        <h4 style="font-weight: 700; color: #102A43;">Comprehensive Care</h4>
+        <i class="fa-solid fa-heart-pulse" style="font-size: 2.5rem; color: #007AFF; margin-bottom: 24px;"></i>
+        <h4 style="font-weight: 700; color: #1D1F1F;">Comprehensive Care</h4>
       </div>
     </div>
   </section>
@@ -231,7 +243,7 @@
         <h3 class="fw-bold mb-2">Admin Portal</h3>
         <p class="text-muted mb-4">Sign in to access the hospital dashboard.</p>
         
-        <form name="loginForm" ng-submit="submit()" novalidate class="text-start">
+        <form name="loginForm" ng-submit="submit(loginForm)" novalidate class="text-start">
           <div class="form-group mb-3">
             <label for="loginEmail" class="fw-medium mb-1">Email Address</label>
             <input type="email" id="loginEmail" name="email" class="form-control form-control-lg bg-light border-0" ng-model="credentials.email" required autofocus placeholder="Enter your email">

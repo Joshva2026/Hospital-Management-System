@@ -40,10 +40,8 @@ router.get('/available', asyncHandler(async (req, res) => {
 }));
 
 async function nextBedId() {
-  const { rows } = await query(`SELECT bed_id FROM beds ORDER BY bed_id DESC LIMIT 1`);
-  let next = 1;
-  if (rows[0]) next = parseInt(rows[0].bed_id.split('-')[1], 10) + 1;
-  return `BED-${String(next).padStart(4, '0')}`;
+  const { rows } = await query("SELECT nextval('beds_seq') AS seq");
+  return 'BED-' + String(rows[0].seq).padStart(5, '0');
 }
 
 router.post(
@@ -88,6 +86,65 @@ router.patch(
     );
     await writeAudit(null, { adminId: req.admin.adminId, action: 'UPDATE', entityType: 'BED', entityId: req.params.id, description: `Bed ${req.params.id} set to ${status}.` });
     res.json({ success: true, data: rows[0] });
+  })
+);
+
+// PUT /api/beds/:id -> Edit bed
+router.put(
+  '/:id',
+  [
+    body('bedNumber').trim().notEmpty().withMessage('Bed number is required.'),
+    body('wardId').notEmpty().withMessage('Ward is required.'),
+  ],
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new AppError(errors.array()[0].msg, 422);
+
+    const { id } = req.params;
+    const { bedNumber, bedType, wardId, status } = req.body;
+
+    const { rows: current } = await query('SELECT * FROM beds WHERE bed_id = $1', [id]);
+    if (!current[0]) throw new AppError('Bed not found.', 404);
+
+    const isOccupied = current[0].status === 'OCCUPIED';
+
+    if (isOccupied && current[0].ward_id !== wardId) {
+      throw new AppError('Cannot move an occupied bed to a different ward.', 409);
+    }
+
+    if (status && status !== current[0].status) {
+      if (isOccupied && status === 'AVAILABLE') {
+        throw new AppError('Cannot change an occupied bed to AVAILABLE. You must discharge the patient first.', 409);
+      }
+      if (isOccupied && status === 'MAINTENANCE') {
+        throw new AppError('Cannot change an occupied bed to MAINTENANCE. You must discharge or move the patient first.', 409);
+      }
+      if (!isOccupied && status === 'OCCUPIED') {
+        throw new AppError('Cannot manually change bed status to OCCUPIED. You must admit a patient.', 409);
+      }
+    }
+
+    const { rows: dupCheck } = await query(
+      'SELECT * FROM beds WHERE ward_id = $1 AND bed_number = $2 AND bed_id != $3',
+      [wardId, bedNumber, id]
+    );
+    if (dupCheck.length > 0) throw new AppError('A bed with this number already exists in this ward.', 409);
+
+    const newStatus = status || current[0].status;
+
+    await withTransaction(async (client) => {
+      if (current[0].ward_id !== wardId) {
+        await client.query(`UPDATE wards SET total_beds = total_beds - 1 WHERE ward_id = $1`, [current[0].ward_id]);
+        await client.query(`UPDATE wards SET total_beds = total_beds + 1 WHERE ward_id = $1`, [wardId]);
+      }
+
+      const { rows } = await client.query(
+        `UPDATE beds SET bed_number=$1, bed_type=$2, ward_id=$3, status=$4, last_updated=NOW() WHERE bed_id=$5 RETURNING *`,
+        [bedNumber, bedType || 'General', wardId, newStatus, id]
+      );
+      await writeAudit(client, { adminId: req.admin.adminId, action: 'UPDATE', entityType: 'BED', entityId: id, description: `Updated bed ${id}.` });
+      res.json({ success: true, data: rows[0] });
+    });
   })
 );
 

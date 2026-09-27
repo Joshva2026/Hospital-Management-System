@@ -18,6 +18,7 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'HMS API is running.', timestamp: new Date().toISOString() }));
 
+app.use('/api/public', require('./routes/public'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/patients', require('./routes/patients'));
 app.use('/api/visits', require('./routes/visits'));

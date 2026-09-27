@@ -10,12 +10,23 @@ const router = express.Router();
 router.use(authenticate);
 
 router.get('/', asyncHandler(async (req, res) => {
+  const { page = 1, limit = 20 } = req.query;
+  const pageNum = Math.max(1, parseInt(page, 10));
+  const limitNum = Math.min(1000, Math.max(1, parseInt(limit, 10)));
+  const offset = (pageNum - 1) * limitNum;
+
+  const { rows: countRows } = await query(`SELECT COUNT(*) FROM discharges`);
+  const total = parseInt(countRows[0].count, 10);
+  const totalPages = Math.ceil(total / limitNum);
+
   const { rows } = await query(
     `SELECT dis.*, p.full_name AS patient_name FROM discharges dis
      JOIN patients p ON p.patient_id = dis.patient_id
-     ORDER BY dis.discharge_date DESC`
+     ORDER BY dis.discharge_date DESC
+     LIMIT $1 OFFSET $2`,
+    [limitNum, offset]
   );
-  res.json({ success: true, data: rows });
+  res.json({ success: true, data: rows, page: pageNum, limit: limitNum, total, totalPages });
 }));
 
 const dischargeValidators = [
@@ -82,6 +93,39 @@ router.post(
     });
 
     res.status(201).json({ success: true, data: result });
+  })
+);
+
+// PUT /api/discharges/:id
+// Safely allows editing of clinical text fields after discharge is finalized,
+// without affecting the underlying patient/bed/admission state machine.
+router.put(
+  '/:id',
+  [
+    body('dischargeType').notEmpty().withMessage('Discharge type is required.'),
+    body('finalDiagnosis').trim().isLength({ min: 2 }).withMessage('Final diagnosis is required.'),
+  ],
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new AppError(errors.array()[0].msg, 422);
+
+    const { id } = req.params;
+    const { dischargeType, finalDiagnosis, treatmentSummary, doctorAdvice, followUpDate } = req.body;
+
+    const { rows: current } = await query('SELECT * FROM discharges WHERE discharge_id = $1', [id]);
+    if (!current[0]) throw new AppError('Discharge record not found.', 404);
+    
+    // We do NOT update discharge_date or discharge_time to preserve integrity with admissions.
+    const { rows } = await query(
+      `UPDATE discharges SET 
+        discharge_type=$1, final_diagnosis=$2, treatment_summary=$3, 
+        doctor_advice=$4, follow_up_date=$5, updated_at=NOW() 
+       WHERE discharge_id=$6 RETURNING *`,
+      [dischargeType, finalDiagnosis, treatmentSummary || null, doctorAdvice || null, followUpDate || null, id]
+    );
+
+    await writeAudit(null, { adminId: req.admin.adminId, action: 'UPDATE', entityType: 'DISCHARGE', entityId: id, description: `Updated discharge summary for ${id}.` });
+    res.json({ success: true, data: rows[0] });
   })
 );
 

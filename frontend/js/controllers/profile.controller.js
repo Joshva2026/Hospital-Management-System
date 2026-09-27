@@ -2,8 +2,8 @@
   'use strict';
 
   angular.module('hmsApp').controller('ProfileController', [
-    '$scope', 'ApiService', 'AuthService', 'ToastService',
-    function ($scope, ApiService, AuthService, ToastService) {
+    '$scope', '$location', 'ApiService', 'AuthService', 'ToastService',
+    function ($scope, $location, ApiService, AuthService, ToastService) {
       $scope.auth = AuthService;
       
       $scope.profileData = {
@@ -20,8 +20,8 @@
       $scope.profileSaving = false;
       $scope.passwordSaving = false;
 
-      $scope.updateProfile = function () {
-        if (!$scope.profileForm.$valid) return;
+      $scope.updateProfile = function(form) {
+        if (!form || !form.$valid) return;
         $scope.profileSaving = true;
         
         ApiService.put('/auth/profile', $scope.profileData)
@@ -33,6 +33,7 @@
             currentAdmin.email = res.admin.email;
             localStorage.setItem('hms_admin', JSON.stringify(currentAdmin));
             AuthService.currentAdmin = currentAdmin;
+            $location.path('/profile');
           })
           .catch(function (err) {
             ToastService.error(err.message || 'Failed to update profile');
@@ -42,8 +43,8 @@
           });
       };
 
-      $scope.updatePassword = function () {
-        if (!$scope.passwordForm.$valid || $scope.passwordData.newPassword !== $scope.passwordData.confirmPassword) return;
+      $scope.updatePassword = function(form) {
+        if (!form || !form.$valid || $scope.passwordData.newPassword !== $scope.passwordData.confirmPassword) return;
         
         $scope.passwordSaving = true;
         
@@ -56,8 +57,11 @@
           .then(function (res) {
             ToastService.success(res.message);
             $scope.passwordData = { currentPassword: '', newPassword: '', confirmPassword: '' };
-            $scope.passwordForm.$setPristine();
-            $scope.passwordForm.$setUntouched();
+            if ($scope.passwordForm) {
+              $scope.passwordForm.$setPristine();
+              $scope.passwordForm.$setUntouched();
+            }
+            $location.path('/profile');
           })
           .catch(function (err) {
             ToastService.error(err.message || 'Failed to change password');
@@ -65,6 +69,18 @@
           .finally(function () {
             $scope.passwordSaving = false;
           });
+      };
+      
+      $scope.goBack = function() {
+        $location.path('/profile');
+      };
+      
+      $scope.goToEditProfile = function() {
+        $location.path('/profile/edit');
+      };
+      
+      $scope.goToChangePassword = function() {
+        $location.path('/profile/change-password');
       };
     },
   ]);

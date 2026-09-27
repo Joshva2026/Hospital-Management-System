@@ -264,3 +264,27 @@ CREATE INDEX IF NOT EXISTS idx_audit_admin ON audit_logs(admin_id);
 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs(created_at);
 
 COMMIT;
+
+
+-- Safely create and initialize sequences based on existing table data to avoid collision
+DO $$
+DECLARE
+    w_max INTEGER;
+    s_max INTEGER;
+    b_max INTEGER;
+BEGIN
+    SELECT COALESCE(MAX(CAST(SPLIT_PART(ward_id, '-', 2) AS INTEGER)), 0) INTO w_max FROM wards WHERE ward_id LIKE 'WARD-%';
+    IF w_max = 0 THEN w_max := 1; END IF;
+    EXECUTE 'CREATE SEQUENCE IF NOT EXISTS wards_seq START WITH ' || w_max;
+    PERFORM setval('wards_seq', w_max, true);
+
+    SELECT COALESCE(MAX(CAST(SPLIT_PART(speciality_id, '-', 2) AS INTEGER)), 0) INTO s_max FROM specialities WHERE speciality_id LIKE 'SPEC-%';
+    IF s_max = 0 THEN s_max := 1; END IF;
+    EXECUTE 'CREATE SEQUENCE IF NOT EXISTS specialities_seq START WITH ' || s_max;
+    PERFORM setval('specialities_seq', s_max, true);
+
+    SELECT COALESCE(MAX(CAST(SPLIT_PART(bed_id, '-', 2) AS INTEGER)), 0) INTO b_max FROM beds WHERE bed_id LIKE 'BED-%';
+    IF b_max = 0 THEN b_max := 1; END IF;
+    EXECUTE 'CREATE SEQUENCE IF NOT EXISTS beds_seq START WITH ' || b_max;
+    PERFORM setval('beds_seq', b_max, true);
+END $$;

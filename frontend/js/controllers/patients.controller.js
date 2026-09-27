@@ -82,8 +82,8 @@
   // Register / Edit Patient
   // ==========================================================================
   angular.module('hmsApp').controller('PatientFormController', [
-    '$scope', '$location', '$routeParams', 'ApiService', 'ToastService',
-    function ($scope, $location, $routeParams, ApiService, ToastService) {
+    '$scope', '$location', '$routeParams', 'ApiService', 'ToastService', 'DateTimeService',
+    function ($scope, $location, $routeParams, ApiService, ToastService, DateTimeService) {
       $scope.isEdit = !!$routeParams.id;
       $scope.saving = false;
       $scope.step = 1;
@@ -120,7 +120,7 @@
           $scope.generatedId = p.patient_id;
           $scope.patient = {
             fullName: p.full_name, mobile: p.mobile, gender: p.gender,
-            dateOfBirth: p.date_of_birth ? p.date_of_birth.slice(0, 10) : '',
+            dateOfBirth: p.date_of_birth ? DateTimeService.parseLocalDate(p.date_of_birth) : '',
             address: p.address, bloodGroup: p.blood_group, emergencyContact: p.emergency_contact,
             problem: p.problem, reasonForVisit: p.reason_for_visit,
             patientType: (p.patient_type === 'OPD' || p.patient_type === 'EMERGENCY') ? p.patient_type : 'OPD',
@@ -130,7 +130,7 @@
 
       $scope.submitPatient = function (form) {
         console.log("Submit called. Form valid:", form ? form.$valid : 'no form', "Form error:", form ? form.$error : 'no form');
-        if (form && !form.$valid) {
+        if (!form || !form.$valid) {
           ToastService.error('Please ensure all required fields are correctly filled.');
           return;
         }
@@ -139,6 +139,7 @@
         $scope.duplicateWarning = null;
 
         var payload = angular.copy($scope.patient);
+        if (payload.dateOfBirth) payload.dateOfBirth = DateTimeService.formatLocalDate(payload.dateOfBirth);
 
         var call = $scope.isEdit
           ? ApiService.put('/patients/' + $routeParams.id, payload)

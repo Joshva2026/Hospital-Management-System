@@ -1,73 +1,202 @@
-<div class="animate-fade-in pb-5">
-  <div class="page-header mb-4">
-    <div class="d-flex flex-column">
-      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Analytics</h2>
-      <p class="text-muted mb-0">Monitor hospital activity and operational trends.</p>
+<div class="animate-fade-in pb-5" style="background-color: #f8f9fa;">
+  
+  <!-- HOSPITAL INTELLIGENCE HEADER -->
+  <div class="page-header mb-4 bg-white border-bottom shadow-sm p-4 rounded-4 position-relative overflow-hidden" style="border-radius: 16px;">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start position-relative z-1">
+      <div>
+        <div class="text-primary fw-bold d-flex align-items-center" style="font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">
+          <i class="fa-solid fa-microchip me-2"></i> Intelligence Center
+        </div>
+        <h2 class="fw-bold mb-1 text-dark" style="font-size: 2rem; letter-spacing: -0.5px;">Hospital Intelligence</h2>
+        <p class="text-muted mb-0">Operational analytics and hospital activity insights.</p>
+      </div>
+      <div class="d-flex bg-light rounded-pill p-1 border mt-3 mt-md-0">
+        <button type="button" ng-click="setRange(7)" class="btn btn-sm rounded-pill px-4 fw-medium border-0" ng-class="{'btn-white shadow-sm text-dark bg-white': selectedRange === 7, 'btn-light text-muted': selectedRange !== 7}">7 Days</button>
+        <button type="button" ng-click="setRange(14)" class="btn btn-sm rounded-pill px-4 fw-medium border-0" ng-class="{'btn-white shadow-sm text-dark bg-white': selectedRange === 14, 'btn-light text-muted': selectedRange !== 14}">14 Days</button>
+        <button type="button" ng-click="setRange(30)" class="btn btn-sm rounded-pill px-4 fw-medium border-0" ng-class="{'btn-white shadow-sm text-dark bg-white': selectedRange === 30, 'btn-light text-muted': selectedRange !== 30}">30 Days</button>
+      </div>
     </div>
   </div>
 
-  <div class="row g-4" ng-if="loading">
-    <div class="col-lg-6" ng-repeat="i in [1,2,3,4]">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-        <div class="skeleton skeleton-text w-50 mb-4" style="height: 24px;"></div>
-        <div class="skeleton skeleton-card" style="height: 280px; border-radius: 12px;"></div>
-      </div>
+  <div ng-if="loading">
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3" ng-repeat="i in [1,2,3,4,5]"><div class="skeleton skeleton-card" style="border-radius: 12px; height: 120px;"></div></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-6" ng-repeat="i in [1,2,3,4]"><div class="skeleton skeleton-card" style="border-radius: 16px; height: 350px;"></div></div>
     </div>
   </div>
 
   <div ng-if="!loading" class="animate-slide-up">
-    <div class="row g-4">
-      <div class="col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
-              <i class="fa-solid fa-user-doctor fs-5"></i>
-            </div>
-            <h5 class="fw-bold text-dark m-0">Doctor Workload</h5>
-            <span class="badge bg-light text-muted border ms-auto">Top 10</span>
-          </div>
-          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartWorkload"></canvas></div>
+    
+    <!-- ANALYTICS KPI SUMMARY -->
+    <div class="dashboard-grid mb-5" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;">
+      <div class="card kpi-card border border-light shadow-sm bg-white" style="border-radius: 16px; padding: 20px;">
+        <div class="text-muted text-uppercase fw-semibold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Patient Registrations</div>
+        <div class="d-flex align-items-center">
+          <div class="kpi-icon bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px; font-size: 1.2rem;"><i class="fa-solid fa-users"></i></div>
+          <div class="fs-3 fw-bold text-dark">{{summary.total_patients}}</div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-            <div class="bg-teal bg-opacity-10 text-teal p-2 rounded-3 me-3" style="color: var(--vincy-teal-dark);">
-              <i class="fa-regular fa-calendar-check fs-5"></i>
-            </div>
-            <h5 class="fw-bold text-dark m-0">Appointment Status</h5>
-            <span class="badge bg-light text-muted border ms-auto">Breakdown</span>
-          </div>
-          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartApptStatus"></canvas></div>
+      <div class="card kpi-card border border-light shadow-sm bg-white" style="border-radius: 16px; padding: 20px;">
+        <div class="text-muted text-uppercase fw-semibold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Today's OPD Visits</div>
+        <div class="d-flex align-items-center">
+          <div class="kpi-icon bg-info bg-opacity-10 text-info-emphasis rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px; font-size: 1.2rem;"><i class="fa-solid fa-stethoscope"></i></div>
+          <div class="fs-3 fw-bold text-dark">{{summary.todays_opd}}</div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-            <div class="bg-info bg-opacity-10 text-info-emphasis p-2 rounded-3 me-3">
-              <i class="fa-solid fa-chart-line fs-5"></i>
-            </div>
-            <h5 class="fw-bold text-dark m-0">Patient Registrations</h5>
-            <span class="badge bg-light text-muted border ms-auto">Last 6 Months</span>
-          </div>
-          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartRegTrend"></canvas></div>
+      <div class="card kpi-card border border-light shadow-sm bg-white" style="border-radius: 16px; padding: 20px;">
+        <div class="text-muted text-uppercase fw-semibold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Today's Admissions</div>
+        <div class="d-flex align-items-center">
+          <div class="kpi-icon bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px; font-size: 1.2rem;"><i class="fa-solid fa-hospital-user"></i></div>
+          <div class="fs-3 fw-bold text-dark">{{summary.todays_admissions}}</div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
-            <div class="bg-warning bg-opacity-10 text-warning-emphasis p-2 rounded-3 me-3">
-              <i class="fa-solid fa-person-walking-arrow-right fs-5"></i>
-            </div>
-            <h5 class="fw-bold text-dark m-0">Discharge Types</h5>
-            <span class="badge bg-light text-muted border ms-auto">Distribution</span>
-          </div>
-          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartDischargeTypes"></canvas></div>
+      <div class="card kpi-card border border-light shadow-sm bg-white" style="border-radius: 16px; padding: 20px;">
+        <div class="text-muted text-uppercase fw-semibold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Today's Discharges</div>
+        <div class="d-flex align-items-center">
+          <div class="kpi-icon bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px; font-size: 1.2rem;"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div class="fs-3 fw-bold text-dark">{{summary.todays_discharges}}</div>
+        </div>
+      </div>
+      <div class="card kpi-card border border-light shadow-sm bg-white" style="border-radius: 16px; padding: 20px;">
+        <div class="text-muted text-uppercase fw-semibold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">Bed Occupancy</div>
+        <div class="d-flex align-items-center">
+          <div class="kpi-icon bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px; font-size: 1.2rem;"><i class="fa-solid fa-bed-pulse"></i></div>
+          <div class="fs-3 fw-bold text-dark">{{ (summary.occupied_beds / (summary.occupied_beds + summary.available_beds) * 100) | number:0 }}<span class="fs-5 text-muted">%</span></div>
         </div>
       </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 mt-5 overflow-hidden bg-white">
+    <!-- SECTION A: PATIENT ACTIVITY -->
+    <h5 class="fw-bold text-dark mb-3 mt-4" style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-chart-line text-primary me-2"></i> Section A: Patient Activity</h5>
+    <div class="row g-4 mb-5">
+      <div class="col-lg-6">
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom">
+            <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Daily Patient Trend</h4>
+            <div class="text-muted" style="font-size: 13px;">Registrations and OPD visits over the last 14 days</div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartDailyTrend"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom">
+            <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Long-term Registration Trend</h4>
+            <div class="text-muted" style="font-size: 13px;">Monthly patient registrations over the last 6 months</div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartRegTrend"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION B & C: HOSPITAL FLOW & PATIENT COMPOSITION -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-4">
+        <h5 class="fw-bold text-dark mb-3" style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-right-left text-primary me-2"></i> Section B: Flow</h5>
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom">
+            <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Admissions vs Discharges</h4>
+            <div class="text-muted" style="font-size: 13px;">Daily comparison over 14 days</div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 260px; position: relative;"><canvas id="chartAdmDis"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <h5 class="fw-bold text-dark mb-3" style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-users-viewfinder text-primary me-2"></i> Section C: Composition</h5>
+        <div class="row g-4 h-100">
+          <div class="col-md-6 h-100">
+            <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+              <div class="p-4 border-bottom">
+                <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Patient Type Distribution</h4>
+                <div class="text-muted" style="font-size: 13px;">Demographic breakdown</div>
+              </div>
+              <div class="p-4">
+                <div class="chart-wrap" style="height: 260px; position: relative;"><canvas id="chartTypeDist"></canvas></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 h-100">
+            <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+              <div class="p-4 border-bottom">
+                <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Speciality Distribution</h4>
+                <div class="text-muted" style="font-size: 13px;">Top 8 specialities by volume</div>
+              </div>
+              <div class="p-4">
+                <div class="chart-wrap" style="height: 260px; position: relative;"><canvas id="chartSpecDist"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION D & F: BED INTELLIGENCE & DISCHARGES -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-6">
+        <h5 class="fw-bold text-dark mb-3" style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-bed text-primary me-2"></i> Section D: Bed Intelligence</h5>
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom">
+            <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Bed Occupancy by Ward</h4>
+            <div class="text-muted" style="font-size: 13px;">Status across all hospital wards</div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 280px; position: relative;"><canvas id="chartBedOcc"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <h5 class="fw-bold text-dark mb-3" style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-door-open text-primary me-2"></i> Section F: Discharge Insights</h5>
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom">
+            <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Discharge Types</h4>
+            <div class="text-muted" style="font-size: 13px;">Distribution of patient discharge outcomes</div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 280px; position: relative;"><canvas id="chartDischargeTypes"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION E: OPERATIONAL WORKLOAD -->
+    <h5 class="fw-bold text-dark mb-3" style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-user-doctor text-primary me-2"></i> Section E: Operational Workload</h5>
+    <div class="row g-4 mb-4">
+      <div class="col-lg-8">
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Doctor Workload (Top 10)</h4>
+              <div class="text-muted" style="font-size: 13px;">Total visits handled per doctor</div>
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartWorkload"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card border border-light shadow-sm bg-white h-100" style="border-radius: 16px;">
+          <div class="p-4 border-bottom">
+            <h4 class="mb-1 font-weight-bold text-dark" style="font-size: 17px;">Appointment Status</h4>
+            <div class="text-muted" style="font-size: 13px;">Breakdown of all recorded appointments</div>
+          </div>
+          <div class="p-4">
+            <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartApptStatus"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCTOR WORKLOAD TABLE -->
+    <div class="card border border-light shadow-sm bg-white overflow-hidden mt-2" style="border-radius: 16px;">
       <div class="p-4 border-bottom bg-light">
         <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-table-list text-primary me-2"></i> Doctor Workload Detail</h5>
       </div>
@@ -75,11 +204,11 @@
         <table class="table mb-0 align-middle">
           <thead class="bg-light">
             <tr>
-              <th class="py-3 px-4">DOCTOR</th>
-              <th class="py-3">SPECIALITY</th>
-              <th class="py-3 text-center">VISITS</th>
-              <th class="py-3 text-center">ADMISSIONS</th>
-              <th class="py-3 text-center px-4">APPOINTMENTS</th>
+              <th class="py-3 px-4 text-uppercase" style="font-size: 12px; letter-spacing: 1px;">Doctor</th>
+              <th class="py-3 text-uppercase" style="font-size: 12px; letter-spacing: 1px;">Speciality</th>
+              <th class="py-3 text-center text-uppercase" style="font-size: 12px; letter-spacing: 1px;">Visits</th>
+              <th class="py-3 text-center text-uppercase" style="font-size: 12px; letter-spacing: 1px;">Admissions</th>
+              <th class="py-3 text-center px-4 text-uppercase" style="font-size: 12px; letter-spacing: 1px;">Appointments</th>
             </tr>
           </thead>
           <tbody>
@@ -88,9 +217,9 @@
                 <div class="fw-bold text-dark"><i class="fa-solid fa-user-doctor text-primary me-2"></i>{{d.doctor_name}}</div>
               </td>
               <td class="py-3 text-muted">{{d.speciality_name}}</td>
-              <td class="py-3 text-center fw-bold fs-5 text-dark">{{d.total_visits}}</td>
-              <td class="py-3 text-center fw-bold fs-5 text-dark">{{d.total_admissions}}</td>
-              <td class="py-3 text-center fw-bold fs-5 text-dark px-4">{{d.total_appointments}}</td>
+              <td class="py-3 text-center fw-bold text-dark">{{d.total_visits}}</td>
+              <td class="py-3 text-center fw-bold text-dark">{{d.total_admissions}}</td>
+              <td class="py-3 text-center fw-bold text-dark px-4">{{d.total_appointments}}</td>
             </tr>
             <tr ng-if="!doctorWorkload.length">
               <td colspan="5" class="text-center py-5 text-muted">No workload data available.</td>
@@ -99,5 +228,6 @@
         </table>
       </div>
     </div>
+    
   </div>
 </div>

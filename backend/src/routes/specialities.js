@@ -11,15 +11,8 @@ router.use(authenticate);
 let seqCounter = null; // speciality IDs are simple SPEC-### - generated via a helper below
 
 async function nextSpecialityId() {
-  const { rows } = await query(
-    `SELECT speciality_id FROM specialities ORDER BY speciality_id DESC LIMIT 1`
-  );
-  let next = 1;
-  if (rows[0]) {
-    const num = parseInt(rows[0].speciality_id.split('-')[1], 10);
-    next = num + 1;
-  }
-  return `SPEC-${String(next).padStart(3, '0')}`;
+  const { rows } = await query("SELECT nextval('specialities_seq') AS seq");
+  return 'SPEC-' + String(rows[0].seq).padStart(5, '0');
 }
 
 router.get('/', asyncHandler(async (req, res) => {

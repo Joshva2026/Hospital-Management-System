@@ -6,6 +6,7 @@
     function ($scope, $timeout, $q, ApiService, ToastService) {
       $scope.summary = null;
       $scope.loading = true;
+      $scope.selectedRange = 14;
 
       var charts = {};
 
@@ -48,58 +49,84 @@
         });
       }
 
-      $q.all([
-        ApiService.get('/dashboard/summary'),
-        ApiService.get('/dashboard/charts/daily-trend', { days: 14 }),
-        ApiService.get('/dashboard/charts/admissions-vs-discharges', { days: 14 }),
-        ApiService.get('/dashboard/charts/patient-type-distribution'),
-        ApiService.get('/dashboard/charts/speciality-distribution'),
-        ApiService.get('/dashboard/charts/bed-occupancy'),
-      ]).then(function (results) {
-        $scope.summary = results[0].data;
-        var trend = results[1].data;
-        var admDis = results[2].data;
-        var typeDist = results[3].data;
-        var specDist = results[4].data;
-        var bedOcc = results[5].data;
+      $scope.setRange = function(range) {
+        $scope.selectedRange = range;
+        
+        if (range === 'Today') {
+          // Gracefully hide charts by relying on ng-if in the template
+          // Only fetch the summary data
+          $scope.loading = true;
+          ApiService.get('/dashboard/summary').then(function(res) {
+            $scope.summary = res.data;
+            $scope.loading = false;
+          }).catch(function(err) {
+            ToastService.error(err.message || 'Failed to load summary.');
+            $scope.loading = false;
+          });
+        } else {
+          loadData(range);
+        }
+      };
 
-        $scope.loading = false;
+      function loadData(days) {
+        $scope.loading = true;
+        
+        $q.all([
+          ApiService.get('/dashboard/summary'),
+          ApiService.get('/dashboard/charts/daily-trend', { days: days }),
+          ApiService.get('/dashboard/charts/admissions-vs-discharges', { days: days }),
+          ApiService.get('/dashboard/charts/patient-type-distribution'),
+          ApiService.get('/dashboard/charts/speciality-distribution'),
+          ApiService.get('/dashboard/charts/bed-occupancy')
+        ]).then(function (results) {
+          $scope.summary = results[0].data;
+          var trend = results[1].data;
+          var admDis = results[2].data;
+          var typeDist = results[3].data;
+          var specDist = results[4].data;
+          var bedOcc = results[5].data;
 
-        $timeout(function () {
-          destroyCharts();
+          $scope.loading = false;
 
-          charts.trend = renderLineChart('chartDailyTrend',
-            trend.map(function (d) { return d.date.slice(5); }),
-            [
-              { label: 'Registrations', data: trend.map(function (d) { return d.registrations; }), borderColor: '#0d7c78', backgroundColor: 'rgba(13,124,120,0.1)', tension: 0.3, fill: true },
-              { label: 'OPD Visits', data: trend.map(function (d) { return d.opd_visits; }), borderColor: '#b9770e', backgroundColor: 'rgba(185,119,14,0.1)', tension: 0.3, fill: true },
-            ]);
+          $timeout(function () {
+            destroyCharts();
 
-          charts.admDis = renderBarChart('chartAdmDis',
-            admDis.map(function (d) { return d.date.slice(5); }),
-            [
-              { label: 'Admissions', data: admDis.map(function (d) { return d.admissions; }), backgroundColor: '#0d7c78' },
-              { label: 'Discharges', data: admDis.map(function (d) { return d.discharges; }), backgroundColor: '#c0392b' },
-            ]);
+            charts.trend = renderLineChart('chartDailyTrend',
+              trend.map(function (d) { return d.date.slice(5); }),
+              [
+                { label: 'Registrations', data: trend.map(function (d) { return d.registrations; }), borderColor: '#0d7c78', backgroundColor: 'rgba(13,124,120,0.1)', tension: 0.3, fill: true },
+                { label: 'OPD Visits', data: trend.map(function (d) { return d.opd_visits; }), borderColor: '#b9770e', backgroundColor: 'rgba(185,119,14,0.1)', tension: 0.3, fill: true },
+              ]);
 
-          charts.typeDist = renderPieChart('chartTypeDist',
-            typeDist.map(function (d) { return d.patient_type; }),
-            typeDist.map(function (d) { return d.count; }));
+            charts.admDis = renderBarChart('chartAdmDis',
+              admDis.map(function (d) { return d.date.slice(5); }),
+              [
+                { label: 'Admissions', data: admDis.map(function (d) { return d.admissions; }), backgroundColor: '#007AFF' },
+                { label: 'Discharges', data: admDis.map(function (d) { return d.discharges; }), backgroundColor: '#ef4444' },
+              ]);
 
-          charts.specDist = renderBarChart('chartSpecDist',
-            specDist.slice(0, 8).map(function (d) { return d.speciality_name; }),
-            [{ label: 'Visits', data: specDist.slice(0, 8).map(function (d) { return d.visit_count; }), backgroundColor: '#0d7c78' }],
-            true);
+            charts.typeDist = renderPieChart('chartTypeDist',
+              typeDist.map(function (d) { return d.patient_type; }),
+              typeDist.map(function (d) { return d.count; }));
 
-          charts.bedOcc = renderBarChart('chartBedOcc',
-            bedOcc.map(function (d) { return d.ward_name; }),
-            [
-              { label: 'Occupied', data: bedOcc.map(function (d) { return d.occupied; }), backgroundColor: '#c0392b' },
-              { label: 'Available', data: bedOcc.map(function (d) { return d.available; }), backgroundColor: '#1e8449' },
-              { label: 'Maintenance', data: bedOcc.map(function (d) { return d.maintenance; }), backgroundColor: '#b9770e' },
-            ], true);
-        }, 50);
-      }).catch(function (err) { ToastService.error(err.message || 'Failed to load dashboard.'); $scope.loading = false; });
+            charts.specDist = renderBarChart('chartSpecDist',
+              specDist.slice(0, 8).map(function (d) { return d.speciality_name; }),
+              [{ label: 'Visits', data: specDist.slice(0, 8).map(function (d) { return d.visit_count; }), backgroundColor: '#007AFF' }],
+              true);
+
+            charts.bedOcc = renderBarChart('chartBedOcc',
+              bedOcc.map(function (d) { return d.ward_name; }),
+              [
+                { label: 'Occupied', data: bedOcc.map(function (d) { return d.occupied; }), backgroundColor: '#ef4444' },
+                { label: 'Available', data: bedOcc.map(function (d) { return d.available; }), backgroundColor: '#10b981' },
+                { label: 'Maintenance', data: bedOcc.map(function (d) { return d.maintenance; }), backgroundColor: '#f59e0b' },
+              ], true);
+          }, 50);
+        }).catch(function (err) { ToastService.error(err.message || 'Failed to load dashboard.'); $scope.loading = false; });
+      }
+
+      // Initial load
+      loadData($scope.selectedRange);
 
       $scope.$on('$destroy', destroyCharts);
     },

@@ -8,8 +8,8 @@
       $scope.loading = false;
       $scope.errorMessage = null;
 
-      $scope.submit = function () {
-        if (!$scope.loginForm.$valid) return;
+      $scope.submit = function(form) {
+        if (!form || !form.$valid) return;
         $scope.loading = true;
         $scope.errorMessage = null;
 

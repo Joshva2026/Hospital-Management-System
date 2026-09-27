@@ -96,23 +96,23 @@
   </div>
 
   <!-- New Visit Modal -->
-  <div class="modal-backdrop-custom" ng-if="showModal">
+  <div class="modal-backdrop-custom" ng-if="showModal" body-scroll-lock>
     <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up">
       <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
         <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-clipboard-user text-primary me-2"></i> New Visit</h5>
         <button class="btn-close" ng-click="closeModal()"></button>
       </div>
-      <form name="visitForm" ng-submit="submitVisit()" novalidate>
+      <form name="visitForm" ng-submit="submitVisit(visitForm)" novalidate>
         <div class="modal-body-custom p-4">
           <div class="mb-4">
             <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Patient Information</h6>
-            <div class="form-group mb-0">
+            <div class="form-group mb-0 position-relative">
               <label class="fw-medium text-dark mb-1">Select Patient *</label>
               <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
                 <input type="text" class="form-control border-start-0" placeholder="Search by name, mobile or ID..." ng-model="patientSearch" ng-change="searchPatients()">
               </div>
-              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden" ng-if="patients.length" style="max-height: 200px; overflow-y: auto;">
+              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="patients.length" style="max-height: 200px; overflow-y: auto; top: 100%;">
                 <button type="button" class="list-group-item list-group-item-action border-0 border-bottom" ng-repeat="p in patients" ng-click="selectPatient(p)">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>

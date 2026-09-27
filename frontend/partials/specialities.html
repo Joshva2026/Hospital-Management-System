@@ -76,13 +76,13 @@
     </div>
   </div>
 
-  <div class="modal-backdrop-custom" ng-if="showModal">
+  <div class="modal-backdrop-custom" ng-if="showModal" body-scroll-lock>
     <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-white">
       <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
         <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-building-user text-primary me-2"></i> {{isEdit ? 'Edit Speciality' : 'Add Speciality'}}</h5>
         <button class="btn-close" ng-click="closeModal()"></button>
       </div>
-      <form name="specForm" ng-submit="submit()" novalidate>
+      <form name="specForm" ng-submit="submit(specForm)" novalidate>
         <div class="modal-body-custom p-4">
           
           <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Speciality Information</h6>

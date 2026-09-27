@@ -11,8 +11,8 @@
       $scope.showWardModal = false;
       $scope.showBedModal = false;
       $scope.saving = false;
-      $scope.wardForm = {};
-      $scope.bedForm = {};
+                  $scope.isWardEdit = false;
+      $scope.isBedEdit = false;
 
       function loadWards() {
         $scope.loading = true;
@@ -32,29 +32,50 @@
       $scope.clearWardFilter = function () { $scope.selectedWardId = ''; loadBeds(); };
 
       $scope.openNewWard = function () {
+        $scope.isWardEdit = false;
         $scope.wardForm = { wardName: '', wardType: 'GENERAL', floor: '' };
         $scope.showWardModal = true;
       };
+      $scope.openEditWard = function(w) {
+        $scope.isWardEdit = true;
+        $scope.wardForm = { wardId: w.ward_id, wardName: w.ward_name, wardType: w.ward_type, floor: w.floor || '' };
+        $scope.showWardModal = true;
+      };
       $scope.closeWardModal = function () { $scope.showWardModal = false; };
-      $scope.submitWard = function () {
-        if (!$scope.wardFormEl.$valid || $scope.saving) return;
+      $scope.submitWard = function (form) {
+        if (!form || !form.$valid || $scope.saving) return;
         $scope.saving = true;
-        ApiService.post('/wards', $scope.wardForm).then(function () {
-          ToastService.success('Ward created.'); $scope.showWardModal = false; loadWards();
+        var call = $scope.isWardEdit 
+          ? ApiService.put('/wards/' + $scope.wardForm.wardId, $scope.wardForm) 
+          : ApiService.post('/wards', $scope.wardForm);
+        
+        call.then(function () {
+          ToastService.success($scope.isWardEdit ? 'Ward updated.' : 'Ward created.'); 
+          $scope.showWardModal = false; loadWards();
         }).catch(function (err) { ToastService.error(err.message); })
           .finally(function () { $scope.saving = false; });
       };
 
       $scope.openNewBed = function () {
+        $scope.isBedEdit = false;
         $scope.bedForm = { wardId: $scope.selectedWardId || ($scope.wards[0] && $scope.wards[0].ward_id), bedNumber: '', bedType: 'General' };
         $scope.showBedModal = true;
       };
+      $scope.openEditBed = function (b) {
+        $scope.isBedEdit = true;
+        $scope.bedForm = { bedId: b.bed_id, wardId: b.ward_id, bedNumber: b.bed_number, bedType: b.bed_type || 'General', status: b.status };
+        $scope.showBedModal = true;
+      };
       $scope.closeBedModal = function () { $scope.showBedModal = false; };
-      $scope.submitBed = function () {
-        if (!$scope.bedFormEl.$valid || $scope.saving) return;
+      $scope.submitBed = function (form) {
+        if (!form || !form.$valid || $scope.saving) return;
         $scope.saving = true;
-        ApiService.post('/beds', $scope.bedForm).then(function () {
-          ToastService.success('Bed added.'); $scope.showBedModal = false; loadWards(); loadBeds();
+        var call = $scope.isBedEdit
+          ? ApiService.put('/beds/' + $scope.bedForm.bedId, $scope.bedForm)
+          : ApiService.post('/beds', $scope.bedForm);
+        call.then(function () {
+          ToastService.success($scope.isBedEdit ? 'Bed updated.' : 'Bed added.'); 
+          $scope.showBedModal = false; loadWards(); loadBeds();
         }).catch(function (err) { ToastService.error(err.message); })
           .finally(function () { $scope.saving = false; });
       };

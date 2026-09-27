@@ -34,8 +34,8 @@
       };
       $scope.closeModal = function () { $scope.showModal = false; };
 
-      $scope.submit = function () {
-        if (!$scope.specForm.$valid || $scope.saving) return;
+      $scope.submit = function (form) {
+        if (!form || !form.$valid || $scope.saving) return;
         $scope.saving = true;
         var call = $scope.isEdit
           ? ApiService.put('/specialities/' + $scope.form.specialityId, $scope.form)

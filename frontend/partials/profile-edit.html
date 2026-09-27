@@ -1,0 +1,49 @@
+<div class="animate-fade-in pb-5">
+  <div class="d-flex align-items-center mb-4">
+    <button class="btn btn-light rounded-circle shadow-sm me-3" ng-click="goBack()" style="width: 40px; height: 40px;">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-0" style="font-size: 1.75rem;">Edit Profile</h2>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+        <form name="profileForm" ng-submit="updateProfile(profileForm)" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Full Name <span class="text-danger">*</span></label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-regular fa-user"></i></span>
+                <input type="text" name="fullName" class="form-control border-start-0" ng-model="profileData.fullName" required minlength="2">
+              </div>
+            </div>
+            
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Email Address <span class="text-danger">*</span></label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-regular fa-envelope"></i></span>
+                <input type="email" name="email" class="form-control border-start-0" ng-model="profileData.email" required>
+              </div>
+            </div>
+            
+            <div class="col-md-12 form-group mb-4">
+              <label class="fw-medium text-dark mb-1">Role</label>
+              <input type="text" class="form-control shadow-sm bg-light text-muted" value="{{auth.currentAdmin.role}}" disabled>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-end gap-2 mt-2">
+            <button type="button" class="btn btn-light shadow-sm px-4 fw-bold rounded-pill" ng-click="goBack()">Cancel</button>
+            <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold rounded-pill" ng-disabled="profileForm.$invalid || profileSaving">
+              <span ng-if="!profileSaving"><i class="fa-solid fa-check me-2"></i> Save Changes</span>
+              <span ng-if="profileSaving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Saving...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,8 +3,10 @@
 
   angular.module('hmsApp').controller('LandingController', [
     '$scope',
+    '$q',
+    '$timeout',
     'ApiService',
-    function ($scope, ApiService) {
+    function ($scope, $q, $timeout, ApiService) {
       $scope.showLoginModal = false;
 
       $scope.openLoginModal = function () {
@@ -28,23 +30,68 @@
       
       const defaultImage = 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800&auto=format&fit=crop';
 
-      function loadSpecialities() {
-        ApiService.get('/specialities').then(function(res) {
-          if (res.data && res.data.success) {
-            $scope.specialities = res.data.data.map(function(s) {
+      function loadData() {
+        $q.all([
+          ApiService.get('/public/specialities'),
+          ApiService.get('/public/doctors')
+        ]).then(function(results) {
+          var specsRes = results[0];
+          var docsRes = results[1];
+
+          if (specsRes.data && specsRes.data.success && docsRes.data && docsRes.data.success) {
+            var allDocs = docsRes.data.data;
+            
+            $scope.specialities = specsRes.data.data.map(function(s) {
+              var docsForSpec = allDocs.filter(function(d) { return d.speciality_id === s.speciality_id; });
+              
+              var doctorsWithImages = docsForSpec.map(function(d) {
+                var neutralImage = 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=800&auto=format&fit=crop'; // Neutral professional medical setting
+                
+                return {
+                  name: d.doctor_name,
+                  qualification: d.qualification,
+                  experience: d.experience_years,
+                  image: neutralImage
+                };
+              });
+
               return {
-                name: s.name,
-                desc: s.description || 'Specialized medical care and consultation.',
-                image: imageMapping[s.name] || defaultImage
+                name: s.speciality_name,
+                desc: s.department_description || 'Specialized medical care and consultation.',
+                image: imageMapping[s.speciality_name] || defaultImage,
+                doctors: doctorsWithImages
               };
             });
+            
+            $timeout(setupScrollReveal, 100);
           }
         }).catch(function(err) {
-          console.error('Failed to load specialities', err);
+          console.error('Failed to load public data', err);
         });
       }
       
-      loadSpecialities();
+      function setupScrollReveal() {
+        var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var elements = document.querySelectorAll('.reveal');
+        
+        if (prefersReducedMotion) {
+          elements.forEach(function(el) { el.classList.add('active'); });
+          return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('active');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+
+        elements.forEach(function(el) { observer.observe(el); });
+      }
+
+      loadData();
     },
   ]);
 })();

@@ -27,6 +27,8 @@
       .when('/analytics', { templateUrl: 'partials/analytics.html', controller: 'AnalyticsController', title: 'Analytics' })
       .when('/audit-logs', { templateUrl: 'partials/audit-logs.html', controller: 'AuditLogsController', title: 'Audit Logs' })
       .when('/profile', { templateUrl: 'partials/profile.html', controller: 'ProfileController', title: 'Admin Profile' })
+      .when('/profile/edit', { templateUrl: 'partials/profile-edit.html', controller: 'ProfileController', title: 'Edit Profile' })
+      .when('/profile/change-password', { templateUrl: 'partials/profile-change-password.html', controller: 'ProfileController', title: 'Change Password' })
       .otherwise({ redirectTo: '/' });
   }]);
 
@@ -74,4 +76,16 @@
   app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.interceptors.push('authInterceptor');
   }]);
+
+  app.directive('bodyScrollLock', function() {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs) {
+        document.body.style.overflow = 'hidden';
+        scope.$on('$destroy', function() {
+          document.body.style.overflow = '';
+        });
+      }
+    };
+  });
 })();

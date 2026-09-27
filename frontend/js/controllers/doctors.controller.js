@@ -2,8 +2,8 @@
   'use strict';
 
   angular.module('hmsApp').controller('DoctorsController', [
-    '$scope', 'ApiService', 'ToastService',
-    function ($scope, ApiService, ToastService) {
+    '$scope', 'ApiService', 'ToastService', 'DateTimeService',
+    function ($scope, ApiService, ToastService, DateTimeService) {
       $scope.doctors = [];
       $scope.loading = true;
       $scope.specialities = [];
@@ -29,26 +29,30 @@
       $scope.openNewDoctor = function () {
         $scope.isEdit = false;
         $scope.form = { doctorName: '', specialityId: '', qualification: '', experienceYears: '', mobile: '',
-          email: '', consultationFee: '', availableDays: '', availableFrom: '', availableTo: '' };
+          email: '', consultationFee: '', availableDays: '', availableFrom: null, availableTo: null };
         $scope.showModal = true;
       };
       $scope.openEditDoctor = function (d) {
         $scope.isEdit = true;
         $scope.form = {
           doctorId: d.doctor_id, doctorName: d.doctor_name, specialityId: d.speciality_id, qualification: d.qualification,
-          experienceYears: d.experience_years, mobile: d.mobile, email: d.email, consultationFee: d.consultation_fee,
-          availableDays: d.available_days, availableFrom: d.available_from, availableTo: d.available_to, status: d.status,
+          experienceYears: d.experience_years == null ? '' : Number(d.experience_years), mobile: d.mobile, email: d.email, consultationFee: d.consultation_fee == null ? '' : Number(d.consultation_fee),
+          availableDays: d.available_days, availableFrom: DateTimeService.parseLocalTime(d.available_from), availableTo: DateTimeService.parseLocalTime(d.available_to), status: d.status,
         };
         $scope.showModal = true;
       };
       $scope.closeModal = function () { $scope.showModal = false; };
 
-      $scope.submitDoctor = function () {
-        if (!$scope.doctorForm.$valid || $scope.saving) return;
+      $scope.submitDoctor = function (form) {
+        if (!form || !form.$valid || $scope.saving) return;
         $scope.saving = true;
+        var payload = angular.copy($scope.form);
+        if (payload.availableFrom) payload.availableFrom = DateTimeService.formatLocalTime(payload.availableFrom);
+        if (payload.availableTo) payload.availableTo = DateTimeService.formatLocalTime(payload.availableTo);
+
         var call = $scope.isEdit
-          ? ApiService.put('/doctors/' + $scope.form.doctorId, $scope.form)
-          : ApiService.post('/doctors', $scope.form);
+          ? ApiService.put('/doctors/' + payload.doctorId, payload)
+          : ApiService.post('/doctors', payload);
         call.then(function () {
           ToastService.success($scope.isEdit ? 'Doctor updated.' : 'Doctor added.');
           $scope.showModal = false; load();
