@@ -1,0 +1,309 @@
+<div>
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Admissions</h2>
+      <p class="text-muted mb-0">Manage inpatient admissions, bed allocation and patient care transitions.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
+      <button class="btn btn-primary shadow-sm px-4" ng-click="openNewAdmission()"><i class="fa-solid fa-plus me-2"></i> New Admission</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4 border-0 shadow-sm rounded-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <select class="form-select bg-light" ng-model="filters.status" ng-change="applyFilters()">
+          <option value="">Status: All</option>
+          <option value="ADMITTED">Admitted</option>
+          <option value="DISCHARGED">Discharged</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden border-0 shadow-sm rounded-4">
+    <div class="p-4" ng-if="loading">
+      <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
+      <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5]"></div>
+    </div>
+    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && admissions.length">
+      <table class="table mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th>ADMISSION ID</th>
+            <th>PATIENT</th>
+            <th>CLINICAL</th>
+            <th>LOCATION</th>
+            <th>DATE</th>
+            <th>REASON</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="a in admissions" class="border-bottom">
+            <td class="py-3"><span class="font-monospace text-muted">{{a.admission_id}}</span></td>
+            <td class="py-3 fw-bold text-dark">{{a.patient_name}}</td>
+            <td class="py-3 text-muted"><i class="fa-solid fa-user-doctor me-1 opacity-50"></i> {{a.doctor_name}}</td>
+            <td class="py-3">
+              <div class="fw-medium text-dark">{{a.ward_name}}</div>
+              <div class="small text-muted">Bed {{a.bed_number}}</div>
+            </td>
+            <td class="py-3 text-muted">{{a.admission_date | date:'dd-MMM-yyyy'}}</td>
+            <td class="py-3 text-muted text-truncate" style="max-width: 200px;">{{a.admission_reason}}</td>
+            <td class="py-3"><span class="badge-status shadow-sm px-3 py-1 rounded-pill" ng-class="'badge-' + (a.status | lowercase)">{{a.status}}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !admissions.length">
+      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+        <i class="fa-solid fa-bed-pulse fs-2 text-muted"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">No admissions found</h4>
+      <p class="text-muted mb-0">Try adjusting your filters to find what you're looking for.</p>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" ng-if="!loading && admissions.length">
+      <span class="text-muted small fw-medium">Showing {{admissions.length}} of {{pagination.total}} admissions</span>
+      <div class="btn-group shadow-sm rounded-3">
+        <button class="btn btn-sm btn-white border" style="border-right: none;" ng-disabled="pagination.page<=1" ng-click="goToPage(pagination.page-1)"><i class="fa-solid fa-chevron-left me-1"></i> Prev</button>
+        <button class="btn btn-sm btn-white border text-dark fw-bold" disabled style="border-left: none; border-right: none;">Page {{pagination.page}} of {{pagination.totalPages||1}}</button>
+        <button class="btn btn-sm btn-white border" style="border-left: none;" ng-disabled="pagination.page>=pagination.totalPages" ng-click="goToPage(pagination.page+1)">Next <i class="fa-solid fa-chevron-right ms-1"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Admission Modal -->
+  <div class="modal-backdrop-custom" ng-if="showModal">
+    <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up overflow-hidden bg-white">
+      
+      <!-- Stepper Header -->
+      <div class="bg-primary text-white p-4 position-relative">
+        <button class="btn-close btn-close-white position-absolute top-0 end-0 m-3" ng-click="closeModal()"></button>
+        <h5 class="mb-3 fw-bold"><i class="fa-solid fa-hospital-user me-2"></i> Admission Workflow</h5>
+        
+        <div class="d-flex justify-content-between text-white-50 small fw-bold text-uppercase mb-2">
+          <span>Step {{step}} of 10</span>
+          <span>
+            <span ng-show="step===1">Patient Selection</span>
+            <span ng-show="step===2">Speciality</span>
+            <span ng-show="step===3">Doctor</span>
+            <span ng-show="step===4">Ward</span>
+            <span ng-show="step===5">Available Bed</span>
+            <span ng-show="step===6">Admission Date & Time</span>
+            <span ng-show="step===7">Admission Reason</span>
+            <span ng-show="step===8">Initial Condition</span>
+            <span ng-show="step===9">Review</span>
+            <span ng-show="step===10">Confirm Admission</span>
+          </span>
+        </div>
+        <div class="progress bg-white bg-opacity-25" style="height: 6px; border-radius: 10px;">
+          <div class="progress-bar bg-info" role="progressbar" ng-style="{ 'width': ((step - 1) / 9 * 100) + '%' }"></div>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <form name="admissionForm" ng-submit="submitAdmission(admissionForm)" novalidate class="p-4 bg-white position-relative" ng-if="!successData">
+        
+        <!-- STEP 1: Patient Selection -->
+        <div ng-show="step === 1" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-user me-2"></i> Find Patient</h5>
+          <div class="form-group mb-4">
+            <label for="patientSearch" class="fw-medium text-dark mb-2">Search Patient <span class="text-danger">*</span></label>
+            <div class="input-group shadow-sm" ng-if="!selectedPatient">
+              <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
+              <input type="text" id="patientSearch" class="form-control border-start-0 ps-0" placeholder="Search by name, mobile or ID..." ng-model="searchObj.patientQuery" ng-change="searchPatients()">
+            </div>
+            
+            <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden" ng-if="patients.length && !selectedPatient" style="max-height: 250px; overflow-y: auto;">
+              <button type="button" class="list-group-item list-group-item-action border-0 border-bottom p-3" ng-repeat="p in patients" ng-click="p.status === 'ADMITTED' ? null : selectPatient(p)" ng-class="{'bg-light opacity-75 cursor-not-allowed': p.status === 'ADMITTED'}" ng-style="p.status === 'ADMITTED' ? {'cursor': 'not-allowed'} : {}">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="d-flex align-items-center justify-content-center bg-light text-primary fw-bold rounded-circle" style="width: 40px; height: 40px; flex-shrink: 0;">{{p.full_name.charAt(0)}}</div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="fw-bold text-dark">{{p.full_name}}</div>
+                      <span class="badge bg-warning text-dark px-2 py-1" ng-if="p.status === 'ADMITTED'"><i class="fa-solid fa-lock me-1"></i> ALREADY ADMITTED</span>
+                    </div>
+                    <div class="small text-muted mb-1">ID: {{p.patient_id}} &middot; Mobile: {{p.mobile}}</div>
+                    <div class="small text-danger fw-medium" ng-if="p.status === 'ADMITTED'">
+                      Patient is currently admitted. 
+                      <span ng-if="p.current_admission">
+                        Ward: {{p.current_admission.ward_name}} &middot; Bed: {{p.current_admission.bed_number}} ({{p.current_admission.admission_id}})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
+            
+            <div class="card border border-success bg-success bg-opacity-10 shadow-sm mt-3" ng-if="selectedPatient">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center justify-content-center bg-success text-white rounded-circle shadow-sm" style="width: 50px; height: 50px;">
+                  <i class="fa-solid fa-check fs-4"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold text-success mb-1" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Selected Patient</div>
+                  <div class="fs-5 fw-bold text-dark mb-1">{{selectedPatient.full_name}} <span class="text-muted fs-6 fw-normal ms-2">({{selectedPatient.patient_id}})</span></div>
+                  <div class="small text-muted">
+                    <span class="me-3"><i class="fa-solid fa-phone me-1"></i> {{selectedPatient.mobile || 'N/A'}}</span>
+                    <span class="me-3"><i class="fa-solid fa-venus-mars me-1"></i> {{selectedPatient.gender || 'N/A'}}</span>
+                    <span><i class="fa-solid fa-droplet me-1"></i> {{selectedPatient.blood_group || 'N/A'}}</span>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill shadow-sm px-3" ng-click="selectedPatient = null; form.patientId = ''; searchObj.patientQuery = ''"><i class="fa-solid fa-times me-1"></i> Change</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Speciality -->
+        <div ng-show="step === 2" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-stethoscope me-2"></i> Select Speciality</h5>
+          <div class="form-group">
+            <label for="specialityId" class="fw-medium text-dark mb-2">Speciality <span class="text-danger">*</span></label>
+            <select id="specialityId" name="specialityId" class="form-select shadow-sm" ng-model="form.specialityId" required>
+              <option value="">Select Speciality</option>
+              <option ng-repeat="s in specialities" value="{{s.speciality_id}}">{{s.speciality_name}}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STEP 3: Doctor -->
+        <div ng-show="step === 3" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-user-doctor me-2"></i> Select Doctor</h5>
+          <div class="form-group">
+            <label for="doctorId" class="fw-medium text-dark mb-2">Doctor <span class="text-danger">*</span></label>
+            <select id="doctorId" name="doctorId" class="form-select shadow-sm" ng-model="form.doctorId" required>
+              <option value="">Select Doctor</option>
+              <option ng-repeat="d in doctors" value="{{d.doctor_id}}">{{d.doctor_name}}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STEP 4: Ward -->
+        <div ng-show="step === 4" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-building me-2"></i> Select Ward</h5>
+          <div class="form-group">
+            <label for="wardId" class="fw-medium text-dark mb-2">Ward <span class="text-danger">*</span></label>
+            <select id="wardId" name="wardId" class="form-select shadow-sm" ng-model="form.wardId" ng-change="onWardChange()" required>
+              <option value="">Select Ward</option>
+              <option ng-repeat="w in wards" value="{{w.ward_id}}">{{w.ward_name}} ({{w.available_beds}} available beds)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STEP 5: Available Bed -->
+        <div ng-show="step === 5" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-bed me-2"></i> Assign Bed</h5>
+          <div class="form-group">
+            <label for="bedId" class="fw-medium text-dark mb-2">Available Bed <span class="text-danger">*</span></label>
+            <select id="bedId" name="bedId" class="form-select shadow-sm" ng-model="form.bedId" required ng-disabled="!form.wardId">
+              <option value="">Select Available Bed</option>
+              <option ng-repeat="b in availableBeds" value="{{b.bed_id}}">Bed {{b.bed_number}} ({{b.bed_type}})</option>
+            </select>
+            <div class="alert alert-warning mt-3 mb-0 border-0 shadow-sm d-flex align-items-center" ng-if="form.wardId && !availableBeds.length">
+              <i class="fa-solid fa-triangle-exclamation fs-4 me-3 text-warning"></i>
+              <div>
+                <strong>No beds available.</strong><br>
+                Please select a different ward.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6: Date & Time -->
+        <div ng-show="step === 6" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-clock me-2"></i> Admission Date & Time</h5>
+          <div class="alert border-0 shadow-sm d-flex align-items-center bg-primary bg-opacity-10 text-primary-dark">
+            <i class="fa-solid fa-info-circle fs-4 me-3 text-primary"></i>
+            <div>Admission date and time are generated automatically by the system upon confirmation.</div>
+          </div>
+        </div>
+
+        <!-- STEP 7: Admission Reason -->
+        <div ng-show="step === 7" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-notes-medical me-2"></i> Admission Reason</h5>
+          <div class="form-group">
+            <label for="admissionReason" class="fw-medium text-dark mb-2">Reason <span class="text-danger">*</span></label>
+            <textarea id="admissionReason" name="admissionReason" class="form-control shadow-sm" rows="4" ng-model="form.admissionReason" required placeholder="Enter the diagnosis or primary reason for this admission..."></textarea>
+          </div>
+        </div>
+
+        <!-- STEP 8: Initial Condition -->
+        <div ng-show="step === 8" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-heart-pulse me-2"></i> Initial Condition</h5>
+          <div class="form-group">
+            <label for="initialCondition" class="fw-medium text-dark mb-2">Condition upon admission</label>
+            <textarea id="initialCondition" class="form-control shadow-sm" rows="4" ng-model="form.initialCondition" placeholder="Describe the patient's current condition, vitals, or immediate care requirements..."></textarea>
+          </div>
+        </div>
+
+        <!-- STEP 9: Review -->
+        <div ng-show="step === 9" class="animate-fade-in">
+          <h5 class="mb-4 text-primary fw-bold"><i class="fa-solid fa-list-check me-2"></i> Review Admission</h5>
+          <div class="card border-0 shadow-sm bg-light">
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-sm-6">
+                  <div class="text-muted small text-uppercase fw-bold mb-1">Patient</div>
+                  <div class="fw-bold text-dark fs-6">{{selectedPatient.full_name}}</div>
+                  <div class="text-muted small">{{selectedPatient.patient_id}}</div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="text-muted small text-uppercase fw-bold mb-1">Location</div>
+                  <div class="fw-bold text-dark fs-6">{{ (wards | filter:{ward_id: form.wardId})[0].ward_name || form.wardId }}</div>
+                  <div class="text-muted small">Bed {{ (availableBeds | filter:{bed_id: form.bedId})[0].bed_number || form.bedId }}</div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="text-muted small text-uppercase fw-bold mb-1">Clinical</div>
+                  <div class="fw-bold text-dark fs-6">{{ (specialities | filter:{speciality_id: form.specialityId})[0].speciality_name || form.specialityId }}</div>
+                  <div class="text-muted small">Dr. {{ (doctors | filter:{doctor_id: form.doctorId})[0].doctor_name || form.doctorId }}</div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="text-muted small text-uppercase fw-bold mb-1">Reason</div>
+                  <div class="text-dark fw-medium">{{form.admissionReason}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center text-muted small mt-3"><i class="fa-solid fa-shield-halved me-1"></i> Please verify the details before final confirmation.</div>
+        </div>
+
+        <!-- STEP 10: Confirm Admission -->
+        <div ng-show="step === 10" class="animate-fade-in text-center py-4">
+          <h5 class="mb-4 text-primary fw-bold">Final Confirmation</h5>
+          <div class="mb-4"><i class="fa-solid fa-clipboard-check text-primary" style="font-size: 4rem;"></i></div>
+          <h4 class="fw-bold text-dark mb-2">Ready to Admit</h4>
+          <p class="text-muted">You are about to securely confirm this admission and allocate the bed.<br>This action will officially admit the patient to Vincy Hospital.</p>
+        </div>
+
+        <div class="mt-4 pt-4 border-top d-flex justify-content-between align-items-center">
+          <button type="button" class="btn btn-white border shadow-sm px-4 py-2" ng-click="prevStep()" ng-disabled="step === 1 || saving"><i class="fa-solid fa-arrow-left me-2"></i> Back</button>
+          <button type="button" class="btn btn-primary shadow-sm px-5 py-2 fw-bold" ng-click="nextStep()" ng-if="step < 10">Next <i class="fa-solid fa-arrow-right ms-2"></i></button>
+          <button type="submit" class="btn btn-success shadow-md px-5 py-2 fw-bold" ng-if="step === 10" ng-disabled="admissionForm.$invalid || saving">
+            <span ng-if="!saving"><i class="fa-solid fa-check-circle me-2"></i> Confirm Admission</span>
+            <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Processing...</span>
+          </button>
+        </div>
+      </form>
+      
+      <!-- Cinematic Success State -->
+      <div class="success-screen animate-fade-in p-5 text-center" ng-if="successData">
+        <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle shadow-sm mb-4" style="width: 80px; height: 80px;">
+          <i class="fa-solid fa-check fs-1"></i>
+        </div>
+        <h3 class="fw-bold text-success mb-2">Admission Confirmed</h3>
+        <p class="text-muted mb-4 fs-5">Patient successfully admitted to <strong>{{successData.ward_name}}</strong>, Bed <strong>{{successData.bed_number}}</strong>.</p>
+        <div class="bg-light p-3 rounded-3 mb-4 d-inline-block text-start shadow-sm mx-auto">
+          <div class="text-muted small text-uppercase fw-bold mb-1">Admission ID</div>
+          <div class="fw-bold text-dark fs-5 font-monospace">{{successData.admission_id}}</div>
+        </div>
+        <div>
+          <button class="btn btn-primary px-5 py-2 fw-bold shadow-sm rounded-pill" ng-click="closeModal()">Close & View Admissions</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

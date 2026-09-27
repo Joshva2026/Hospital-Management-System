@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="hmsApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vincy Hospital &mdash; Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body ng-controller="RootController">
+
+  <!-- ============ LANDING PAGE (shown when not authenticated) ============ -->
+  <div ng-if="!auth.isAuthenticated()" class="landing-wrapper">
+    <div ng-include="'partials/landing.html'"></div>
+  </div>
+
+  <!-- ============ APP SHELL (shown when authenticated) ============ -->
+  <div ng-if="auth.isAuthenticated()" class="app-shell">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <i class="fa-solid fa-hospital"></i>
+        <span>Vincy Hospital HMS</span>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+        <li><a href="#!/patients" ng-class="{active: isActive('/patients')}"><i class="fa-solid fa-users"></i> Patients</a></li>
+        <li><a href="#!/visits" ng-class="{active: isActive('/visits')}"><i class="fa-solid fa-stethoscope"></i> OPD / Visits</a></li>
+        <li><a href="#!/admissions" ng-class="{active: isActive('/admissions')}"><i class="fa-solid fa-bed-pulse"></i> Admissions</a></li>
+        <li><a href="#!/reports" ng-class="{active: isActive('/reports')}"><i class="fa-solid fa-file-medical"></i> Daily Reports</a></li>
+        <li><a href="#!/appointments" ng-class="{active: isActive('/appointments')}"><i class="fa-solid fa-calendar-check"></i> Appointments</a></li>
+        <li><a href="#!/doctors" ng-class="{active: isActive('/doctors')}"><i class="fa-solid fa-user-doctor"></i> Doctors</a></li>
+        <li><a href="#!/specialities" ng-class="{active: isActive('/specialities')}"><i class="fa-solid fa-book-medical"></i> Specialities</a></li>
+        <li><a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}"><i class="fa-solid fa-bed"></i> Wards &amp; Beds</a></li>
+        <li><a href="#!/discharges" ng-class="{active: isActive('/discharges')}"><i class="fa-solid fa-right-from-bracket"></i> Discharges</a></li>
+        <li><a href="#!/analytics" ng-class="{active: isActive('/analytics')}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+        <li><a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}"><i class="fa-solid fa-clipboard-list"></i> Audit Logs</a></li>
+        <li><a href="#!/profile" ng-class="{active: isActive('/profile')}"><i class="fa-solid fa-user-shield"></i> Admin Profile</a></li>
+      </ul>
+      <div class="sidebar-profile" style="padding: 12px 16px;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="avatar-circle bg-primary text-white border border-2 border-white" style="width: 36px; height: 36px; font-size: 14px; margin-right: 0;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+          <div style="line-height: 1.2;">
+            <div class="text-white" style="font-size: 14px; font-weight: 600;">{{auth.currentAdmin.fullName}}</div>
+            <div class="text-primary" style="font-size: 11px;">{{auth.currentAdmin.role || 'Hospital Administrator'}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <a href="#" ng-click="logout()"><i class="fa-solid fa-power-off"></i> Logout</a>
+      </div>
+    </nav>
+
+    <button class="sidebar-toggle d-md-none" ng-click="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-title">{{pageTitle}}</div>
+        <div class="topbar-user">
+          <div class="avatar-circle bg-primary-light text-primary" style="width: 32px; height: 32px; font-size: 14px; margin-right: 8px;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+          <span style="font-size: 14px; font-weight: 500;">{{auth.currentAdmin.fullName}}</span>
+          <span class="role-badge">{{auth.currentAdmin.role}}</span>
+        </div>
+      </header>
+
+      <!-- Global toast/alert -->
+      <div class="app-toast" ng-if="toast.message" ng-class="'toast-' + toast.type">
+        {{toast.message}}
+        <button class="toast-close" ng-click="toast.message=null">&times;</button>
+      </div>
+
+      <div class="page-body" ng-view></div>
+    </main>
+  </div>
+
+  <!-- ============ Scripts ============ -->
+  <script src="lib/angular.min.js"></script>
+  <script src="lib/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/services/api.service.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script src="js/services/toast.service.js"></script>
+
+  <script src="js/controllers/root.controller.js"></script>
+  <script src="js/controllers/landing.controller.js"></script>
+  <script src="js/controllers/login.controller.js"></script>
+  <script src="js/controllers/dashboard.controller.js"></script>
+  <script src="js/controllers/patients.controller.js"></script>
+  <script src="js/controllers/visits.controller.js"></script>
+  <script src="js/controllers/admissions.controller.js"></script>
+  <script src="js/controllers/reports.controller.js"></script>
+  <script src="js/controllers/appointments.controller.js"></script>
+  <script src="js/controllers/doctors.controller.js"></script>
+  <script src="js/controllers/specialities.controller.js"></script>
+  <script src="js/controllers/wardsBeds.controller.js"></script>
+  <script src="js/controllers/discharges.controller.js"></script>
+  <script src="js/controllers/analytics.controller.js"></script>
+  <script src="js/controllers/auditLogs.controller.js"></script>
+  <script src="js/controllers/profile.controller.js"></script>
+</body>
+</html>
+
+

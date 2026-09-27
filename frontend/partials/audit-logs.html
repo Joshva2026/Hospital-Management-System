@@ -1,0 +1,128 @@
+<div class="animate-fade-in pb-5">
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Audit Logs</h2>
+      <p class="text-muted mb-0">Review administrative activity and system changes.</p>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4 border-0 shadow-sm rounded-4 bg-white">
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4">
+        <label class="fw-medium text-dark mb-1 small text-uppercase" style="letter-spacing: 0.5px;">Filter by Action</label>
+        <div class="input-group shadow-sm">
+          <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-filter"></i></span>
+          <select class="form-select border-start-0" ng-model="filters.action" ng-change="applyFilters()">
+            <option value="">All Actions</option>
+            <option value="LOGIN">Login</option>
+            <option value="LOGOUT">Logout</option>
+            <option value="CREATE">Create</option>
+            <option value="UPDATE">Update</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <label class="fw-medium text-dark mb-1 small text-uppercase" style="letter-spacing: 0.5px;">Filter by Entity</label>
+        <div class="input-group shadow-sm">
+          <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-layer-group"></i></span>
+          <select class="form-select border-start-0" ng-model="filters.entityType" ng-change="applyFilters()">
+            <option value="">All Entities</option>
+            <option value="PATIENT">Patient</option>
+            <option value="VISIT">Visit</option>
+            <option value="ADMISSION">Admission</option>
+            <option value="DAILY_REPORT">Daily Report</option>
+            <option value="DISCHARGE">Discharge</option>
+            <option value="DOCTOR">Doctor</option>
+            <option value="APPOINTMENT">Appointment</option>
+            <option value="BED">Bed</option>
+            <option value="WARD">Ward</option>
+            <option value="SPECIALITY">Speciality</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+    
+    <div class="p-4" ng-if="loading">
+      <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
+      <div class="skeleton skeleton-text" style="height: 60px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5,6]"></div>
+    </div>
+    
+    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && logs.length">
+      <table class="table mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th class="py-3 px-4">ACTION</th>
+            <th class="py-3">ENTITY</th>
+            <th class="py-3">ADMIN</th>
+            <th class="py-3">DATE / TIME</th>
+            <th class="py-3 px-4">DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="l in logs" class="border-bottom transition hover-bg-light">
+            <td class="py-3 px-4">
+              <span class="badge shadow-sm rounded-pill px-3 py-2" ng-class="{
+                'bg-success': l.action === 'CREATE' || l.action === 'LOGIN',
+                'bg-warning text-dark': l.action === 'UPDATE',
+                'bg-secondary': l.action === 'LOGOUT',
+                'bg-danger': l.action === 'DELETE'
+              }" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                {{l.action}}
+              </span>
+            </td>
+            <td class="py-3">
+              <div ng-if="l.entity_type">
+                <div class="fw-bold text-dark" style="font-size: 0.85rem;"><i class="fa-solid fa-cube text-primary opacity-75 me-1"></i>{{l.entity_type}}</div>
+                <div class="text-muted font-monospace small mt-1">{{l.entity_id || '-'}}</div>
+              </div>
+              <div ng-if="!l.entity_type" class="text-muted small">-</div>
+            </td>
+            <td class="py-3">
+              <div class="d-flex align-items-center gap-2">
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 32px; height: 32px;">
+                  <i class="fa-solid fa-user-shield" style="font-size: 0.85rem;"></i>
+                </div>
+                <span class="fw-medium text-dark">{{l.admin_name || '-'}}</span>
+              </div>
+            </td>
+            <td class="py-3">
+              <div class="fw-medium text-dark">{{l.created_at | date:'dd MMM yyyy'}}</div>
+              <div class="text-muted small">{{l.created_at | date:'hh:mm a'}}</div>
+            </td>
+            <td class="py-3 px-4">
+              <div class="text-muted" style="max-width: 300px; font-size: 0.9rem; line-height: 1.4;">
+                {{l.description}}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !logs.length">
+      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+        <i class="fa-solid fa-clipboard-check fs-2 text-muted"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">No audit activity found</h4>
+      <p class="text-muted mb-0">There are currently no audit records matching the selected criteria.</p>
+    </div>
+    
+    <div class="card-footer bg-white border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3" ng-if="!loading && logs.length">
+      <span class="text-muted fw-medium small">Showing <span class="text-dark fw-bold">{{logs.length}}</span> of <span class="text-dark fw-bold">{{pagination.total}}</span> records</span>
+      <div class="btn-group shadow-sm rounded-pill">
+        <button class="btn btn-light border px-3" ng-disabled="pagination.page<=1" ng-click="goToPage(pagination.page-1)">
+          <i class="fa-solid fa-chevron-left me-1 small"></i> Prev
+        </button>
+        <button class="btn btn-white border px-3 fw-bold text-dark" disabled>
+          Page {{pagination.page}} of {{pagination.totalPages||1}}
+        </button>
+        <button class="btn btn-light border px-3" ng-disabled="pagination.page>=pagination.totalPages" ng-click="goToPage(pagination.page+1)">
+          Next <i class="fa-solid fa-chevron-right ms-1 small"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

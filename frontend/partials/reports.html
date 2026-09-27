@@ -1,0 +1,177 @@
+<div>
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Daily Patient Reports</h2>
+      <p class="text-muted mb-0">Monitor and document daily inpatient clinical progress.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
+      <button class="btn btn-primary shadow-sm px-4" ng-click="openNewReport()"><i class="fa-solid fa-plus me-2"></i> Add Daily Report</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4 border-0 shadow-sm rounded-4">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="fw-medium text-dark mb-2">Filter by Admission</label>
+        <select class="form-select bg-light" ng-model="filters.admissionId" ng-change="applyFilters()">
+          <option value="">All Active Admissions</option>
+          <option ng-repeat="a in activeAdmissions" value="{{a.admission_id}}">{{a.admission_id}} - {{a.patient_name}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden border-0 shadow-sm rounded-4">
+    <div class="p-4" ng-if="loading">
+      <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
+      <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3]"></div>
+    </div>
+    
+    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && reports.length">
+      <table class="table mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th>HOSPITAL DAY</th>
+            <th>PATIENT</th>
+            <th>VITALS</th>
+            <th>CONDITION</th>
+            <th>REPORT ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="r in reports" class="border-bottom">
+            <td class="py-3">
+              <div class="d-flex flex-column align-items-start">
+                <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm mb-1">DAY {{r.day_number}}</span>
+                <span class="small text-muted fw-bold">{{r.report_date | date:'dd MMM yyyy'}}</span>
+              </div>
+            </td>
+            <td class="py-3 fw-bold text-dark">{{r.patient_name}}</td>
+            <td class="py-3">
+              <div class="d-flex flex-wrap gap-2 small">
+                <span class="text-muted"><i class="fa-solid fa-temperature-half me-1"></i>{{r.temperature || '-'}}</span>
+                <span class="text-muted"><i class="fa-solid fa-heart-pulse me-1"></i>{{r.blood_pressure || '-'}}</span>
+                <span class="text-muted"><i class="fa-solid fa-wave-square me-1"></i>{{r.pulse_rate || '-'}}</span>
+                <span class="text-muted"><i class="fa-solid fa-lungs me-1"></i>{{r.spo2 || '-'}}</span>
+              </div>
+            </td>
+            <td class="py-3">
+              <span class="badge bg-light text-dark border">{{r.patient_condition}}</span>
+            </td>
+            <td class="py-3"><span class="font-monospace text-muted small">{{r.report_id}}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !reports.length">
+      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+        <i class="fa-solid fa-file-medical fs-2 text-muted"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">No daily reports available</h4>
+      <p class="text-muted mb-0">Reports will appear here once clinical documentation is recorded.</p>
+    </div>
+  </div>
+
+  <!-- New Report Modal -->
+  <div class="modal-backdrop-custom" ng-if="showModal">
+    <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-white">
+      <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
+        <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-file-signature text-primary me-2"></i> Add Daily Report</h5>
+        <button class="btn-close" ng-click="closeModal()"></button>
+      </div>
+      <form name="reportForm" ng-submit="submitReport()" novalidate>
+        <div class="modal-body-custom p-4">
+          
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Patient / Admission Context</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-8 form-group">
+              <label class="fw-medium text-dark mb-1">Admission <span class="text-danger">*</span></label>
+              <select name="admissionId" class="form-select shadow-sm" ng-model="form.admissionId" required>
+                <option value="">Select Active Admission</option>
+                <option ng-repeat="a in activeAdmissions" value="{{a.admission_id}}">{{a.admission_id}} - {{a.patient_name}} ({{a.ward_name}}/Bed {{a.bed_number}})</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group">
+              <label class="fw-medium text-dark mb-1">Report Date <span class="text-danger">*</span></label>
+              <input type="date" name="reportDate" class="form-control shadow-sm" ng-model="form.reportDate" required>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Vital Signs</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3 form-group">
+              <label class="fw-medium text-dark mb-1">Temperature (&deg;F)</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-temperature-half"></i></span>
+                <input type="number" step="0.1" class="form-control border-start-0" ng-model="form.temperature" placeholder="98.6">
+              </div>
+            </div>
+            <div class="col-md-3 form-group">
+              <label class="fw-medium text-dark mb-1">Blood Pressure</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-heart-pulse"></i></span>
+                <input type="text" class="form-control border-start-0" placeholder="120/80" ng-model="form.bloodPressure">
+              </div>
+            </div>
+            <div class="col-md-3 form-group">
+              <label class="fw-medium text-dark mb-1">Pulse Rate</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-wave-square"></i></span>
+                <input type="number" class="form-control border-start-0" ng-model="form.pulseRate" placeholder="72">
+              </div>
+            </div>
+            <div class="col-md-3 form-group">
+              <label class="fw-medium text-dark mb-1">SpO2 (%)</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-lungs"></i></span>
+                <input type="number" min="0" max="100" class="form-control border-start-0" ng-model="form.spo2" placeholder="99">
+              </div>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Clinical Condition</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Patient Condition <span class="text-danger">*</span></label>
+              <select name="patientCondition" class="form-select shadow-sm" ng-model="form.patientCondition" required>
+                <option value="Stable">Stable</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Critical">Critical</option>
+                <option value="Improving">Improving</option>
+              </select>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Symptoms</label>
+              <input type="text" class="form-control shadow-sm" ng-model="form.symptoms" placeholder="Brief symptom description...">
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Treatment & Notes</h6>
+          <div class="row g-3">
+            <div class="col-12 form-group">
+              <label class="fw-medium text-dark mb-1">Treatment Given</label>
+              <textarea class="form-control shadow-sm" rows="3" ng-model="form.treatmentGiven" placeholder="Details of treatment provided today..."></textarea>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Doctor Notes</label>
+              <textarea class="form-control shadow-sm" rows="3" ng-model="form.doctorNotes" placeholder="Clinical observations and notes..."></textarea>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Next Plan</label>
+              <textarea class="form-control shadow-sm" rows="3" ng-model="form.nextPlan" placeholder="Plan for the next 24 hours..."></textarea>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer-custom bg-light border-top px-4 py-3 rounded-bottom-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-white border shadow-sm px-4" ng-click="closeModal()" ng-disabled="saving">Cancel</button>
+          <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold" ng-disabled="reportForm.$invalid || saving">
+            <span ng-if="!saving"><i class="fa-solid fa-check me-2"></i> Save Report</span>
+            <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

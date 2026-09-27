@@ -1,0 +1,186 @@
+<div class="animate-fade-in">
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Wards &amp; Beds</h2>
+      <p class="text-muted mb-0">Monitor ward capacity, bed availability and current occupancy.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
+      <button class="btn btn-white border shadow-sm px-4" ng-click="openNewWard()"><i class="fa-solid fa-hospital me-2 text-primary"></i> Add Ward</button>
+      <button class="btn btn-primary shadow-sm px-4" ng-click="openNewBed()"><i class="fa-solid fa-bed me-2"></i> Add Bed</button>
+    </div>
+  </div>
+
+  <h5 class="fw-bold text-dark mb-3" style="font-size: 1.1rem;"><i class="fa-solid fa-hospital-user text-primary me-2"></i> Hospital Wards</h5>
+  <div class="row g-4 mb-5">
+    <div class="col-md-4 col-xl-3" ng-repeat="w in wards">
+      <div class="card h-100 p-0 overflow-hidden shadow-sm border-0 rounded-4 transition" style="cursor:pointer;" 
+           ng-click="selectWard(w.ward_id)" 
+           ng-class="{'ring-2 ring-primary ring-offset-2': selectedWardId===w.ward_id, 'bg-light': selectedWardId!==w.ward_id}">
+        
+        <div class="p-4 bg-white border-bottom border-light">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="m-0 fw-bold text-dark">{{w.ward_name}}</h5>
+            <span class="badge bg-light text-primary border border-primary-subtle rounded-pill px-2 py-1" style="font-size: 0.7rem;">{{w.ward_type}}</span>
+          </div>
+          <div class="text-muted small fw-medium"><i class="fa-solid fa-layer-group me-1"></i> Floor {{w.floor || 'N/A'}}</div>
+        </div>
+        
+        <div class="p-4 bg-white d-flex justify-content-between text-center flex-grow-1">
+          <div class="d-flex flex-column align-items-center">
+            <div class="fs-4 fw-bold text-dark">{{w.total_beds}}</div>
+            <div class="small text-muted fw-medium text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Total</div>
+          </div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="fs-4 fw-bold text-danger">{{w.occupied_beds}}</div>
+            <div class="small text-muted fw-medium text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Occupied</div>
+          </div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="fs-4 fw-bold text-success">{{w.available_beds}}</div>
+            <div class="small text-muted fw-medium text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Available</div>
+          </div>
+        </div>
+        
+        <div class="bg-warning bg-opacity-25 text-warning-emphasis text-center py-2 small fw-bold" ng-if="w.maintenance_beds > 0">
+          <i class="fa-solid fa-triangle-exclamation me-1"></i> {{w.maintenance_beds}} in Maintenance
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="fw-bold text-dark m-0" style="font-size: 1.1rem;">
+      <i class="fa-solid fa-bed-pulse text-primary me-2"></i> 
+      Beds <span class="text-muted fw-normal ms-1">{{selectedWardId ? '(Filtered by Ward)' : '(All Wards)'}}</span>
+    </h5>
+    <button class="btn btn-sm btn-white border shadow-sm px-3 rounded-pill" ng-if="selectedWardId" ng-click="clearWardFilter()">
+      <i class="fa-solid fa-filter-circle-xmark me-2 text-danger"></i> Clear Filter
+    </button>
+  </div>
+
+  <!-- Bed Grid Representation -->
+  <div class="row g-3 mb-4 animate-slide-up">
+    <div class="col-6 col-sm-4 col-md-3 col-xl-2" ng-repeat="b in beds">
+      <div class="card h-100 p-3 text-center transition border-0 shadow-sm rounded-4 position-relative overflow-hidden"
+           ng-class="{
+             'bg-white': true
+           }">
+           
+        <div class="position-absolute top-0 start-0 w-100" style="height: 4px;"
+             ng-class="{
+               'bg-success': b.status==='AVAILABLE',
+               'bg-danger': b.status==='OCCUPIED',
+               'bg-warning': b.status==='MAINTENANCE'
+             }"></div>
+        
+        <div class="mt-2 mb-1">
+          <div class="fw-bold fs-4 text-dark">{{b.bed_number}}</div>
+          <div class="small text-muted text-truncate fw-medium" title="{{b.ward_name}}"><i class="fa-regular fa-hospital text-primary opacity-75 me-1"></i>{{b.ward_name}}</div>
+        </div>
+        
+        <div class="mt-auto pt-3">
+          <span class="badge-status w-100 mb-3 shadow-sm rounded-pill py-2" ng-class="'badge-' + (b.status | lowercase)">{{b.status}}</span>
+          
+          <div class="small fw-bold text-truncate text-dark mb-3 bg-light rounded p-2 border" ng-if="b.status==='OCCUPIED'" title="{{b.current_patient_name}}">
+            <i class="fa-solid fa-user-injured me-1 text-danger"></i> {{b.current_patient_name}}
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-light border text-warning fw-medium rounded-pill py-1" style="font-size: 0.75rem;" ng-if="b.status==='AVAILABLE'" ng-click="setBedMaintenance(b)"><i class="fa-solid fa-wrench me-1"></i> Maintenance</button>
+            <button class="btn btn-sm btn-light border text-success fw-medium rounded-pill py-1" style="font-size: 0.75rem;" ng-if="b.status==='MAINTENANCE'" ng-click="setBedAvailable(b)"><i class="fa-solid fa-check me-1"></i> Available</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="empty-state animate-fade-in p-5 text-center" ng-if="!beds.length">
+    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+      <i class="fa-solid fa-bed fs-2 text-muted"></i>
+    </div>
+    <h4 class="fw-bold text-dark mb-2">No beds found</h4>
+    <p class="text-muted mb-0">There are no beds matching your current filter.</p>
+  </div>
+
+  <!-- Modals remain the same functionally, applying custom styling class already written in style.css -->
+  <div class="modal-backdrop-custom" ng-if="showWardModal">
+    <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-white" style="max-width: 500px;">
+      <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
+        <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-hospital-user text-primary me-2"></i> Add New Ward</h5>
+        <button class="btn-close" ng-click="closeWardModal()"></button>
+      </div>
+      <form name="wardFormEl" ng-submit="submitWard()" novalidate>
+        <div class="modal-body-custom p-4">
+          <div class="form-group mb-4">
+            <label class="fw-medium text-dark mb-1">Ward Name <span class="text-danger">*</span></label>
+            <input type="text" name="wardName" class="form-control shadow-sm" ng-model="wardForm.wardName" required minlength="2" placeholder="e.g. General Ward A">
+          </div>
+          <div class="row g-3">
+            <div class="col-md-8 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Ward Type <span class="text-danger">*</span></label>
+              <select name="wardType" class="form-select shadow-sm" ng-model="wardForm.wardType" required>
+                <option value="GENERAL">General</option>
+                <option value="ICU">ICU</option>
+                <option value="PRIVATE">Private</option>
+                <option value="EMERGENCY">Emergency</option>
+                <option value="PEDIATRIC">Pediatric</option>
+                <option value="MATERNITY">Maternity</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Floor</label>
+              <input type="number" class="form-control shadow-sm" ng-model="wardForm.floor" placeholder="e.g. 1">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer-custom bg-light border-top px-4 py-3 rounded-bottom-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-white border shadow-sm px-4" ng-click="closeWardModal()" ng-disabled="saving">Cancel</button>
+          <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold" ng-disabled="wardFormEl.$invalid || saving">
+            <span ng-if="!saving"><i class="fa-solid fa-check me-2"></i> Save Ward</span>
+            <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop-custom" ng-if="showBedModal">
+    <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-white" style="max-width: 500px;">
+      <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
+        <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-bed text-primary me-2"></i> Add New Bed</h5>
+        <button class="btn-close" ng-click="closeBedModal()"></button>
+      </div>
+      <form name="bedFormEl" ng-submit="submitBed()" novalidate>
+        <div class="modal-body-custom p-4">
+          <div class="form-group mb-4">
+            <label class="fw-medium text-dark mb-1">Select Ward <span class="text-danger">*</span></label>
+            <select name="wardId" class="form-select shadow-sm" ng-model="bedForm.wardId" required>
+              <option value="">Choose Ward</option>
+              <option ng-repeat="w in wards" value="{{w.ward_id}}">{{w.ward_name}}</option>
+            </select>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Bed Number <span class="text-danger">*</span></label>
+              <input type="text" name="bedNumber" class="form-control shadow-sm" ng-model="bedForm.bedNumber" required placeholder="e.g. B-01">
+            </div>
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Bed Type</label>
+              <select class="form-select shadow-sm" ng-model="bedForm.bedType">
+                <option value="General">General</option>
+                <option value="ICU">ICU</option>
+                <option value="Private">Private</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer-custom bg-light border-top px-4 py-3 rounded-bottom-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-white border shadow-sm px-4" ng-click="closeBedModal()" ng-disabled="saving">Cancel</button>
+          <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold" ng-disabled="bedFormEl.$invalid || saving">
+            <span ng-if="!saving"><i class="fa-solid fa-check me-2"></i> Save Bed</span>
+            <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

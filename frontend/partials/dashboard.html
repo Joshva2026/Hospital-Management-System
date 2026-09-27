@@ -1,0 +1,114 @@
+<div class="animate-fade-in">
+  <div class="dashboard-hero mb-4 rounded-4 shadow-sm position-relative overflow-hidden" style="background: linear-gradient(135deg, #0a4275 0%, #0056b3 100%);">
+    <div class="position-relative z-1 p-5 text-white">
+      <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; margin-bottom: 8px;">Vincy Hospital</div>
+      <h2 class="fw-bold mb-2" style="font-size: 2.2rem; letter-spacing: -0.5px;">Hospital Administration Dashboard</h2>
+      <p class="fs-5 opacity-75 mb-0">Good morning, Admin. Here is today's hospital activity at a glance.</p>
+    </div>
+    <i class="fa-solid fa-hospital position-absolute" style="font-size: 18rem; right: -2rem; bottom: -4rem; opacity: 0.05; color: white;"></i>
+  </div>
+
+  <div ng-if="loading">
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3" ng-repeat="i in [1,2,3,4,5,6,7,8]"><div class="skeleton skeleton-card"></div></div>
+    </div>
+    <div class="row g-3">
+      <div class="col-lg-6"><div class="skeleton skeleton-card" style="height: 300px;"></div></div>
+      <div class="col-lg-6"><div class="skeleton skeleton-card" style="height: 300px;"></div></div>
+    </div>
+  </div>
+
+  <div ng-if="!loading" class="animate-slide-up">
+    <div class="dashboard-grid mb-5" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Total Patients</div>
+          <div class="kpi-icon bg-primary-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-users"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.total_patients}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.05s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Currently Admitted</div>
+          <div class="kpi-icon bg-warning-light text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-bed-pulse"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.currently_admitted}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.1s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's OPD</div>
+          <div class="kpi-icon bg-info-light text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-stethoscope"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.todays_opd}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.15s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's Admissions</div>
+          <div class="kpi-icon bg-danger-light text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-hospital-user"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.todays_admissions}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.2s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's Discharges</div>
+          <div class="kpi-icon bg-success-light text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-right-from-bracket"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.todays_discharges}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.25s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Emergency Cases</div>
+          <div class="kpi-icon bg-danger-light text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-truck-medical"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.emergency_cases}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.3s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Available Beds</div>
+          <div class="kpi-icon bg-success-light text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-bed"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.available_beds}}</div>
+      </div>
+      <div class="card kpi-card border-0 shadow-sm rounded-4 animate-slide-up" style="padding: 24px; animation-delay: 0.35s; transition: transform 0.2s;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Occupied Beds</div>
+          <div class="kpi-icon bg-warning-light text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;"><i class="fa-solid fa-bed-pulse"></i></div>
+        </div>
+        <div class="kpi-value text-dark fw-bold" style="font-size: 2.5rem; line-height: 1;">{{summary.occupied_beds}}</div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-lg-6">
+        <div class="card chart-card p-4 border-0 shadow-sm rounded-4">
+          <h4 class="mb-4 font-weight-bold text-dark" style="font-size: 16px;"><i class="fa-solid fa-chart-area me-2 text-primary"></i> Daily Patient Trend (last 14 days)</h4>
+          <div class="chart-wrap" style="height: 280px; position: relative;"><canvas id="chartDailyTrend"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card chart-card p-4 border-0 shadow-sm rounded-4">
+          <h4 class="mb-4 font-weight-bold text-dark" style="font-size: 16px;"><i class="fa-solid fa-chart-line me-2 text-primary"></i> Admissions vs Discharges (last 14 days)</h4>
+          <div class="chart-wrap" style="height: 280px; position: relative;"><canvas id="chartAdmDis"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card chart-card p-4 border-0 shadow-sm rounded-4">
+          <h4 class="mb-4 font-weight-bold text-dark" style="font-size: 16px;"><i class="fa-solid fa-chart-pie me-2 text-primary"></i> Patient Type Distribution</h4>
+          <div class="chart-wrap" style="height: 260px; position: relative;"><canvas id="chartTypeDist"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card chart-card p-4 border-0 shadow-sm rounded-4">
+          <h4 class="mb-4 font-weight-bold text-dark" style="font-size: 16px;"><i class="fa-solid fa-chart-bar me-2 text-primary"></i> Speciality Distribution (top 8)</h4>
+          <div class="chart-wrap" style="height: 260px; position: relative;"><canvas id="chartSpecDist"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card chart-card p-4 border-0 shadow-sm rounded-4">
+          <h4 class="mb-4 font-weight-bold text-dark" style="font-size: 16px;"><i class="fa-solid fa-bed me-2 text-primary"></i> Bed Occupancy by Ward</h4>
+          <div class="chart-wrap" style="height: 260px; position: relative;"><canvas id="chartBedOcc"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

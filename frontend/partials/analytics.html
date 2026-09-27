@@ -1,0 +1,103 @@
+<div class="animate-fade-in pb-5">
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Analytics</h2>
+      <p class="text-muted mb-0">Monitor hospital activity and operational trends.</p>
+    </div>
+  </div>
+
+  <div class="row g-4" ng-if="loading">
+    <div class="col-lg-6" ng-repeat="i in [1,2,3,4]">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+        <div class="skeleton skeleton-text w-50 mb-4" style="height: 24px;"></div>
+        <div class="skeleton skeleton-card" style="height: 280px; border-radius: 12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-if="!loading" class="animate-slide-up">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
+              <i class="fa-solid fa-user-doctor fs-5"></i>
+            </div>
+            <h5 class="fw-bold text-dark m-0">Doctor Workload</h5>
+            <span class="badge bg-light text-muted border ms-auto">Top 10</span>
+          </div>
+          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartWorkload"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <div class="bg-teal bg-opacity-10 text-teal p-2 rounded-3 me-3" style="color: var(--vincy-teal-dark);">
+              <i class="fa-regular fa-calendar-check fs-5"></i>
+            </div>
+            <h5 class="fw-bold text-dark m-0">Appointment Status</h5>
+            <span class="badge bg-light text-muted border ms-auto">Breakdown</span>
+          </div>
+          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartApptStatus"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <div class="bg-info bg-opacity-10 text-info-emphasis p-2 rounded-3 me-3">
+              <i class="fa-solid fa-chart-line fs-5"></i>
+            </div>
+            <h5 class="fw-bold text-dark m-0">Patient Registrations</h5>
+            <span class="badge bg-light text-muted border ms-auto">Last 6 Months</span>
+          </div>
+          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartRegTrend"></canvas></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+            <div class="bg-warning bg-opacity-10 text-warning-emphasis p-2 rounded-3 me-3">
+              <i class="fa-solid fa-person-walking-arrow-right fs-5"></i>
+            </div>
+            <h5 class="fw-bold text-dark m-0">Discharge Types</h5>
+            <span class="badge bg-light text-muted border ms-auto">Distribution</span>
+          </div>
+          <div class="chart-wrap" style="height: 300px; position: relative;"><canvas id="chartDischargeTypes"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mt-5 overflow-hidden bg-white">
+      <div class="p-4 border-bottom bg-light">
+        <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-table-list text-primary me-2"></i> Doctor Workload Detail</h5>
+      </div>
+      <div class="table-responsive-wrap p-0">
+        <table class="table mb-0 align-middle">
+          <thead class="bg-light">
+            <tr>
+              <th class="py-3 px-4">DOCTOR</th>
+              <th class="py-3">SPECIALITY</th>
+              <th class="py-3 text-center">VISITS</th>
+              <th class="py-3 text-center">ADMISSIONS</th>
+              <th class="py-3 text-center px-4">APPOINTMENTS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="d in doctorWorkload" class="border-bottom">
+              <td class="py-3 px-4">
+                <div class="fw-bold text-dark"><i class="fa-solid fa-user-doctor text-primary me-2"></i>{{d.doctor_name}}</div>
+              </td>
+              <td class="py-3 text-muted">{{d.speciality_name}}</td>
+              <td class="py-3 text-center fw-bold fs-5 text-dark">{{d.total_visits}}</td>
+              <td class="py-3 text-center fw-bold fs-5 text-dark">{{d.total_admissions}}</td>
+              <td class="py-3 text-center fw-bold fs-5 text-dark px-4">{{d.total_appointments}}</td>
+            </tr>
+            <tr ng-if="!doctorWorkload.length">
+              <td colspan="5" class="text-center py-5 text-muted">No workload data available.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

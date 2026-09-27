@@ -1,0 +1,185 @@
+<div class="animate-fade-in">
+  <div class="page-header">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-outline-secondary" ng-click="back()"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="m-0">Patient Profile</h2>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary shadow-sm" ng-click="editPatient()" ng-if="data"><i class="fa-solid fa-pen me-2"></i> Edit Record</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4" ng-if="loading">
+    <div class="row">
+      <div class="col-md-3"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="height: 24px; width: 60%;"></div></div>
+      <div class="col-md-3"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="height: 24px; width: 80%;"></div></div>
+      <div class="col-md-3"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="height: 24px; width: 50%;"></div></div>
+      <div class="col-md-3"><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text" style="height: 24px; width: 70%;"></div></div>
+    </div>
+  </div>
+
+  <div ng-if="!loading && data" class="animate-slide-up">
+    <!-- Header Card -->
+    <div class="card p-4 mb-4 border-0 shadow-sm rounded-4" style="border-top: 4px solid var(--primary);">
+      <div class="row align-items-center mb-4">
+        <div class="col-auto">
+          <div class="avatar-circle shadow-sm" style="width: 72px; height: 72px; font-size: 28px; background: var(--primary-light); color: var(--primary);">{{data.patient.full_name.charAt(0).toUpperCase()}}</div>
+        </div>
+        <div class="col">
+          <h3 class="m-0 fw-bold text-dark">{{data.patient.full_name}}</h3>
+          <div class="text-muted mt-2" style="font-size: 14px;"><strong>{{data.patient.patient_id}}</strong> &middot; Registered {{data.patient.registration_date | date:'dd-MMM-yyyy'}}</div>
+        </div>
+        <div class="col-auto text-end">
+          <div style="margin-bottom: 8px;"><span class="badge-status shadow-sm px-3 py-2 rounded-pill" ng-class="'badge-' + (data.patient.status | lowercase)">{{data.patient.status}}</span></div>
+          <span class="badge-status shadow-sm px-3 py-2 rounded-pill" ng-class="'badge-' + (data.patient.patient_type | lowercase)">{{data.patient.patient_type}}</span>
+        </div>
+      </div>
+      
+      <!-- Workflow Visualization -->
+      <div class="d-flex align-items-center justify-content-between my-4 px-2 position-relative" style="max-width: 600px; margin: 0 auto;">
+        <div style="position: absolute; top: 12px; left: 10%; right: 10%; height: 2px; background: var(--border); z-index: 0;"></div>
+        
+        <div class="text-center z-1" style="background: var(--surface); padding: 0 8px;">
+          <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 shadow-sm" style="width: 28px; height: 28px; background: var(--primary); color: white; font-size: 12px;"><i class="fa-solid fa-check"></i></div>
+          <div class="small fw-bold text-dark" style="font-size: 11px;">REGISTERED</div>
+        </div>
+        
+        <div class="text-center z-1" style="background: var(--surface); padding: 0 8px;">
+          <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 shadow-sm" style="width: 28px; height: 28px; font-size: 12px;" ng-class="{'bg-primary text-white': data.visits.length > 0, 'bg-light text-muted border': data.visits.length === 0}">
+            <i class="fa-solid" ng-class="{'fa-check': data.visits.length > 0, 'fa-stethoscope': data.visits.length === 0}"></i>
+          </div>
+          <div class="small fw-bold" ng-class="{'text-dark': data.visits.length > 0, 'text-muted': data.visits.length === 0}" style="font-size: 11px;">OPD VISIT</div>
+        </div>
+        
+        <div class="text-center z-1" style="background: var(--surface); padding: 0 8px;">
+          <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 shadow-sm" style="width: 28px; height: 28px; font-size: 12px;" ng-class="{'bg-primary text-white': data.admissions.length > 0, 'bg-light text-muted border': data.admissions.length === 0}">
+            <i class="fa-solid" ng-class="{'fa-check': data.admissions.length > 0, 'fa-bed-pulse': data.admissions.length === 0}"></i>
+          </div>
+          <div class="small fw-bold" ng-class="{'text-dark': data.admissions.length > 0, 'text-muted': data.admissions.length === 0}" style="font-size: 11px;">ADMITTED</div>
+        </div>
+        
+        <div class="text-center z-1" style="background: var(--surface); padding: 0 8px;">
+          <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1 shadow-sm" style="width: 28px; height: 28px; font-size: 12px;" ng-class="{'bg-success text-white': data.discharges.length > 0, 'bg-light text-muted border': data.discharges.length === 0}">
+            <i class="fa-solid" ng-class="{'fa-check': data.discharges.length > 0, 'fa-right-from-bracket': data.discharges.length === 0}"></i>
+          </div>
+          <div class="small fw-bold" ng-class="{'text-dark': data.discharges.length > 0, 'text-muted': data.discharges.length === 0}" style="font-size: 11px;">DISCHARGED</div>
+        </div>
+      </div>
+
+      <div class="row g-3 px-2 py-3 bg-light rounded">
+        <div class="col-md-3">
+          <div class="small text-muted text-uppercase fw-bold mb-1">Mobile</div>
+          <div class="fw-medium">{{data.patient.mobile}}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="small text-muted text-uppercase fw-bold mb-1">Gender / Age</div>
+          <div class="fw-medium">{{data.patient.gender}} <span class="text-muted ms-1" ng-if="data.patient.date_of_birth">({{data.patient.date_of_birth | date:'yyyy'}})</span></div>
+        </div>
+        <div class="col-md-3">
+          <div class="small text-muted text-uppercase fw-bold mb-1">Blood Group</div>
+          <div class="fw-medium text-danger">{{data.patient.blood_group || 'Unknown'}}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="small text-muted text-uppercase fw-bold mb-1">Emergency Contact</div>
+          <div class="fw-medium">{{data.patient.emergency_contact || '-'}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proper Tabs -->
+    <div class="profile-tabs" role="tablist">
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='overview'}}" ng-class="{active: activeTab==='overview'}" ng-click="setTab('overview')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('overview')">Overview</div>
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='timeline'}}" ng-class="{active: activeTab==='timeline'}" ng-click="setTab('timeline')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('timeline')">Timeline</div>
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='visits'}}" ng-class="{active: activeTab==='visits'}" ng-click="setTab('visits')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('visits')">Visits <span class="badge bg-secondary rounded-pill ms-1">{{data.visits.length}}</span></div>
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='admissions'}}" ng-class="{active: activeTab==='admissions'}" ng-click="setTab('admissions')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('admissions')">Admissions <span class="badge bg-secondary rounded-pill ms-1">{{data.admissions.length}}</span></div>
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='reports'}}" ng-class="{active: activeTab==='reports'}" ng-click="setTab('reports')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('reports')">Daily Reports <span class="badge bg-secondary rounded-pill ms-1">{{data.dailyReports.length}}</span></div>
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='discharges'}}" ng-class="{active: activeTab==='discharges'}" ng-click="setTab('discharges')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('discharges')">Discharges <span class="badge bg-secondary rounded-pill ms-1">{{data.discharges.length}}</span></div>
+      <div class="profile-tab" role="tab" tabindex="0" aria-selected="{{activeTab==='appointments'}}" ng-class="{active: activeTab==='appointments'}" ng-click="setTab('appointments')" ng-keypress="($event.keyCode === 13 || $event.keyCode === 32) && setTab('appointments')">Appointments <span class="badge bg-secondary rounded-pill ms-1">{{data.appointments.length}}</span></div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="animate-fade-in" ng-if="activeTab==='overview'">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card p-4 h-100">
+            <h5 class="form-section-title mt-0"><i class="fa-solid fa-house-chimney-medical me-2"></i> Address & Contact</h5>
+            <p class="mb-2"><strong>Address:</strong><br>{{data.patient.address || 'No address provided.'}}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-4 h-100">
+            <h5 class="form-section-title mt-0"><i class="fa-solid fa-notes-medical me-2"></i> Medical Context</h5>
+            <p class="mb-3"><strong>Primary Problem:</strong><br>{{data.patient.problem || 'Not specified.'}}</p>
+            <p class="mb-0"><strong>Reason for Visit:</strong><br>{{data.patient.reason_for_visit || 'Not specified.'}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline Tab -->
+    <div class="card p-4 animate-fade-in border-0 shadow-sm" ng-if="activeTab==='timeline'">
+      <div class="timeline ps-2">
+        <div class="timeline-item" ng-repeat="item in timeline">
+          <div class="timeline-icon bg-white text-primary">
+            <i class="fa-solid" ng-class="{'fa-user': item.type==='REGISTRATION', 'fa-stethoscope': item.type==='VISIT', 'fa-bed-pulse': item.type==='ADMISSION', 'fa-file-medical': item.type==='REPORT', 'fa-right-from-bracket text-success': item.type==='DISCHARGE'}"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h6 class="mb-0 fw-bold text-dark">{{item.title}}</h6>
+              <span class="badge bg-light text-muted">{{item.date | date:'dd-MMM-yyyy HH:mm'}}</span>
+            </div>
+            <div class="text-secondary fs-6 mb-2">{{item.desc}}</div>
+            <div class="small fw-bold text-primary" ng-if="item.doctor"><i class="fa-solid fa-user-doctor me-1"></i> {{item.doctor}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- The rest of the tables use standard table classes -->
+    <div class="card table-responsive-wrap animate-fade-in" ng-if="activeTab==='visits'">
+      <table class="table mb-0" ng-if="data.visits.length"><thead><tr><th>Visit ID</th><th>Date</th><th>Doctor</th><th>Speciality</th><th>Type</th><th>Complaint</th><th>Diagnosis</th><th>Status</th></tr></thead>
+      <tbody><tr ng-repeat="v in data.visits">
+        <td><strong>{{v.visit_id}}</strong></td><td>{{v.visit_date | date:'dd-MMM-yyyy'}}</td><td>{{v.doctor_name}}</td><td>{{v.speciality_name}}</td>
+        <td>{{v.visit_type}}</td><td>{{v.complaint}}</td><td>{{v.diagnosis || '-'}}</td>
+        <td><span class="badge-status" ng-class="'badge-' + (v.status | lowercase)">{{v.status}}</span></td>
+      </tr></tbody></table>
+      <div class="empty-state" ng-if="!data.visits.length"><i class="fa-solid fa-stethoscope"></i><h4>No visits recorded</h4><p>This patient has no recorded OPD visits.</p></div>
+    </div>
+
+    <div class="card table-responsive-wrap animate-fade-in" ng-if="activeTab==='admissions'">
+      <table class="table mb-0" ng-if="data.admissions.length"><thead><tr><th>Admission ID</th><th>Date</th><th>Doctor</th><th>Ward</th><th>Bed</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody><tr ng-repeat="a in data.admissions">
+        <td><strong>{{a.admission_id}}</strong></td><td>{{a.admission_date | date:'dd-MMM-yyyy'}}</td><td>{{a.doctor_name}}</td><td>{{a.ward_name}}</td><td>{{a.bed_number}}</td>
+        <td>{{a.admission_reason}}</td>
+        <td><span class="badge-status" ng-class="'badge-' + (a.status | lowercase)">{{a.status}}</span></td>
+      </tr></tbody></table>
+      <div class="empty-state" ng-if="!data.admissions.length"><i class="fa-solid fa-bed-pulse"></i><h4>No admission history</h4><p>This patient has never been admitted.</p></div>
+    </div>
+
+    <div class="card table-responsive-wrap animate-fade-in" ng-if="activeTab==='reports'">
+      <table class="table mb-0" ng-if="data.dailyReports.length"><thead><tr><th>Report</th><th>Date</th><th>Day #</th><th>Temp</th><th>BP</th><th>Pulse</th><th>SpO2</th><th>Condition</th></tr></thead>
+      <tbody><tr ng-repeat="r in data.dailyReports">
+        <td><strong>{{r.report_id}}</strong></td><td>{{r.report_date | date:'dd-MMM-yyyy'}}</td><td>Day {{r.day_number}}</td>
+        <td>{{r.temperature ? r.temperature + '°C' : '-'}}</td><td>{{r.blood_pressure || '-'}}</td><td>{{r.pulse_rate ? r.pulse_rate + ' bpm' : '-'}}</td><td>{{r.spo2 ? r.spo2 + '%' : '-'}}</td><td>{{r.patient_condition}}</td>
+      </tr></tbody></table>
+      <div class="empty-state" ng-if="!data.dailyReports.length"><i class="fa-solid fa-file-medical"></i><h4>No daily reports</h4><p>No observation reports available.</p></div>
+    </div>
+
+    <div class="card table-responsive-wrap animate-fade-in" ng-if="activeTab==='discharges'">
+      <table class="table mb-0" ng-if="data.discharges.length"><thead><tr><th>Discharge</th><th>Date</th><th>Type</th><th>Final Diagnosis</th><th>Follow-up</th></tr></thead>
+      <tbody><tr ng-repeat="d in data.discharges">
+        <td><strong>{{d.discharge_id}}</strong></td><td>{{d.discharge_date | date:'dd-MMM-yyyy'}}</td><td>{{d.discharge_type}}</td><td>{{d.final_diagnosis}}</td><td>{{d.follow_up_date ? (d.follow_up_date | date:'dd-MMM-yyyy') : '-'}}</td>
+      </tr></tbody></table>
+      <div class="empty-state" ng-if="!data.discharges.length"><i class="fa-solid fa-right-from-bracket"></i><h4>No discharge history</h4></div>
+    </div>
+
+    <div class="card table-responsive-wrap animate-fade-in" ng-if="activeTab==='appointments'">
+      <table class="table mb-0" ng-if="data.appointments.length"><thead><tr><th>Appointment</th><th>Date</th><th>Time</th><th>Doctor</th><th>Type</th><th>Status</th></tr></thead>
+      <tbody><tr ng-repeat="ap in data.appointments">
+        <td><strong>{{ap.appointment_id}}</strong></td><td>{{ap.appointment_date | date:'dd-MMM-yyyy'}}</td><td>{{ap.appointment_time}}</td><td>{{ap.doctor_name}}</td><td>{{ap.appointment_type}}</td>
+        <td><span class="badge-status" ng-class="'badge-' + (ap.status | lowercase)">{{ap.status}}</span></td>
+      </tr></tbody></table>
+      <div class="empty-state" ng-if="!data.appointments.length"><i class="fa-solid fa-calendar-check"></i><h4>No appointments</h4></div>
+    </div>
+  </div>
+</div>

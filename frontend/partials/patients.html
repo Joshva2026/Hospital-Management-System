@@ -1,0 +1,159 @@
+<div class="animate-fade-in">
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Patients</h2>
+      <p class="text-muted mb-0">Manage patient registrations, records and hospital activity.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
+      <button class="btn btn-outline-warning btn-sm shadow-sm" ng-click="findDuplicates()"><i class="fa-solid fa-copy me-1"></i> Find Duplicates</button>
+      <button class="btn btn-primary shadow-sm" ng-click="registerNew()"><i class="fa-solid fa-plus me-2"></i> Register Patient</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4 border-0 shadow-sm rounded-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 bg-light" placeholder="Search by ID, Name, or Mobile..." ng-model="filters.search" ng-change="applyFilters()" ng-model-options="{debounce: 400}">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <select class="form-select bg-light" ng-model="filters.status" ng-change="applyFilters()">
+          <option value="">Status: All</option>
+          <option value="ACTIVE">Active</option>
+          <option value="ADMITTED">Admitted</option>
+          <option value="DISCHARGED">Discharged</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select bg-light" ng-model="filters.patientType" ng-change="applyFilters()">
+          <option value="">Type: All</option>
+          <option value="OPD">OPD</option>
+          <option value="EMERGENCY">Emergency</option>
+          <option value="ADMITTED">Admitted</option>
+          <option value="DISCHARGED">Discharged</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select bg-light" ng-model="filters.gender" ng-change="applyFilters()">
+          <option value="">Gender: All</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden border-0 shadow-sm rounded-4">
+    <!-- Skeleton loader -->
+    <div class="p-4" ng-if="loading">
+      <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
+      <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5,6]"></div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && patients.length">
+      <table class="table mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th ng-click="sortBy('full_name')" style="cursor:pointer; width: 30%;">Patient <i class="fa-solid fa-sort ms-1 opacity-50"></i></th>
+            <th ng-click="sortBy('patient_id')" style="cursor:pointer">Contact & ID <i class="fa-solid fa-sort ms-1 opacity-50"></i></th>
+            <th ng-click="sortBy('patient_type')" style="cursor:pointer">Medical <i class="fa-solid fa-sort ms-1 opacity-50"></i></th>
+            <th ng-click="sortBy('registration_date')" style="cursor:pointer">Registered <i class="fa-solid fa-sort ms-1 opacity-50"></i></th>
+            <th ng-click="sortBy('status')" style="cursor:pointer">Status <i class="fa-solid fa-sort ms-1 opacity-50"></i></th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="p in patients" class="border-bottom">
+            <td class="py-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="avatar-circle shadow-sm" style="width: 48px; height: 48px; font-size: 18px; background: var(--primary-light); color: var(--primary); flex-shrink: 0;">{{p.full_name.charAt(0).toUpperCase()}}</div>
+                <div>
+                  <div class="fw-bold text-dark">{{p.full_name}}</div>
+                  <div class="small text-muted">{{p.gender}}, {{p.age || '?'}} yrs <span ng-if="p.blood_group">&middot; {{p.blood_group}}</span></div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3">
+              <div class="fw-medium text-dark">{{p.mobile}}</div>
+              <div class="small text-muted font-monospace">{{p.patient_id}}</div>
+            </td>
+            <td class="py-3">
+              <span class="badge-status shadow-sm px-2 py-1 rounded" ng-class="'badge-' + (p.patient_type | lowercase)">{{p.patient_type}}</span>
+            </td>
+            <td class="py-3 text-muted">
+              {{p.registration_date | date:'dd-MMM-yyyy'}}
+            </td>
+            <td class="py-3">
+              <span class="badge-status shadow-sm px-3 py-1 rounded-pill" ng-class="'badge-' + (p.status | lowercase)">{{p.status}}</span>
+            </td>
+            <td class="py-3 text-end text-nowrap">
+              <button class="btn btn-sm btn-light border me-1" ng-click="viewPatient(p.patient_id)" title="View Profile"><i class="fa-solid fa-eye text-primary"></i></button>
+              <button class="btn btn-sm btn-light border me-1" ng-click="editPatient(p.patient_id)" title="Edit Patient"><i class="fa-solid fa-pen text-secondary"></i></button>
+              <button class="btn btn-sm btn-light border text-danger" ng-if="p.status !== 'INACTIVE'" ng-click="deletePatient(p.patient_id)" title="Delete/Deactivate Patient"><i class="fa-solid fa-trash"></i></button>
+              <button class="btn btn-sm btn-light border text-success" ng-if="p.status === 'INACTIVE'" ng-click="deactivatePatient(p.patient_id, 'ACTIVE')" title="Reactivate Patient"><i class="fa-solid fa-check"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !patients.length">
+      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+        <i class="fa-solid fa-folder-open fs-2 text-muted"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">No patients found</h4>
+      <p class="text-muted mb-4">Try adjusting your search or filters to find what you're looking for.</p>
+      <button class="btn btn-outline-primary px-4 rounded-pill shadow-sm" ng-click="filters.search=''; applyFilters()">Clear Filters</button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" ng-if="!loading && patients.length">
+      <span class="text-muted small fw-medium">Showing {{patients.length}} of {{pagination.total}} patients</span>
+      <div class="btn-group shadow-sm rounded-3">
+        <button class="btn btn-sm btn-white border" style="border-right: none;" ng-disabled="pagination.page <= 1" ng-click="goToPage(pagination.page - 1)"><i class="fa-solid fa-chevron-left me-1"></i> Prev</button>
+        <button class="btn btn-sm btn-white border text-dark fw-bold" disabled style="border-left: none; border-right: none;">Page {{pagination.page}} of {{pagination.totalPages || 1}}</button>
+        <button class="btn btn-sm btn-white border" style="border-left: none;" ng-disabled="pagination.page >= pagination.totalPages" ng-click="goToPage(pagination.page + 1)">Next <i class="fa-solid fa-chevron-right ms-1"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplicates Modal -->
+  <div class="modal-backdrop-custom" ng-if="showDuplicates">
+    <div class="modal-box modal-lg animate-slide-up">
+      <div class="modal-header-custom">
+        <h5 class="m-0 fw-bold"><i class="fa-solid fa-copy text-warning me-2"></i> Possible Duplicates</h5>
+        <button class="btn-close" ng-click="closeDuplicates()"></button>
+      </div>
+      <div class="modal-body-custom p-4">
+        <div ng-if="duplicateGroups.length === 0" class="text-center p-4">
+          <i class="fa-solid fa-check-circle text-success fs-1 mb-3"></i>
+          <h5>No duplicate groups found based on mobile numbers.</h5>
+        </div>
+        
+        <div ng-repeat="group in duplicateGroups" class="card mb-3 border-warning border-opacity-50 shadow-sm">
+          <div class="card-header bg-warning bg-opacity-10 fw-bold">
+            Matching Mobile: {{group.mobile}}
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-sm table-borderless mb-0">
+              <tr ng-repeat="id in group.ids track by $index" class="border-bottom">
+                <td class="p-3"><strong>{{id}}</strong></td>
+                <td class="p-3">{{group.names[$index]}}</td>
+                <td class="p-3 text-end">
+                  <button class="btn btn-sm btn-outline-primary me-1" ng-click="viewPatient(id)">View</button>
+                  <button class="btn btn-sm btn-outline-danger" ng-click="deletePatient(id)">Delete/Deactivate</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

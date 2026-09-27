@@ -1,0 +1,42 @@
+<div class="login-split animate-fade-in" ng-controller="LoginController">
+  <div class="login-video-container">
+    <video class="login-video" autoplay muted loop playsinline
+      poster="https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg">
+      <source src="https://videos.pexels.com/video-files/8460012/8460012-hd_1920_1080_25fps.mp4" type="video/mp4">
+    </video>
+    <div class="login-overlay">
+      <h1>Smarter Hospital Operations</h1>
+      <p>Connected care. Better management. Empowering your medical staff with real-time insights.</p>
+    </div>
+  </div>
+
+  <div class="login-form-container">
+    <div class="login-brand animate-slide-up" style="animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards;">
+      <i class="fa-solid fa-hospital"></i>
+      <h2>Vincy Hospital Administration</h2>
+      <p class="text-muted mt-2">Welcome back. Please sign in to continue.</p>
+    </div>
+    <form name="loginForm" ng-submit="submit()" novalidate class="animate-slide-up"
+      style="animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards;">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" class="form-control form-control-lg" ng-model="credentials.email" required
+          autofocus placeholder="Enter your email">
+        <div class="field-error" ng-if="loginForm.email.$dirty && loginForm.email.$invalid">A valid email is required.
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control form-control-lg" ng-model="credentials.password"
+          required placeholder="Enter your password">
+        <div class="field-error" ng-if="loginForm.password.$dirty && loginForm.password.$invalid">Password is required.
+        </div>
+      </div>
+      <div class="alert alert-danger" ng-if="errorMessage">{{errorMessage}}</div>
+      <button type="submit" class="btn btn-primary w-100 py-3 mt-4" ng-disabled="loginForm.$invalid || loading">
+        <span ng-if="!loading">Sign In to Dashboard</span>
+        <span ng-if="loading"><i class="fa-solid fa-spinner fa-spin"></i> Authenticating...</span>
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,191 @@
+<div class="animate-fade-in">
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Doctors</h2>
+      <p class="text-muted mb-0">Manage physicians, specialities, availability and clinical profiles.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
+      <button class="btn btn-primary shadow-sm px-4" ng-click="openNewDoctor()"><i class="fa-solid fa-user-doctor me-2"></i> Add Doctor</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4 border-0 shadow-sm rounded-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="fw-medium text-dark mb-2">Search Doctors</label>
+        <div class="input-group bg-light rounded">
+          <span class="input-group-text bg-transparent border-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" class="form-control bg-transparent border-0 shadow-none ps-0" placeholder="Search by name..." ng-model="filters.search" ng-change="applyFilters()" ng-model-options="{debounce:400}">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label class="fw-medium text-dark mb-2">Filter by Speciality</label>
+        <select class="form-select bg-light border-0" ng-model="filters.specialityId" ng-change="applyFilters()">
+          <option value="">All Specialities</option>
+          <option ng-repeat="s in specialities" value="{{s.speciality_id}}">{{s.speciality_name}}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="fw-medium text-dark mb-2">Filter by Status</label>
+        <select class="form-select bg-light border-0" ng-model="filters.status" ng-change="applyFilters()">
+          <option value="">All Status</option>
+          <option value="ACTIVE">Active</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden border-0 shadow-sm rounded-4">
+    <div class="p-4" ng-if="loading">
+      <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
+      <div class="skeleton skeleton-text" style="height: 60px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5]"></div>
+    </div>
+
+    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && doctors.length">
+      <table class="table mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th>DOCTOR</th>
+            <th>SPECIALITY / FEE</th>
+            <th>CONTACT</th>
+            <th>AVAILABILITY</th>
+            <th>STATUS</th>
+            <th class="text-end">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="d in doctors" class="border-bottom">
+            <td class="py-3">
+              <div class="patient-name-cell">
+                <div class="avatar-circle shadow-sm" style="width: 40px; height: 40px; font-size: 16px; background-color: var(--vincy-navy); color: white;">{{d.doctor_name.replace('Dr. ', '').charAt(0).toUpperCase()}}</div>
+                <div>
+                  <div class="fw-bold text-dark">{{d.doctor_name}}</div>
+                  <div class="small text-muted font-monospace">{{d.doctor_id}} &middot; {{d.qualification || 'N/A'}} &middot; {{d.experience_years}} yrs exp</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3">
+              <div class="fw-bold text-dark"><i class="fa-solid fa-stethoscope text-primary me-2"></i>{{d.speciality_name}}</div>
+              <div class="small text-muted ms-4">&#8377;{{d.consultation_fee}} per visit</div>
+            </td>
+            <td class="py-3">
+              <div class="text-dark fw-medium"><i class="fa-solid fa-phone text-muted me-2 small"></i>{{d.mobile}}</div>
+              <div class="small text-muted mt-1"><i class="fa-solid fa-envelope text-muted me-2 small"></i>{{d.email || '-'}}</div>
+            </td>
+            <td class="py-3">
+              <div class="small fw-bold text-dark"><i class="fa-regular fa-calendar text-primary me-1"></i> {{d.available_days || 'Mon-Fri'}}</div>
+              <div class="small text-muted mt-1" ng-if="d.available_from && d.available_to"><i class="fa-regular fa-clock me-1"></i> {{d.available_from}} - {{d.available_to}}</div>
+            </td>
+            <td class="py-3"><span class="badge-status shadow-sm px-3 py-2 rounded-pill" ng-class="'badge-' + (d.status | lowercase)">{{d.status}}</span></td>
+            <td class="py-3 text-end">
+              <div class="btn-group shadow-sm rounded-pill">
+                <button class="btn btn-sm btn-light border px-3" ng-click="openEditDoctor(d)" title="Edit"><i class="fa-solid fa-pen text-primary"></i></button>
+                <button class="btn btn-sm btn-light border px-3" ng-click="toggleStatus(d)" title="Toggle Status">
+                  <i class="fa-solid" ng-class="d.status==='ACTIVE' ? 'fa-ban text-danger' : 'fa-check text-success'"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !doctors.length">
+      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+        <i class="fa-solid fa-user-doctor fs-2 text-muted"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">No doctors found</h4>
+      <p class="text-muted mb-0">Adjust your search filters.</p>
+    </div>
+  </div>
+
+  <div class="modal-backdrop-custom" ng-if="showModal">
+    <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-white">
+      <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
+        <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-user-md text-primary me-2"></i> {{isEdit ? 'Edit Doctor Profile' : 'Add New Doctor'}}</h5>
+        <button class="btn-close" ng-click="closeModal()"></button>
+      </div>
+      <form name="doctorForm" ng-submit="submitDoctor()" novalidate>
+        <div class="modal-body-custom p-4">
+          
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Doctor Information</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Doctor Name <span class="text-danger">*</span></label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-user"></i></span>
+                <input type="text" name="doctorName" class="form-control border-start-0" ng-model="form.doctorName" required minlength="2" placeholder="Dr. John Doe">
+              </div>
+            </div>
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Speciality <span class="text-danger">*</span></label>
+              <select name="specialityId" class="form-select shadow-sm" ng-model="form.specialityId" required>
+                <option value="">Select Speciality</option>
+                <option ng-repeat="s in specialities" value="{{s.speciality_id}}">{{s.speciality_name}}</option>
+              </select>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Professional Information</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-5 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Qualification</label>
+              <input type="text" class="form-control shadow-sm" ng-model="form.qualification" placeholder="MBBS, MD, FRCS">
+            </div>
+            <div class="col-md-3 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Experience (yrs)</label>
+              <input type="number" min="0" class="form-control shadow-sm" ng-model="form.experienceYears" placeholder="e.g. 10">
+            </div>
+            <div class="col-md-4 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Consultation Fee (&#8377;) <span class="text-danger">*</span></label>
+              <input type="number" name="consultationFee" min="0" class="form-control shadow-sm" ng-model="form.consultationFee" required placeholder="500">
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Contact Information</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Mobile <span class="text-danger">*</span></label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-phone"></i></span>
+                <input type="text" name="mobile" class="form-control border-start-0" ng-model="form.mobile" required ng-pattern="/^[0-9]{10}$/" maxlength="10" placeholder="10-digit mobile number">
+              </div>
+            </div>
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Email</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-envelope"></i></span>
+                <input type="email" class="form-control border-start-0" ng-model="form.email" placeholder="doctor@vincyhospital.com">
+              </div>
+            </div>
+          </div>
+          
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Availability</h6>
+          <div class="row g-3">
+            <div class="col-md-6 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Available Days</label>
+              <input type="text" class="form-control shadow-sm" placeholder="e.g. Mon, Wed, Fri" ng-model="form.availableDays">
+            </div>
+            <div class="col-md-3 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Available From</label>
+              <input type="time" class="form-control shadow-sm" ng-model="form.availableFrom">
+            </div>
+            <div class="col-md-3 form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Available To</label>
+              <input type="time" class="form-control shadow-sm" ng-model="form.availableTo">
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer-custom bg-light border-top px-4 py-3 rounded-bottom-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-white border shadow-sm px-4" ng-click="closeModal()" ng-disabled="saving">Cancel</button>
+          <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold" ng-disabled="doctorForm.$invalid || saving">
+            <span ng-if="!saving"><i class="fa-solid fa-check me-2"></i> Save Doctor Profile</span>
+            <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

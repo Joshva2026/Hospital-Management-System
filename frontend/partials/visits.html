@@ -1,0 +1,193 @@
+<div>
+  <div class="page-header mb-4">
+    <div class="d-flex flex-column">
+      <h2 class="fw-bold mb-1" style="font-size: 2rem;">OPD / Visits</h2>
+      <p class="text-muted mb-0">Manage outpatient consultations and patient visits.</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
+      <button class="btn btn-primary shadow-sm px-4" ng-click="openNewVisit()"><i class="fa-solid fa-plus me-2"></i> New Visit</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4 border-0 shadow-sm rounded-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-calendar text-muted"></i></span>
+          <input type="date" class="form-control border-start-0 bg-light" ng-model="filters.date" ng-change="applyFilters()">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select bg-light" ng-model="filters.doctorId" ng-change="applyFilters()">
+          <option value="">All Doctors</option>
+          <option ng-repeat="d in doctors" value="{{d.doctor_id}}">{{d.doctor_name}}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select bg-light" ng-model="filters.status" ng-change="applyFilters()">
+          <option value="">All Status</option>
+          <option value="SCHEDULED">Scheduled</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden border-0 shadow-sm rounded-4">
+    <div class="p-4" ng-if="loading">
+      <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
+      <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5]"></div>
+    </div>
+    
+    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && visits.length">
+      <table class="table mb-0 align-middle">
+        <thead class="bg-light">
+          <tr>
+            <th>VISIT ID</th>
+            <th>PATIENT</th>
+            <th>DOCTOR</th>
+            <th>SPECIALITY</th>
+            <th>DATE</th>
+            <th>TYPE & COMPLAINT</th>
+            <th>STATUS</th>
+            <th class="text-end">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="v in visits" class="border-bottom">
+            <td class="py-3"><span class="font-monospace text-muted">{{v.visit_id}}</span></td>
+            <td class="py-3 fw-bold text-dark">{{v.patient_name}}</td>
+            <td class="py-3 text-muted"><i class="fa-solid fa-user-doctor me-1 opacity-50"></i> {{v.doctor_name}}</td>
+            <td class="py-3"><span class="badge bg-light text-dark border">{{v.speciality_name}}</span></td>
+            <td class="py-3 text-muted">{{v.visit_date | date:'dd-MMM-yyyy'}}</td>
+            <td class="py-3">
+              <div class="fw-medium text-dark">{{v.visit_type}}</div>
+              <div class="small text-muted text-truncate" style="max-width: 200px;">{{v.complaint}}</div>
+            </td>
+            <td class="py-3"><span class="badge-status shadow-sm px-3 py-1 rounded-pill" ng-class="'badge-' + (v.status | lowercase)">{{v.status}}</span></td>
+            <td class="py-3 text-end text-nowrap">
+              <button class="btn btn-sm btn-light border me-1 text-primary" ng-if="v.status==='SCHEDULED'" ng-click="markStatus(v,'IN_PROGRESS')" title="Start Visit"><i class="fa-solid fa-play"></i></button>
+              <button class="btn btn-sm btn-light border me-1 text-success" ng-if="v.status==='IN_PROGRESS'" ng-click="markStatus(v,'COMPLETED')" title="Complete Visit"><i class="fa-solid fa-check"></i></button>
+              <button class="btn btn-sm btn-light border text-danger" ng-if="v.status==='SCHEDULED'" ng-click="markStatus(v,'CANCELLED')" title="Cancel Visit"><i class="fa-solid fa-xmark"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !visits.length">
+      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+        <i class="fa-solid fa-stethoscope fs-2 text-muted"></i>
+      </div>
+      <h4 class="fw-bold text-dark mb-2">No visits found</h4>
+      <p class="text-muted mb-0">Try adjusting your search or filters to find what you're looking for.</p>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" ng-if="!loading && visits.length">
+      <span class="text-muted small fw-medium">Showing {{visits.length}} of {{pagination.total}} visits</span>
+      <div class="btn-group shadow-sm rounded-3">
+        <button class="btn btn-sm btn-white border" style="border-right: none;" ng-disabled="pagination.page<=1" ng-click="goToPage(pagination.page-1)"><i class="fa-solid fa-chevron-left me-1"></i> Prev</button>
+        <button class="btn btn-sm btn-white border text-dark fw-bold" disabled style="border-left: none; border-right: none;">Page {{pagination.page}} of {{pagination.totalPages||1}}</button>
+        <button class="btn btn-sm btn-white border" style="border-left: none;" ng-disabled="pagination.page>=pagination.totalPages" ng-click="goToPage(pagination.page+1)">Next <i class="fa-solid fa-chevron-right ms-1"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Visit Modal -->
+  <div class="modal-backdrop-custom" ng-if="showModal">
+    <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up">
+      <div class="modal-header-custom border-bottom bg-light px-4 py-3 rounded-top-4">
+        <h5 class="m-0 fw-bold text-dark"><i class="fa-solid fa-clipboard-user text-primary me-2"></i> New Visit</h5>
+        <button class="btn-close" ng-click="closeModal()"></button>
+      </div>
+      <form name="visitForm" ng-submit="submitVisit()" novalidate>
+        <div class="modal-body-custom p-4">
+          <div class="mb-4">
+            <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Patient Information</h6>
+            <div class="form-group mb-0">
+              <label class="fw-medium text-dark mb-1">Select Patient *</label>
+              <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
+                <input type="text" class="form-control border-start-0" placeholder="Search by name, mobile or ID..." ng-model="patientSearch" ng-change="searchPatients()">
+              </div>
+              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden" ng-if="patients.length" style="max-height: 200px; overflow-y: auto;">
+                <button type="button" class="list-group-item list-group-item-action border-0 border-bottom" ng-repeat="p in patients" ng-click="selectPatient(p)">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <div class="fw-bold text-dark">{{p.full_name}}</div>
+                      <div class="small text-muted">{{p.patient_id}} &middot; {{p.mobile}}</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted small"></i>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Consultation Details</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Speciality *</label>
+              <select name="specialityId" class="form-select shadow-sm" ng-model="form.specialityId" required>
+                <option value="">Select Speciality</option>
+                <option ng-repeat="s in specialities" value="{{s.speciality_id}}">{{s.speciality_name}}</option>
+              </select>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Doctor *</label>
+              <select name="doctorId" class="form-select shadow-sm" ng-model="form.doctorId" required>
+                <option value="">Select Doctor</option>
+                <option ng-repeat="d in doctors" value="{{d.doctor_id}}">{{d.doctor_name}}</option>
+              </select>
+            </div>
+            <div class="col-md-4 form-group">
+              <label class="fw-medium text-dark mb-1">Date *</label>
+              <input type="date" name="visitDate" class="form-control shadow-sm" ng-model="form.visitDate" required>
+            </div>
+            <div class="col-md-4 form-group">
+              <label class="fw-medium text-dark mb-1">Time *</label>
+              <input type="time" name="visitTime" class="form-control shadow-sm" ng-model="form.visitTime" required>
+            </div>
+            <div class="col-md-4 form-group">
+              <label class="fw-medium text-dark mb-1">Visit Type *</label>
+              <select name="visitType" class="form-select shadow-sm" ng-model="form.visitType" required>
+                <option value="OPD">OPD</option>
+                <option value="EMERGENCY">Emergency</option>
+                <option value="FOLLOW_UP">Follow-up</option>
+              </select>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Clinical Information</h6>
+          <div class="row g-3">
+            <div class="col-12 form-group">
+              <label class="fw-medium text-dark mb-1">Complaint *</label>
+              <textarea name="complaint" class="form-control shadow-sm" rows="2" ng-model="form.complaint" required placeholder="Describe the primary reason for the visit..."></textarea>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Diagnosis</label>
+              <textarea class="form-control shadow-sm" rows="2" ng-model="form.diagnosis" placeholder="Preliminary diagnosis..."></textarea>
+            </div>
+            <div class="col-md-6 form-group">
+              <label class="fw-medium text-dark mb-1">Treatment</label>
+              <textarea class="form-control shadow-sm" rows="2" ng-model="form.treatment" placeholder="Prescribed treatment plan..."></textarea>
+            </div>
+            <div class="col-12 form-group">
+              <label class="fw-medium text-dark mb-1">Additional Notes</label>
+              <textarea class="form-control shadow-sm" rows="2" ng-model="form.notes" placeholder="Any additional clinical or administrative notes..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer-custom bg-light border-top px-4 py-3 rounded-bottom-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-white border shadow-sm px-4" ng-click="closeModal()" ng-disabled="saving">Cancel</button>
+          <button type="submit" class="btn btn-primary shadow-sm px-4" ng-disabled="visitForm.$invalid || !form.patientId || saving">
+            <span ng-if="!saving"><i class="fa-solid fa-check me-2"></i> Create Visit</span>
+            <span ng-if="saving"><i class="fa-solid fa-spinner fa-spin me-2"></i> Saving...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
