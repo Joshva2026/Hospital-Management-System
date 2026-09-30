@@ -7,8 +7,3 @@ node_modules/
 *.backup
 
 # Temporary test / generated artifacts
-backend/scripts/audit_results.json
-backend/scripts/e2e_audit.js
-backend/scripts/seed.js.backup*
-backend/scripts/test_concurrency.js
-backend/scripts/test_duplicates.js
