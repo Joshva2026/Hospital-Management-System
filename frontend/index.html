@@ -24,59 +24,88 @@
   </div>
 
   <!-- ============ APP SHELL (shown when authenticated) ============ -->
-  <div ng-if="auth.isAuthenticated()" class="app-shell">
+  <div ng-if="auth.isAuthenticated()" class="app-shell flex-column">
 
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <i class="fa-solid fa-hospital"></i>
-        <span>Vincy Hospital HMS</span>
-      </div>
-      <ul class="sidebar-nav">
-        <li><a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
-        <li><a href="#!/patients" ng-class="{active: isActive('/patients')}"><i class="fa-solid fa-users"></i> Patients</a></li>
-        <li><a href="#!/visits" ng-class="{active: isActive('/visits')}"><i class="fa-solid fa-stethoscope"></i> OPD / Visits</a></li>
-        <li><a href="#!/admissions" ng-class="{active: isActive('/admissions')}"><i class="fa-solid fa-bed-pulse"></i> Admissions</a></li>
-        <li><a href="#!/reports" ng-class="{active: isActive('/reports')}"><i class="fa-solid fa-file-medical"></i> Daily Reports</a></li>
-        <li><a href="#!/appointments" ng-class="{active: isActive('/appointments')}"><i class="fa-solid fa-calendar-check"></i> Appointments</a></li>
-        <li><a href="#!/doctors" ng-class="{active: isActive('/doctors')}"><i class="fa-solid fa-user-doctor"></i> Doctors</a></li>
-        <li><a href="#!/specialities" ng-class="{active: isActive('/specialities')}"><i class="fa-solid fa-book-medical"></i> Specialities</a></li>
-        <li><a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}"><i class="fa-solid fa-bed"></i> Wards &amp; Beds</a></li>
-        <li><a href="#!/discharges" ng-class="{active: isActive('/discharges')}"><i class="fa-solid fa-right-from-bracket"></i> Discharges</a></li>
-        <li><a href="#!/analytics" ng-class="{active: isActive('/analytics')}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
-        <li><a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}"><i class="fa-solid fa-clipboard-list"></i> Audit Logs</a></li>
-        <li><a href="#!/profile" ng-class="{active: isActive('/profile')}"><i class="fa-solid fa-user-shield"></i> Admin Profile</a></li>
-      </ul>
-      <div class="sidebar-profile" style="padding: 12px 16px;">
-        <div class="d-flex align-items-center gap-2">
-          <div class="avatar-circle bg-primary text-white border border-2 border-white" style="width: 36px; height: 36px; font-size: 14px; margin-right: 0;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
-          <div style="line-height: 1.2;">
-            <div class="text-white" style="font-size: 14px; font-weight: 600;">{{auth.currentAdmin.fullName}}</div>
-            <div class="text-primary" style="font-size: 11px;">{{auth.currentAdmin.role || 'Hospital Administrator'}}</div>
+    <!-- Premium Top Navigation -->
+    <header class="premium-topnav">
+      <div class="topnav-container">
+        <!-- Left: Brand -->
+        <div class="topnav-brand">
+          <i class="fa-solid fa-hospital"></i>
+          <span>VINCY HOSPITAL</span>
+        </div>
+
+        <!-- Center: Desktop Navigation -->
+        <nav class="topnav-menu desktop-nav">
+          <div class="topnav-links-scroll">
+            <a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}">Dashboard</a>
+            <a href="#!/patients" ng-class="{active: isActive('/patients')}">Patients</a>
+            <a href="#!/visits" ng-class="{active: isActive('/visits')}">OPD</a>
+            <a href="#!/admissions" ng-class="{active: isActive('/admissions')}">Admissions</a>
+            <a href="#!/reports" ng-class="{active: isActive('/reports')}">Reports</a>
+            <a href="#!/appointments" ng-class="{active: isActive('/appointments')}">Appointments</a>
+            <a href="#!/doctors" ng-class="{active: isActive('/doctors')}">Doctors</a>
+            <a href="#!/specialities" ng-class="{active: isActive('/specialities')}">Specialities</a>
+            <a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}">Wards &amp; Beds</a>
+            <a href="#!/discharges" ng-class="{active: isActive('/discharges')}">Discharges</a>
+            <a href="#!/analytics" ng-class="{active: isActive('/analytics')}">Analytics</a>
+            <a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}">Audit Logs</a>
           </div>
+        </nav>
+
+        <!-- Right: Admin Area -->
+        <div class="topnav-right">
+          <a href="#!/profile" class="topnav-user" ng-class="{active: isActive('/profile')}">
+            <div class="avatar-circle bg-primary-light text-primary" style="margin-right: 8px;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+            <div class="user-info">
+              <span class="user-name">{{auth.currentAdmin.fullName}}</span>
+            </div>
+          </a>
+          <button class="topnav-logout" ng-click="logout()" aria-label="Logout">
+            <i class="fa-solid fa-power-off"></i>
+          </button>
+          
+          <button class="mobile-nav-toggle" ng-click="toggleSidebar()" aria-label="Toggle menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
         </div>
       </div>
-      <div class="sidebar-footer">
-        <a href="#" ng-click="logout()"><i class="fa-solid fa-power-off"></i> Logout</a>
+      
+      <!-- Mobile Navigation Drawer -->
+      <div class="mobile-nav-drawer" ng-class="{'open': sidebarOpen}">
+        <div class="mobile-nav-header">
+          <div class="topnav-brand">
+            <i class="fa-solid fa-hospital"></i>
+            <span>VINCY HOSPITAL</span>
+          </div>
+          <button class="mobile-nav-close" ng-click="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="mobile-nav-links">
+          <a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}" ng-click="toggleSidebar()">Dashboard</a>
+          <a href="#!/patients" ng-class="{active: isActive('/patients')}" ng-click="toggleSidebar()">Patients</a>
+          <a href="#!/visits" ng-class="{active: isActive('/visits')}" ng-click="toggleSidebar()">OPD</a>
+          <a href="#!/admissions" ng-class="{active: isActive('/admissions')}" ng-click="toggleSidebar()">Admissions</a>
+          <a href="#!/reports" ng-class="{active: isActive('/reports')}" ng-click="toggleSidebar()">Reports</a>
+          <a href="#!/appointments" ng-class="{active: isActive('/appointments')}" ng-click="toggleSidebar()">Appointments</a>
+          <a href="#!/doctors" ng-class="{active: isActive('/doctors')}" ng-click="toggleSidebar()">Doctors</a>
+          <a href="#!/specialities" ng-class="{active: isActive('/specialities')}" ng-click="toggleSidebar()">Specialities</a>
+          <a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}" ng-click="toggleSidebar()">Wards &amp; Beds</a>
+          <a href="#!/discharges" ng-class="{active: isActive('/discharges')}" ng-click="toggleSidebar()">Discharges</a>
+          <a href="#!/analytics" ng-class="{active: isActive('/analytics')}" ng-click="toggleSidebar()">Analytics</a>
+          <a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}" ng-click="toggleSidebar()">Audit Logs</a>
+          <a href="#!/profile" ng-class="{active: isActive('/profile')}" ng-click="toggleSidebar()">Profile</a>
+          <a href="#" ng-click="logout()" class="text-danger">Logout</a>
+        </div>
       </div>
-    </nav>
-
-    <!-- Mobile sidebar backdrop -->
-    <div id="sidebarBackdrop" class="sidebar-backdrop" ng-click="closeSidebar()"></div>
+      <!-- Mobile nav backdrop -->
+      <div class="mobile-nav-backdrop" ng-class="{'show': sidebarOpen}" ng-click="toggleSidebar()"></div>
+    </header>
 
     <!-- Main content -->
     <main class="main-content">
-      <header class="topbar">
-        <div class="d-flex align-items-center gap-3">
-          <button class="sidebar-toggle" ng-click="toggleSidebar()" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
-          <div class="topbar-title">{{pageTitle}}</div>
-        </div>
-        <div class="topbar-user">
-          <div class="avatar-circle bg-primary-light text-primary" style="width: 32px; height: 32px; font-size: 14px; margin-right: 8px;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
-          <span style="font-size: 14px; font-weight: 500;">{{auth.currentAdmin.fullName}}</span>
-          <span class="role-badge">{{auth.currentAdmin.role}}</span>
-        </div>
-      </header>
+      <div class="page-title-bar">
+        <h2>{{pageTitle}}</h2>
+      </div>
 
       <!-- Global toast/alert -->
       <div class="app-toast" ng-if="toast.message" ng-class="'toast-' + toast.type">
