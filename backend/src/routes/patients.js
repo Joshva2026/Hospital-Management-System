@@ -143,6 +143,7 @@ router.post(
       const lockKey = crypto.createHash('md5').update(lockKeyStr).digest().readInt32BE(0);
       await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
 
+      // Normalize name to prevent spacing mismatches in duplicate detection
       const normalizedFullName = (fullName || '').trim().replace(/\s+/g, ' ').toLowerCase();
 
       // Duplicate detection (Unconditional - no force override)
