@@ -1,83 +1,488 @@
-<div class="landing-page-v2" ng-controller="LandingController">
-  
+<div class="public-landing-container" ng-controller="LandingController">
   <style>
-    .landing-page-v2 { font-family: 'Inter', sans-serif; background-color: #F5F8FA; color: #1D1F1F; }
-    
+    /* Premium Medical Palette */
+    :root {
+      --medical-teal: #0D7C78;
+      --navy: #1E293B;
+      --bg-light: #F4F7F9;
+      --white: #FFFFFF;
+      --text-muted: #64748B;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      color: var(--navy);
+      overflow-x: hidden;
+    }
+
+    /* Cinematic Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
     /* Navigation */
-    .cinematic-nav { position: fixed; top: 0; left: 0; right: 0; padding: 20px 40px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; transition: all 0.4s ease; background: rgba(255,255,255,0.0); backdrop-filter: blur(0px); }
-    .cinematic-nav.scrolled { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); padding: 15px 40px; }
-    .nav-brand { font-size: 1.25rem; font-weight: 700; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 10px; transition: color 0.3s; }
-    .cinematic-nav.scrolled .nav-brand { color: #007AFF; }
-    .nav-links { display: none; }
+    .cinematic-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: all 0.4s ease;
+      background: transparent;
+    }
+    .cinematic-nav.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 48px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    }
+    .nav-brand {
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.4s;
+    }
+    .cinematic-nav.scrolled .nav-brand {
+      color: var(--medical-teal);
+    }
+    .nav-links {
+      display: none;
+    }
     @media (min-width: 992px) {
-      .nav-links { display: flex; gap: 32px; align-items: center; }
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
     }
-    .nav-links a { color: #fff; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s; opacity: 0.9; }
-    .nav-links a:hover { opacity: 1; }
-    .cinematic-nav.scrolled .nav-links a { color: #1D1F1F; }
-    .btn-admin { background: #007AFF; color: #fff; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; transition: transform 0.2s, background 0.2s; cursor: pointer; }
-    .btn-admin:hover { transform: scale(1.02); background: #072a4b; }
-    
-    /* Hero */
-    .hero-cinematic { height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
-    .hero-bg { position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop'); background-size: cover; background-position: center; opacity: 0.7; transform: scale(1.02); animation: heroPan 20s ease-out forwards; }
-    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,66,117,0.4), rgba(0,0,0,0.2)); }
-    @keyframes heroPan { to { transform: scale(1); } }
-    .hero-content { position: relative; z-index: 10; text-align: center; color: #fff; max-width: 800px; padding: 0 24px; margin-top: 60px; }
-    .hero-eyebrow { font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; margin-bottom: 24px; display: block; opacity: 0.9; }
-    .hero-title { font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 32px; }
-    .hero-desc { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 400; opacity: 0.9; max-width: 600px; margin: 0 auto 48px; line-height: 1.5; }
-    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .btn-explore { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 14px 32px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; backdrop-filter: blur(4px); }
-    .btn-explore:hover { background: rgba(255,255,255,0.1); border-color: #fff; color: #fff;}
-    .btn-primary-hero { background: #fff; color: #007AFF; padding: 14px 32px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s; border: none; cursor: pointer; }
-    .btn-primary-hero:hover { transform: scale(1.03); }
-    .scroll-indicator { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.6); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.3s;
+      opacity: 0.9;
+    }
+    .nav-links a:hover {
+      opacity: 1;
+    }
+    .cinematic-nav.scrolled .nav-links a {
+      color: var(--navy);
+    }
+    .cinematic-nav.scrolled .nav-links a:hover {
+      color: var(--medical-teal);
+    }
+    .btn-admin {
+      background: var(--medical-teal);
+      color: var(--white);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .btn-admin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(13, 124, 120, 0.3);
+      background: #0b6965;
+    }
+
+    /* Hero Section */
+    .hero-cinematic {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--navy);
+      overflow: hidden;
+    }
+    .hero-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translateX(-50%) translateY(-50%);
+      z-index: 0;
+      object-fit: cover;
+    }
+    /* Fallback image in case video doesn't load or mobile */
+    .hero-bg-fallback {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      z-index: -1;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      color: var(--white);
+      max-width: 900px;
+      padding: 0 24px;
+      animation: fadeIn 1s ease-out;
+    }
+    .hero-eyebrow {
+      font-size: 1rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--medical-teal);
+      margin-bottom: 24px;
+      display: block;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+    .hero-desc {
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+      font-weight: 300;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-explore {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: var(--white);
+      padding: 16px 36px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s;
+      backdrop-filter: blur(4px);
+    }
+    .btn-explore:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--white);
+      color: var(--white);
+    }
+    .btn-primary-hero {
+      background: var(--medical-teal);
+      color: var(--white);
+      padding: 16px 36px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary-hero:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(13, 124, 120, 0.4);
+    }
+
+    /* Sections Shared */
+    .section-padding {
+      padding: 140px 24px;
+    }
+    .section-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--medical-teal);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: block;
+    }
+    .section-title {
+      font-size: clamp(2.5rem, 4vw, 3.5rem);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+
     /* Intro */
-    .section-intro { padding: 160px 24px; background: #fff; text-align: center; }
-    .section-label { font-size: 0.8rem; font-weight: 700; color: #0D7C78; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; display: block; }
-    .intro-statement { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; color: #1D1F1F; max-width: 900px; margin: 0 auto 32px; line-height: 1.15; letter-spacing: -0.02em; }
-    .intro-desc { font-size: 1.2rem; color: #64748B; max-width: 600px; margin: 0 auto; line-height: 1.6; }
-    
+    .section-intro {
+      background: var(--white);
+      text-align: center;
+    }
+    .intro-desc {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
     /* Specialities */
-    .section-specialities { padding: 120px 24px; background: #F5F8FA; }
-    .speciality-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; max-width: 1200px; margin: 64px auto 0; }
-    .spec-card { background: #fff; border-radius: 24px; overflow: hidden; text-decoration: none; color: #1D1F1F; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
-    .spec-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(10,66,117,0.08); }
-    .spec-img-wrap { height: 280px; overflow: hidden; position: relative; }
-    .spec-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .spec-card:hover .spec-img { transform: scale(1.05); }
-    .spec-content { padding: 32px; }
-    .spec-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; }
-    .spec-desc { color: #64748B; line-height: 1.5; font-size: 0.95rem; margin-bottom: 24px; }
-    .spec-link { font-size: 0.85rem; font-weight: 600; color: #0D7C78; display: flex; align-items: center; gap: 8px; transition: gap 0.2s; }
-    .spec-card:hover .spec-link { gap: 12px; }
-    
+    .section-specialities {
+      background: var(--bg-light);
+    }
+    .speciality-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 32px;
+      max-width: 1200px;
+      margin: 64px auto 0;
+    }
+    .spec-card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      color: var(--navy);
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+    .spec-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(30, 41, 59, 0.08);
+    }
+    .spec-img-wrap {
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+    }
+    .spec-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s ease;
+    }
+    .spec-card:hover .spec-img {
+      transform: scale(1.05);
+    }
+    .spec-content {
+      padding: 32px;
+    }
+    .spec-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--navy);
+    }
+    .spec-desc {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
     /* Journey */
-    .section-journey { padding: 160px 24px; background: #fff; }
-    .journey-container { max-width: 1200px; margin: 80px auto 0; display: flex; justify-content: space-between; position: relative; }
-    .journey-line { position: absolute; top: 40px; left: 40px; right: 40px; height: 1px; background: #e2e8f0; z-index: 1; }
-    .journey-step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; }
-    .step-num { width: 80px; height: 80px; border-radius: 50%; background: #F5F8FA; color: #007AFF; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 8px solid #fff; transition: transform 0.3s; }
-    .journey-step:hover .step-num { transform: scale(1.1); background: #007AFF; color: #fff; }
-    .step-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; color: #1D1F1F; }
+    .section-journey {
+      background: var(--white);
+    }
+    .journey-container {
+      max-width: 1200px;
+      margin: 80px auto 0;
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+    .journey-line {
+      position: absolute;
+      top: 40px;
+      left: 5%;
+      right: 5%;
+      height: 2px;
+      background: #E2E8F0;
+      z-index: 1;
+    }
+    .journey-step {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 16%;
+    }
+    .step-num {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-light);
+      color: var(--medical-teal);
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      border: 4px solid var(--white);
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .journey-step:hover .step-num {
+      transform: scale(1.1);
+      background: var(--medical-teal);
+      color: var(--white);
+    }
+    .step-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--navy);
+    }
     @media (max-width: 992px) {
-      .journey-container { flex-direction: column; gap: 48px; }
-      .journey-line { top: 0; bottom: 0; left: 40px; width: 1px; height: auto; right: auto; }
-      .journey-step { width: 100%; flex-direction: row; text-align: left; align-items: center; gap: 32px; }
-      .step-num { margin-bottom: 0; }
+      .journey-container {
+        flex-direction: column;
+        gap: 48px;
+      }
+      .journey-line {
+        top: 0;
+        bottom: 0;
+        left: 40px;
+        width: 2px;
+        height: 100%;
+        right: auto;
+      }
+      .journey-step {
+        width: 100%;
+        flex-direction: row;
+        text-align: left;
+        align-items: center;
+        gap: 32px;
+      }
+      .step-num {
+        margin-bottom: 0;
+      }
+    }
+
+    /* Facilities Banner */
+    .section-facilities {
+      height: 70vh;
+      background-image: url('https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=2000&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .facilities-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(30, 41, 59, 0.6);
+    }
+    .facilities-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      color: var(--white);
+      padding: 0 24px;
     }
     
-    /* CTA */
-    .section-cta { padding: 160px 24px; background: #007AFF; text-align: center; color: #fff; }
+    /* Services/Info Grid */
+    .section-services {
+      background: var(--navy);
+      color: var(--white);
+      text-align: center;
+    }
+    .services-grid {
+      max-width: 1100px;
+      margin: 64px auto 0;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 48px;
+    }
+    .service-item i {
+      font-size: 3rem;
+      color: var(--medical-teal);
+      margin-bottom: 24px;
+    }
+    .service-item h4 {
+      font-weight: 600;
+      font-size: 1.3rem;
+    }
+
+    /* CTA Section */
+    .section-cta {
+      background: var(--medical-teal);
+      color: var(--white);
+      text-align: center;
+    }
     
     /* Footer */
-    .landing-footer { background: #1D1F1F; color: rgba(255,255,255,0.7); padding: 80px 40px 40px; text-align: center; }
-    
-    /* Reveal Animation Utility */
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .reveal.active { opacity: 1; transform: translateY(0); }
+    .landing-footer {
+      background: #0f172a;
+      color: rgba(255,255,255,0.7);
+      padding: 80px 40px 40px;
+      text-align: center;
+    }
+
+    /* Animations & Utilities */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .spec-card, .spec-img, .step-num, .btn-primary-hero, .btn-admin {
+        transition: none !important;
+        transform: none !important;
+        animation: none !important;
+      }
+      .reveal {
+        opacity: 1;
+      }
+      .section-facilities {
+        background-attachment: scroll;
+      }
+    }
+
+    /* Modal Tweaks */
+    .modal-backdrop-custom {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 1050;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 450px;
+      margin: 24px;
+    }
   </style>
 
   <!-- Navigation -->
@@ -88,66 +493,75 @@
     </a>
     <div class="nav-links">
       <a href="#">Home</a>
+      <a href="#about">About</a>
       <a href="#specialities">Specialities</a>
       <a href="#journey">Patient Journey</a>
     </div>
     <button class="btn-admin" ng-click="openLoginModal()">Admin Portal</button>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero Section with Video -->
   <header class="hero-cinematic">
-    <div class="hero-bg"></div>
+    <div class="hero-bg-fallback"></div>
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="https://cdn.pixabay.com/video/2020/07/22/45330-441617462_large.mp4" type="video/mp4">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-medical-team-walking-in-the-hallway-of-a-hospital-41613-large.mp4" type="video/mp4">
+    </video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <span class="hero-eyebrow animate-fade-in">Vincy Hospital</span>
-      <h1 class="hero-title animate-slide-up" style="animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards;">Advanced Care.<br>Human Connection.</h1>
-      <p class="hero-desc animate-slide-up" style="animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards;">Modern healthcare designed around every patient's journey.</p>
-      <div class="hero-actions animate-slide-up" style="animation-delay: 0.6s; opacity: 0; animation-fill-mode: forwards;">
-        <a href="#specialities" class="btn-explore">Explore Care</a>
-        <button class="btn-primary-hero" ng-click="openLoginModal()">Admin Portal</button>
+      <span class="hero-eyebrow">Vincy Hospital</span>
+      <h1 class="hero-title">Advanced Care.<br>Compassionate Healing.</h1>
+      <p class="hero-desc">Comprehensive multi-speciality healthcare supported by modern medical facilities, experienced doctors and coordinated patient care.</p>
+      <div class="hero-actions">
+        <a href="#about" class="btn-explore">Explore Our Care</a>
+        <button class="btn-primary-hero" ng-click="openLoginModal()">Admin Login</button>
       </div>
-    </div>
-    <div class="scroll-indicator animate-fade-in" style="animation-delay: 1.2s; opacity: 0; animation-fill-mode: forwards;">
-      <span>Scroll</span>
-      <i class="fa-solid fa-arrow-down"></i>
     </div>
   </header>
 
   <!-- Introduction -->
-  <section class="section-intro">
+  <section id="about" class="section-intro section-padding reveal">
     <span class="section-label">The Vincy Experience</span>
-    <h2 class="intro-statement">Healthcare designed around people, not just procedures.</h2>
-    <p class="intro-desc">We deliver world-class healthcare with cutting-edge technology and compassionate medical professionals. Our facilities are built to support seamless care from arrival to recovery.</p>
+    <h2 class="section-title">Care Designed Around You.</h2>
+    <p class="intro-desc">Vincy Hospital brings together multi-speciality expertise, modern facilities and coordinated care to provide patients with a connected healthcare experience.</p>
   </section>
-  
-  <!-- Facilities Image Break -->
-  <section style="height: 70vh; background-image: url('https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center; background-attachment: fixed;"></section>
+
+  <!-- Facilities Cinematic Break -->
+  <section class="section-facilities">
+    <div class="facilities-overlay"></div>
+    <div class="facilities-content reveal">
+      <span class="section-label" style="color: var(--white); opacity: 0.8;">Infrastructure</span>
+      <h2 class="section-title" style="color: var(--white); font-size: clamp(2rem, 4vw, 3rem);">Modern clinical environments.</h2>
+      <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; opacity: 0.9;">Designed for comfort, equipped for excellence.</p>
+    </div>
+  </section>
 
   <!-- Specialities -->
-  <section id="specialities" class="section-specialities">
+  <section id="specialities" class="section-specialities section-padding">
     <div class="text-center reveal">
       <span class="section-label">Centers of Excellence</span>
-      <h2 class="intro-statement" style="font-size: clamp(2rem, 3vw, 3rem); margin-bottom: 16px;">Specialised medical care.</h2>
-      <p class="intro-desc">Comprehensive care across a wide spectrum of medical disciplines.</p>
+      <h2 class="section-title">Specialised Medical Care</h2>
+      <p class="intro-desc" style="max-width: 600px;">Comprehensive care across a wide spectrum of medical disciplines.</p>
     </div>
     
     <div class="speciality-grid">
+      <!-- Speciality Cards (Iterating over existing API data) -->
       <div class="spec-card reveal" ng-repeat="spec in specialities" style="transition-delay: {{$index * 50}}ms">
         <div class="spec-img-wrap">
-          <div class="spec-img" ng-style="{'background-image': 'url(' + spec.image + ')'}"></div>
+          <div class="spec-img" ng-style="{'background-image': 'url(' + (spec.image || 'https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?q=80&w=800') + ')'}"></div>
         </div>
         <div class="spec-content">
           <h3 class="spec-title">{{spec.name}}</h3>
-          <p class="spec-desc">{{spec.desc}}</p>
+          <p class="spec-desc">{{spec.desc || 'Comprehensive diagnostic and therapeutic services delivered by our expert specialists.'}}</p>
           
           <div ng-if="spec.doctors.length > 0" class="mt-4 pt-3 border-top">
-            <h6 class="text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700;">Specialists</h6>
+            <h6 class="text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700; color: var(--medical-teal);">Specialists</h6>
             <div class="d-flex flex-column gap-3">
               <div class="d-flex align-items-center gap-3" ng-repeat="doc in spec.doctors">
-                <img ng-src="{{doc.image}}" alt="{{doc.name}}" class="rounded-circle object-fit-cover shadow-sm" style="width: 48px; height: 48px; border: 2px solid #fff;">
+                <img ng-src="{{doc.image || 'https://ui-avatars.com/api/?name='+doc.name+'&background=F4F7F9&color=1E293B'}}" alt="{{doc.name}}" class="rounded-circle object-fit-cover shadow-sm" style="width: 48px; height: 48px; border: 2px solid #fff;">
                 <div>
-                  <div class="fw-bold" style="font-size: 0.95rem; color: #1D1F1F;">{{doc.name}}</div>
-                  <div class="text-muted" style="font-size: 0.8rem;">{{doc.qualification}} &bull; {{doc.experience}} yrs exp.</div>
+                  <div class="fw-bold" style="font-size: 0.95rem; color: var(--navy);">{{doc.name}}</div>
+                  <div class="text-muted" style="font-size: 0.8rem;">{{doc.qualification}} <span ng-if="doc.experience">&bull; {{doc.experience}} yrs exp.</span></div>
                 </div>
               </div>
             </div>
@@ -158,89 +572,98 @@
   </section>
 
   <!-- Patient Journey -->
-  <section id="journey" class="section-journey">
-    <div class="text-center">
+  <section id="journey" class="section-journey section-padding">
+    <div class="text-center reveal">
       <span class="section-label">Patient Journey</span>
-      <h2 class="intro-statement" style="font-size: clamp(2rem, 3vw, 3rem); max-width: 700px;">A seamless approach to your recovery.</h2>
+      <h2 class="section-title">A seamless approach to recovery.</h2>
     </div>
     
-    <div class="journey-container">
+    <div class="journey-container reveal">
       <div class="journey-line"></div>
       
       <div class="journey-step">
         <div class="step-num">01</div>
-        <div class="step-title">Arrival</div>
-      </div>
-      
-      <div class="journey-step">
-        <div class="step-num">02</div>
         <div class="step-title">Registration</div>
       </div>
       
       <div class="journey-step">
-        <div class="step-num">03</div>
+        <div class="step-num">02</div>
         <div class="step-title">Consultation</div>
       </div>
       
       <div class="journey-step">
-        <div class="step-num">04</div>
+        <div class="step-num">03</div>
         <div class="step-title">Diagnosis</div>
       </div>
       
       <div class="journey-step">
+        <div class="step-num">04</div>
+        <div class="step-title">Admission</div>
+      </div>
+      
+      <div class="journey-step">
         <div class="step-num">05</div>
-        <div class="step-title">Treatment</div>
+        <div class="step-title">Monitoring</div>
       </div>
       
       <div class="journey-step">
         <div class="step-num">06</div>
-        <div class="step-title">Recovery</div>
+        <div class="step-title">Discharge</div>
       </div>
     </div>
   </section>
 
-  <!-- Trust / Info -->
-  <section style="padding: 120px 24px; background: #F5F8FA; text-align: center;">
-    <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 40px;">
-      <div>
-        <i class="fa-solid fa-truck-medical" style="font-size: 2.5rem; color: #007AFF; margin-bottom: 24px;"></i>
-        <h4 style="font-weight: 700; color: #1D1F1F;">24/7 Emergency Care</h4>
+  <!-- Services / Info -->
+  <section class="section-services section-padding">
+    <div class="reveal">
+      <h2 class="section-title" style="color: var(--white); margin-bottom: 16px;">Exceptional Healthcare Core</h2>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service-item">
+        <i class="fa-solid fa-stethoscope"></i>
+        <h4>Outpatient Care</h4>
       </div>
-      <div>
-        <i class="fa-solid fa-stethoscope" style="font-size: 2.5rem; color: #007AFF; margin-bottom: 24px;"></i>
-        <h4 style="font-weight: 700; color: #1D1F1F;">Advanced Diagnostics</h4>
+      <div class="service-item">
+        <i class="fa-solid fa-bed-pulse"></i>
+        <h4>Inpatient Care</h4>
       </div>
-      <div>
-        <i class="fa-solid fa-heart-pulse" style="font-size: 2.5rem; color: #007AFF; margin-bottom: 24px;"></i>
-        <h4 style="font-weight: 700; color: #1D1F1F;">Comprehensive Care</h4>
+      <div class="service-item">
+        <i class="fa-solid fa-truck-medical"></i>
+        <h4>Emergency Care</h4>
+      </div>
+      <div class="service-item">
+        <i class="fa-solid fa-microscope"></i>
+        <h4>Diagnostics</h4>
       </div>
     </div>
   </section>
 
   <!-- Final CTA -->
-  <section class="section-cta">
-    <h2 class="hero-title" style="font-size: clamp(2.5rem, 4vw, 4rem); margin-bottom: 24px;">Care begins with confidence.</h2>
-    <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 48px; max-width: 500px; margin-left: auto; margin-right: auto;">Secure administration and medical management for the modern healthcare era.</p>
-    <button class="btn-primary-hero" ng-click="openLoginModal()" style="padding: 16px 40px; font-size: 1.1rem;">Enter Admin Portal</button>
+  <section class="section-cta section-padding">
+    <div class="reveal">
+      <h2 class="section-title" style="color: var(--white);">Secure Medical Management.</h2>
+      <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto;">Authorized personnel can securely access the hospital dashboard below.</p>
+      <button class="btn-primary-hero" ng-click="openLoginModal()" style="background: var(--navy); padding: 18px 48px; font-size: 1.1rem;">Admin Login</button>
+    </div>
   </section>
 
   <!-- Footer -->
   <footer class="landing-footer">
-    <i class="fa-solid fa-hospital-user" style="font-size: 2rem; color: #fff; margin-bottom: 24px;"></i>
-    <h3 style="font-weight: 700; color: #fff; margin-bottom: 12px;">Vincy Hospital</h3>
+    <i class="fa-solid fa-hospital" style="font-size: 2.5rem; color: var(--medical-teal); margin-bottom: 24px;"></i>
+    <h3 style="font-weight: 700; color: var(--white); margin-bottom: 12px; letter-spacing: 1px;">Vincy Hospital</h3>
     <p style="margin-bottom: 48px;">Administration & Management System</p>
-    <p style="font-size: 0.85rem; opacity: 0.6;">&copy; 2026 Vincy Hospital. All rights reserved.</p>
+    <p style="font-size: 0.85rem; opacity: 0.5;">&copy; 2026 Vincy Hospital. All rights reserved.</p>
   </footer>
 
-  <!-- Login Modal -->
+  <!-- Login Modal (Preserves Existing Flow) -->
   <div class="modal-backdrop-custom" ng-if="showLoginModal">
-    <div class="modal-box modal-md animate-slide-up">
-      <div class="modal-header-custom border-0 pb-0">
-        <button class="btn-close ms-auto" ng-click="closeLoginModal()"></button>
+    <div class="modal-box animate-slide-up">
+      <div class="modal-header-custom border-0 pb-0 pt-4 pe-4 d-flex justify-content-end">
+        <button class="btn-close" ng-click="closeLoginModal()"></button>
       </div>
       <div class="modal-body-custom pt-0 px-5 pb-5 text-center" ng-controller="LoginController">
-        <i class="fa-solid fa-user-lock text-primary fs-1 mb-4"></i>
-        <h3 class="fw-bold mb-2">Admin Portal</h3>
+        <i class="fa-solid fa-user-lock fs-1 mb-4" style="color: var(--medical-teal);"></i>
+        <h3 class="fw-bold mb-2" style="color: var(--navy);">Admin Portal</h3>
         <p class="text-muted mb-4">Sign in to access the hospital dashboard.</p>
         
         <form name="loginForm" ng-submit="submit(loginForm)" novalidate class="text-start">
@@ -253,7 +676,7 @@
             <input type="password" id="loginPassword" name="password" class="form-control form-control-lg bg-light border-0" ng-model="credentials.password" required placeholder="Enter your password">
           </div>
           <div class="alert alert-danger border-0 rounded-3" ng-if="errorMessage"><i class="fa-solid fa-circle-exclamation me-2"></i>{{errorMessage}}</div>
-          <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold" ng-disabled="loginForm.$invalid || loading">
+          <button type="submit" class="btn w-100 py-3 rounded-pill fw-bold" style="background: var(--medical-teal); color: var(--white);" ng-disabled="loginForm.$invalid || loading">
             <span ng-if="!loading">Sign In</span>
             <span ng-if="loading"><i class="fa-solid fa-spinner fa-spin me-2"></i> Authenticating...</span>
           </button>
@@ -263,14 +686,32 @@
   </div>
 
   <script>
-    // Simple script to handle nav background on scroll
-    window.addEventListener('scroll', function() {
+    // Simple script to handle nav background on scroll & reveal animations
+    setTimeout(function() {
       var nav = document.getElementById('cinematicNav');
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      });
+      
+      // Reveal animations for scroll
+      var reveals = document.querySelectorAll('.reveal');
+      function reveal() {
+        var windowHeight = window.innerHeight;
+        var elementVisible = 100;
+        
+        for (var i = 0; i < reveals.length; i++) {
+          var elementTop = reveals[i].getBoundingClientRect().top;
+          if (elementTop < windowHeight - elementVisible) {
+            reveals[i].classList.add('active');
+          }
+        }
       }
-    });
+      window.addEventListener('scroll', reveal);
+      reveal(); // initial trigger
+    }, 100);
   </script>
 </div>
