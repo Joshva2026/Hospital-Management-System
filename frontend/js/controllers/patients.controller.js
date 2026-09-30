@@ -95,6 +95,12 @@
       $scope.generatedId = null;
       $scope.duplicateWarning = null;
 
+      $scope.$watch('patient', function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.duplicateWarning = null;
+        }
+      }, true);
+
       $scope.nextStep = function() {
         if ($scope.step === 1) {
           if (!$scope.patient.fullName || !$scope.patient.gender || !$scope.patient.patientType) {

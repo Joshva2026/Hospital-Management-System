@@ -143,6 +143,8 @@ router.post(
       const lockKey = crypto.createHash('md5').update(lockKeyStr).digest().readInt32BE(0);
       await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
 
+      const normalizedFullName = (fullName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
       // Duplicate detection (Unconditional - no force override)
       const dupQuery = `
         SELECT p.*,
@@ -156,23 +158,36 @@ router.post(
               WHERE a.patient_id = p.patient_id AND a.status = 'ADMITTED'
               LIMIT 1
             ) curr_adm
-          ) AS current_admission
+          ) AS current_admission,
+          CASE 
+            WHEN p.mobile = $1 THEN 'MOBILE'
+            WHEN lower(regexp_replace(p.full_name, '\\s+', ' ', 'g')) = $2 AND p.date_of_birth = $3 THEN 'NAME_DOB'
+            WHEN p.emergency_contact = $4 THEN 'EMERGENCY_CONTACT'
+            ELSE 'OTHER'
+          END as match_reason
         FROM patients p
         WHERE p.status = 'ACTIVE' 
         AND (
-          p.mobile = $1
-          OR (p.full_name ILIKE $2 AND p.date_of_birth = $3)
-          OR (p.full_name ILIKE $2 AND p.mobile = $1)
-          OR (p.emergency_contact = $4 AND p.emergency_contact IS NOT NULL AND p.emergency_contact != '')
+          (p.mobile = $1 AND $1::text != '')
+          OR (lower(regexp_replace(p.full_name, '\\s+', ' ', 'g')) = $2 AND p.date_of_birth = $3 AND $3::date IS NOT NULL)
+          OR (p.emergency_contact = $4 AND $4::text != '' AND p.emergency_contact IS NOT NULL AND p.emergency_contact != '')
         )
         LIMIT 1
       `;
-      const { rows: dups } = await client.query(dupQuery, [mobile, fullName, dateOfBirth || null, emergencyContact || null]);
+      const { rows: dups } = await client.query(dupQuery, [
+        mobile || null, 
+        normalizedFullName || null, 
+        dateOfBirth || null, 
+        emergencyContact || null
+      ]);
       if (dups.length > 0) {
         return {
           success: false,
+          exists: true,
           isDuplicate: true,
+          match_reason: dups[0].match_reason,
           message: 'Patient already exists.',
+          patient: dups[0],
           duplicate: dups[0]
         };
       }
