@@ -179,11 +179,6 @@
           return;
         }
 
-        // Guard: patient not yet selected via autocomplete
-        if (!$scope.form.patientId) {
-          ToastService.error('Please search and select a patient first.');
-          return;
-        }
 
         // Guard: prevent double-submit
         if ($scope.saving) return;
