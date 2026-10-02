@@ -14,10 +14,12 @@
       $scope.showModal = false;
       $scope.saving = false;
       $scope.form = {};
-      $scope.patientSearch = '';
+      $scope.search = { query: '' };
       $scope.selectedPatient = null;
       $scope.hasSearched = false;
+      $scope.patientSearching = false;
       var searchTimeout = null;
+      var searchReqToken = 0;
 
       function load() {
         $scope.loading = true;
@@ -38,18 +40,44 @@
       $scope.goToPage = function (p) { if (p < 1 || p > $scope.pagination.totalPages) return; $scope.pagination.page = p; load(); };
 
       $scope.searchPatients = function () {
-        $scope.hasSearched = false;
-        var searchTerm = $scope.patientSearch ? $scope.patientSearch.trim() : '';
+        var searchTerm = $scope.search.query ? $scope.search.query.trim() : '';
+        
+        if (searchTimeout) $timeout.cancel(searchTimeout);
+        
         if (searchTerm.length < 2) { 
           $scope.patients = []; 
+          $scope.hasSearched = false;
+          $scope.patientSearching = false;
           return; 
         }
-        if (searchTimeout) $timeout.cancel(searchTimeout);
+
         searchTimeout = $timeout(function() {
-          ApiService.get('/patients', { search: searchTerm, limit: 8 }).then(function (res) {
-            $scope.patients = res.data;
-            $scope.hasSearched = true;
-          });
+          $scope.patientSearching = true;
+          $scope.hasSearched = false;
+          $scope.patients = [];
+          
+          searchReqToken++;
+          var currentReq = searchReqToken;
+
+          ApiService.get('/patients', { search: searchTerm, limit: 8 })
+            .then(function (res) {
+              if (currentReq === searchReqToken) {
+                $scope.patients = res.data || [];
+                $scope.hasSearched = true;
+              }
+            })
+            .catch(function (err) {
+              if (currentReq === searchReqToken) {
+                $scope.patients = [];
+                $scope.hasSearched = true;
+                ToastService.error(err.message || 'Search failed');
+              }
+            })
+            .finally(function() {
+              if (currentReq === searchReqToken) {
+                $scope.patientSearching = false;
+              }
+            });
         }, 300);
       };
 
@@ -66,10 +94,11 @@
           visitType:    'OPD',
           complaint: '', diagnosis: '', treatment: '', notes: ''
         };
-        $scope.patientSearch = ''; 
+        $scope.search = { query: '' }; 
         $scope.patients = []; 
         $scope.selectedPatient = null;
         $scope.hasSearched = false;
+        $scope.patientSearching = false;
         $scope.showModal = true;
       };
       $scope.closeModal = function () { $scope.showModal = false; };
@@ -77,17 +106,19 @@
       $scope.selectPatient = function (p) { 
         $scope.form.patientId = p.patient_id; 
         $scope.selectedPatient = p;
-        $scope.patientSearch = ''; 
+        $scope.search = { query: '' }; 
         $scope.patients = []; 
         $scope.hasSearched = false;
+        $scope.patientSearching = false;
       };
 
       $scope.clearPatient = function () {
         $scope.form.patientId = '';
         $scope.selectedPatient = null;
-        $scope.patientSearch = '';
+        $scope.search = { query: '' };
         $scope.patients = [];
         $scope.hasSearched = false;
+        $scope.patientSearching = false;
       };
 
       $scope.submitVisit = function (form) {

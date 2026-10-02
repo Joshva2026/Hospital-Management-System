@@ -111,10 +111,10 @@
               <label class="fw-medium text-dark mb-1">Search patient *</label>
               <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
-                <input type="text" class="form-control border-start-0" placeholder="Search patient by name, ID or phone number..." ng-model="patientSearch" ng-change="searchPatients()">
+                <input type="text" class="form-control border-start-0" placeholder="Search patient by name, ID or phone number..." ng-model="search.query" ng-change="searchPatients()">
               </div>
               
-              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="patients.length" style="max-height: 250px; overflow-y: auto; top: 100%;">
+              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="!patientSearching && patients.length > 0" style="max-height: 250px; overflow-y: auto; top: 100%;">
                 <button type="button" class="list-group-item list-group-item-action border-0 border-bottom p-3" ng-repeat="p in patients" ng-click="selectPatient(p)">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -127,16 +127,16 @@
                 </button>
               </div>
 
-              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="patientSearch.trim().length >= 2 && !hasSearched && !patients.length" style="top: 100%;">
+              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="patientSearching" style="top: 100%;">
                 <div class="list-group-item border-0 p-3 text-center text-muted">
                   <i class="fa-solid fa-spinner fa-spin me-2"></i> Searching...
                 </div>
               </div>
 
-              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="hasSearched && patients.length === 0" style="top: 100%;">
+              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="!patientSearching && hasSearched && patients.length === 0" style="top: 100%;">
                 <div class="list-group-item border-0 p-4 text-center text-muted">
                   <i class="fa-solid fa-user-slash mb-2 fs-4"></i><br>
-                  No patients found for "{{patientSearch}}"
+                  No patients found for "{{search.query}}"
                 </div>
               </div>
             </div>
