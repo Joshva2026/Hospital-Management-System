@@ -166,7 +166,7 @@ body {
 .page-title-bar { display: none; }
 
 /* ---------- Page Body ---------- */
-.page-body { padding: 32px; animation: fadeIn 0.3s ease; }
+.page-body { padding: 32px; }
 
 /* ---------- Cards ---------- */
 .card {

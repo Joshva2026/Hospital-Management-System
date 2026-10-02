@@ -108,6 +108,7 @@
       </div>
     </div>
   </div>
+</div> <!-- Close animate-fade-in -->
 
   <!-- Schedule Appointment Modal -->
   <!--
@@ -140,7 +141,7 @@
               <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
               <input type="text" class="form-control border-start-0" placeholder="Search by name, mobile or ID..." ng-model="search.query" ng-change="searchPatients()" autocomplete="off">
             </div>
-            <div class="list-group mt-1 shadow-sm position-absolute w-100" style="z-index: 9999; max-height: 200px; overflow-y: auto; top: 100%;" ng-if="!patientSearching && patients.length > 0">
+            <div class="list-group mt-1 shadow-sm w-100" style="max-height: 200px; overflow-y: auto;" ng-if="!patientSearching && patients.length > 0">
               <button type="button" class="list-group-item list-group-item-action fw-medium" ng-repeat="p in patients" ng-click="selectPatient(p)">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
@@ -152,12 +153,12 @@
                 </div>
               </button>
             </div>
-            <div class="list-group mt-1 shadow-sm position-absolute w-100" style="z-index: 9999; top: 100%;" ng-if="patientSearching">
+            <div class="list-group mt-1 shadow-sm w-100" ng-if="patientSearching">
               <div class="list-group-item border-0 p-3 text-center text-muted">
                 <i class="fa-solid fa-spinner fa-spin me-2"></i> Searching...
               </div>
             </div>
-            <div class="list-group mt-1 shadow-sm position-absolute w-100" style="z-index: 9999; top: 100%;" ng-if="!patientSearching && hasSearched && patients.length === 0">
+            <div class="list-group mt-1 shadow-sm w-100" ng-if="!patientSearching && hasSearched && patients.length === 0">
               <div class="list-group-item border-0 p-4 text-center text-muted">
                 <i class="fa-solid fa-user-slash mb-2 fs-4"></i><br>
                 No patients found for "{{search.query}}"
@@ -242,4 +243,3 @@
       </form>
     </div>
   </div>
-</div>
