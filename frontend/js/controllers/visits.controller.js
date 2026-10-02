@@ -2,8 +2,8 @@
   'use strict';
 
   angular.module('hmsApp').controller('VisitsController', [
-    '$scope', 'ApiService', 'ToastService', 'DateTimeService',
-    function ($scope, ApiService, ToastService, DateTimeService) {
+    '$scope', 'ApiService', 'ToastService', 'DateTimeService', '$timeout',
+    function ($scope, ApiService, ToastService, DateTimeService, $timeout) {
       $scope.visits = [];
       $scope.loading = true;
       $scope.pagination = { page: 1, limit: 10, total: 0, totalPages: 0 };
@@ -15,6 +15,9 @@
       $scope.saving = false;
       $scope.form = {};
       $scope.patientSearch = '';
+      $scope.selectedPatient = null;
+      $scope.hasSearched = false;
+      var searchTimeout = null;
 
       function load() {
         $scope.loading = true;
@@ -35,10 +38,18 @@
       $scope.goToPage = function (p) { if (p < 1 || p > $scope.pagination.totalPages) return; $scope.pagination.page = p; load(); };
 
       $scope.searchPatients = function () {
-        if (!$scope.patientSearch || $scope.patientSearch.length < 2) { $scope.patients = []; return; }
-        ApiService.get('/patients', { search: $scope.patientSearch, limit: 8 }).then(function (res) {
-          $scope.patients = res.data;
-        });
+        $scope.hasSearched = false;
+        if (!$scope.patientSearch || $scope.patientSearch.length < 2) { 
+          $scope.patients = []; 
+          return; 
+        }
+        if (searchTimeout) $timeout.cancel(searchTimeout);
+        searchTimeout = $timeout(function() {
+          ApiService.get('/patients', { search: $scope.patientSearch, limit: 8 }).then(function (res) {
+            $scope.patients = res.data;
+            $scope.hasSearched = true;
+          });
+        }, 300);
       };
 
       $scope.openNewVisit = function () {
@@ -54,11 +65,29 @@
           visitType:    'OPD',
           complaint: '', diagnosis: '', treatment: '', notes: ''
         };
-        $scope.patientSearch = ''; $scope.patients = [];
+        $scope.patientSearch = ''; 
+        $scope.patients = []; 
+        $scope.selectedPatient = null;
+        $scope.hasSearched = false;
         $scope.showModal = true;
       };
       $scope.closeModal = function () { $scope.showModal = false; };
-      $scope.selectPatient = function (p) { $scope.form.patientId = p.patient_id; $scope.patientSearch = p.patient_id + ' - ' + p.full_name; $scope.patients = []; };
+      
+      $scope.selectPatient = function (p) { 
+        $scope.form.patientId = p.patient_id; 
+        $scope.selectedPatient = p;
+        $scope.patientSearch = ''; 
+        $scope.patients = []; 
+        $scope.hasSearched = false;
+      };
+
+      $scope.clearPatient = function () {
+        $scope.form.patientId = '';
+        $scope.selectedPatient = null;
+        $scope.patientSearch = '';
+        $scope.patients = [];
+        $scope.hasSearched = false;
+      };
 
       $scope.submitVisit = function (form) {
         if (!form || !form.$valid || $scope.saving || !$scope.form.patientId) return;
