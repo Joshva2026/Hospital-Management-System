@@ -2,8 +2,8 @@
   'use strict';
 
   angular.module('hmsApp').controller('AppointmentsController', [
-    '$scope', 'ApiService', 'ToastService', 'DateTimeService',
-    function ($scope, ApiService, ToastService, DateTimeService) {
+    '$scope', 'ApiService', 'ToastService', 'DateTimeService', '$timeout',
+    function ($scope, ApiService, ToastService, DateTimeService, $timeout) {
 
       $scope.appointments   = [];
       $scope.loading        = true;
