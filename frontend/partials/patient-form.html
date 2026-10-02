@@ -83,7 +83,7 @@
           </div>
           <div class="col-md-6 form-group">
             <label for="emergencyContact">Emergency Contact</label>
-            <input type="text" id="emergencyContact" class="form-control form-control-lg bg-light border-0" ng-model="patient.emergencyContact" ng-pattern="/^[0-9]{10}$/" maxlength="10" placeholder="10-digit number">
+            <input type="text" id="emergencyContact" name="emergencyContact" class="form-control form-control-lg bg-light border-0" ng-model="patient.emergencyContact" ng-pattern="/^([0-9]{10})?$/" maxlength="10" placeholder="10-digit number">
           </div>
           <div class="col-12 form-group">
             <label for="address">Full Address</label>

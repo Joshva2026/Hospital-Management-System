@@ -9,7 +9,10 @@ const app = express();
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*', // tighten this to your real frontend URL in production
+  origin: process.env.CORS_ORIGIN || [
+    'https://hospital-management-system-frontend-nine.vercel.app',
+    'http://localhost:8080'
+  ],
   credentials: true,
 }));
 app.use(express.json({ limit: '2mb' }));
