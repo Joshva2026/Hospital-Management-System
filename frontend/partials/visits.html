@@ -127,10 +127,16 @@
                 </button>
               </div>
 
+              <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="patientSearch.trim().length >= 2 && !hasSearched && !patients.length" style="top: 100%;">
+                <div class="list-group-item border-0 p-3 text-center text-muted">
+                  <i class="fa-solid fa-spinner fa-spin me-2"></i> Searching...
+                </div>
+              </div>
+
               <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="hasSearched && patients.length === 0" style="top: 100%;">
                 <div class="list-group-item border-0 p-4 text-center text-muted">
                   <i class="fa-solid fa-user-slash mb-2 fs-4"></i><br>
-                  No patients found
+                  No patients found for "{{patientSearch}}"
                 </div>
               </div>
             </div>

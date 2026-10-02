@@ -39,13 +39,14 @@
 
       $scope.searchPatients = function () {
         $scope.hasSearched = false;
-        if (!$scope.patientSearch || $scope.patientSearch.length < 2) { 
+        var searchTerm = $scope.patientSearch ? $scope.patientSearch.trim() : '';
+        if (searchTerm.length < 2) { 
           $scope.patients = []; 
           return; 
         }
         if (searchTimeout) $timeout.cancel(searchTimeout);
         searchTimeout = $timeout(function() {
-          ApiService.get('/patients', { search: $scope.patientSearch, limit: 8 }).then(function (res) {
+          ApiService.get('/patients', { search: searchTerm, limit: 8 }).then(function (res) {
             $scope.patients = res.data;
             $scope.hasSearched = true;
           });
