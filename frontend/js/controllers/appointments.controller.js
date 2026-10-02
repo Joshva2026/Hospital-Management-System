@@ -15,8 +15,14 @@
       $scope.doctors        = [];
       $scope.specialities   = [];
       $scope.patients       = [];
-      $scope.patientSearch  = '';
+      $scope.search         = { query: '' };
+      $scope.selectedPatient = null;
+      $scope.hasSearched    = false;
+      $scope.patientSearching = false;
       $scope.form           = {};
+      
+      var searchTimeout = null;
+      var searchReqToken = 0;
 
       // ── Load list ────────────────────────────────────────────────────────────
       function load() {
@@ -52,18 +58,63 @@
 
       // ── Patient autocomplete ──────────────────────────────────────────────────
       $scope.searchPatients = function () {
-        if (!$scope.patientSearch || $scope.patientSearch.length < 2) {
+        var searchTerm = $scope.search.query ? $scope.search.query.trim() : '';
+
+        if (searchTimeout) $timeout.cancel(searchTimeout);
+
+        if (searchTerm.length < 2) {
           $scope.patients = [];
+          $scope.hasSearched = false;
+          $scope.patientSearching = false;
           return;
         }
-        ApiService.get('/patients', { search: $scope.patientSearch, limit: 8 })
-          .then(function (res) { $scope.patients = res.data; });
+
+        searchTimeout = $timeout(function() {
+          $scope.patientSearching = true;
+          $scope.hasSearched = false;
+          $scope.patients = [];
+          
+          searchReqToken++;
+          var currentReq = searchReqToken;
+
+          ApiService.get('/patients', { search: searchTerm, limit: 8 })
+            .then(function (res) {
+              if (currentReq === searchReqToken) {
+                $scope.patients = res.data || [];
+                $scope.hasSearched = true;
+              }
+            })
+            .catch(function (err) {
+              if (currentReq === searchReqToken) {
+                $scope.patients = [];
+                $scope.hasSearched = true;
+                ToastService.error(err.message || 'Search failed');
+              }
+            })
+            .finally(function() {
+              if (currentReq === searchReqToken) {
+                $scope.patientSearching = false;
+              }
+            });
+        }, 300);
       };
 
       $scope.selectPatient = function (p) {
-        $scope.form.patientId  = p.patient_id;       // real DB ID e.g. "PAT-2026-000119"
-        $scope.patientSearch   = p.patient_id + ' - ' + p.full_name;
+        $scope.form.patientId  = p.patient_id;
+        $scope.selectedPatient = p;
+        $scope.search          = { query: '' };
         $scope.patients        = [];
+        $scope.hasSearched     = false;
+        $scope.patientSearching = false;
+      };
+
+      $scope.clearPatient = function () {
+        $scope.form.patientId = '';
+        $scope.selectedPatient = null;
+        $scope.search = { query: '' };
+        $scope.patients = [];
+        $scope.hasSearched = false;
+        $scope.patientSearching = false;
       };
 
       // ── Open modal ────────────────────────────────────────────────────────────
@@ -83,8 +134,11 @@
           appointmentType: 'CONSULTATION',
           reason:          ''
         };
-        $scope.patientSearch       = '';
+        $scope.search              = { query: '' };
         $scope.patients            = [];
+        $scope.selectedPatient     = null;
+        $scope.hasSearched         = false;
+        $scope.patientSearching    = false;
         $scope.formSubmitAttempted = false;
         $scope.showModal           = true;
       };
