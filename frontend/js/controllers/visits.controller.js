@@ -42,12 +42,15 @@
       };
 
       $scope.openNewVisit = function () {
+        var defaultTime = new Date();
+        defaultTime.setHours(9, 0, 0, 0);
+
         $scope.form = {
           patientId:    '',
           doctorId:     '',
           specialityId: '',
-          visitDate:    DateTimeService.formatLocalDate(new Date()), // string "YYYY-MM-DD"
-          visitTime:    '09:00',                                     // string "HH:mm"
+          visitDate:    new Date(),
+          visitTime:    defaultTime,
           visitType:    'OPD',
           complaint: '', diagnosis: '', treatment: '', notes: ''
         };
@@ -62,13 +65,20 @@
         $scope.saving = true;
         
         var payload = angular.copy($scope.form);
-        // type="date" gives "YYYY-MM-DD" string directly; type="time" gives "HH:mm" — normalize to HH:mm:ss
+        
         if (payload.visitDate && typeof payload.visitDate !== 'string') {
           payload.visitDate = DateTimeService.formatLocalDate(payload.visitDate);
         }
+        
         if (payload.visitTime) {
-          var t = payload.visitTime;
-          payload.visitTime = t.length === 5 ? t + ':00' : t.substring(0, 8);
+          if (angular.isDate(payload.visitTime)) {
+            var h = payload.visitTime.getHours().toString().padStart(2, '0');
+            var m = payload.visitTime.getMinutes().toString().padStart(2, '0');
+            payload.visitTime = h + ':' + m + ':00';
+          } else if (typeof payload.visitTime === 'string') {
+            var t = payload.visitTime;
+            payload.visitTime = t.length === 5 ? t + ':00' : t.substring(0, 8);
+          }
         }
 
         ApiService.post('/visits', payload).then(function () {
