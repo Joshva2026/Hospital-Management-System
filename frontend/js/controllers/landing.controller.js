@@ -6,18 +6,11 @@
     '$timeout',
     function ($scope, $timeout) {
 
-      // =========================================================
-      // PUBLIC LANDING ONLY
-      // No backend/API dependency.
-      // Existing LoginController / authenticated HMS untouched.
-      // =========================================================
+      /* ============================================================
+         LOGIN MODAL — EXISTING FLOW PRESERVED
+      ============================================================ */
 
       $scope.showLoginModal = false;
-      $scope.journeyIndex = 0;
-
-      // ---------------------------------------------------------
-      // Login modal
-      // ---------------------------------------------------------
 
       $scope.openLoginModal = function () {
         $scope.showLoginModal = true;
@@ -27,366 +20,760 @@
         $scope.showLoginModal = false;
       };
 
-      // ---------------------------------------------------------
-      // Internal cleanup
-      // ---------------------------------------------------------
 
-      var cleanupFunctions = [];
-      var destroyed = false;
+      /* ============================================================
+         LANDING PAGE DATA
+      ============================================================ */
 
-      function addCleanup(fn) {
-        cleanupFunctions.push(fn);
+      $scope.navScrolled = false;
+
+      // Registration is always the first stage.
+      $scope.activeStep = 0;
+
+
+      $scope.journeySteps = [
+
+        {
+          num: '01',
+          label: 'Registration',
+          desc: 'Capture demographic and clinical data instantly, generating a unique digital ID that follows the patient through every stage.'
+        },
+
+        {
+          num: '02',
+          label: 'OPD',
+          desc: 'Doctors access unified records in real time for rapid diagnosis, prescriptions and structured consultation notes.'
+        },
+
+        {
+          num: '03',
+          label: 'Admission',
+          desc: 'Seamless transition from outpatient to inpatient care, with the admission linked directly to the patient record.'
+        },
+
+        {
+          num: '04',
+          label: 'Ward',
+          desc: 'Live visibility into ward occupancy and allocation, so the care team always knows where every patient is.'
+        },
+
+        {
+          num: '05',
+          label: 'Bed',
+          desc: 'Granular, bed-level tracking keeps capacity, transfers and discharges accurate across the entire facility.'
+        },
+
+        {
+          num: '06',
+          label: 'Monitoring',
+          desc: 'Ongoing vitals and daily progress stay visible to the authorized care team throughout the stay.'
+        },
+
+        {
+          num: '07',
+          label: 'Reports',
+          desc: 'Daily and operational reports roll up automatically from every module into one reporting layer.'
+        }
+
+      ];
+
+
+      $scope.featureCards = [
+
+        {
+          icon: 'fa-solid fa-users',
+          title: 'Patient Management',
+          desc: 'Comprehensive profiles, history and interaction logs centralized in one secure record.'
+        },
+
+        {
+          icon: 'fa-solid fa-bed',
+          title: 'Ward & Bed Control',
+          desc: 'Live occupancy visibility across wards and beds, with smooth transfers and discharges.'
+        },
+
+        {
+          icon: 'fa-solid fa-user-doctor',
+          title: 'Doctor Management',
+          desc: 'Roster scheduling, OPD assignment and specialities managed from a single place.'
+        },
+
+        {
+          icon: 'fa-solid fa-chart-line',
+          title: 'Daily Reports',
+          desc: 'Operational and clinical reporting generated directly from live hospital data.'
+        },
+
+        {
+          icon: 'fa-solid fa-file-medical',
+          title: 'Admission Workflows',
+          desc: 'Digitized admission and discharge flows that reduce administrative overhead.'
+        },
+
+        {
+          icon: 'fa-solid fa-chart-pie',
+          title: 'Analytics',
+          desc: 'A connected view of hospital performance across patients, beds and visits.'
+        }
+
+      ];
+
+
+      /* ============================================================
+         DOM / STATE
+      ============================================================ */
+
+      var MOBILE_BREAKPOINT = 992;
+
+      var cleanupFns = [];
+
+      var rootEl = null;
+
+      var heroVisualEl = null;
+
+      var journeyDeviceEl = null;
+
+      var stepEls = [];
+
+      var isMobile =
+        window.innerWidth < MOBILE_BREAKPOINT;
+
+      var ticking = false;
+
+      var lastKnownScrollY = 0;
+
+      var prefersReducedMotion = false;
+
+
+      /* ============================================================
+         REDUCED MOTION
+      ============================================================ */
+
+      try {
+
+        prefersReducedMotion =
+          window.matchMedia &&
+          window.matchMedia(
+            '(prefers-reduced-motion: reduce)'
+          ).matches;
+
+      } catch (e) {
+
+        prefersReducedMotion = false;
+
       }
 
-      // ---------------------------------------------------------
-      // Scroll-driven cinematic behavior
-      // ---------------------------------------------------------
 
-      function handleScroll() {
-        if (destroyed) return;
+      /* ============================================================
+         EVENT LISTENER HELPER
+      ============================================================ */
 
-        var page = document.querySelector('.hms-cinematic');
+      function addListener(
+        target,
+        type,
+        handler,
+        options
+      ) {
 
-        if (!page) return;
-
-        // -------------------------------------------------------
-        // Navigation state
-        // -------------------------------------------------------
-
-        var hero = page.querySelector('.hms-hero');
-        var nav = page.querySelector('.hms-nav');
-
-        if (hero && nav) {
-          var heroBottom =
-            hero.getBoundingClientRect().bottom;
-
-          if (heroBottom < 100) {
-            nav.classList.add('is-scrolled');
-          } else {
-            nav.classList.remove('is-scrolled');
-          }
-        }
-
-        // -------------------------------------------------------
-        // Patient journey progress
-        // -------------------------------------------------------
-
-        var journey =
-          page.querySelector('.hms-journey');
-
-        if (!journey) return;
-
-        var rect =
-          journey.getBoundingClientRect();
-
-        var totalScrollable =
-          Math.max(
-            1,
-            journey.offsetHeight -
-            window.innerHeight
-          );
-
-        var progress =
-          (-rect.top) /
-          totalScrollable;
-
-        progress =
-          Math.max(
-            0,
-            Math.min(1, progress)
-          );
-
-        // 7 journey stages
-        var stage =
-          Math.min(
-            6,
-            Math.floor(progress * 7)
-          );
-
-        if ($scope.journeyIndex !== stage) {
-          $scope.$evalAsync(function () {
-            $scope.journeyIndex = stage;
-          });
-        }
-
-        // -------------------------------------------------------
-        // Timeline progress
-        // -------------------------------------------------------
-
-        var progressBar =
-          page.querySelector(
-            '.hms-journey-progress'
-          );
-
-        if (progressBar) {
-          progressBar.style.height =
-            (progress * 100) + '%';
-        }
-
-        // -------------------------------------------------------
-        // Main journey visual movement
-        // -------------------------------------------------------
-
-        var visual =
-          page.querySelector(
-            '.hms-journey-visual'
-          );
-
-        if (visual) {
-          var movement =
-            (progress - 0.5) * -18;
-
-          visual.style.transform =
-            'translate3d(0,' +
-            movement +
-            'px,0)';
-        }
-
-        // -------------------------------------------------------
-        // Optional cinematic progress variable
-        // Useful for CSS animations.
-        // -------------------------------------------------------
-
-        page.style.setProperty(
-          '--hms-scroll-progress',
-          progress.toFixed(4)
+        target.addEventListener(
+          type,
+          handler,
+          options || false
         );
+
+
+        cleanupFns.push(function () {
+
+          target.removeEventListener(
+            type,
+            handler,
+            options || false
+          );
+
+        });
+
       }
 
-      // ---------------------------------------------------------
-      // Reveal animations
-      // ---------------------------------------------------------
 
-      function setupRevealAnimations() {
+      /* ============================================================
+         NAVIGATION
+      ============================================================ */
 
-        var page =
-          document.querySelector(
-            '.hms-cinematic'
-          );
+      function updateNav() {
 
-        if (!page) return;
+        var shouldBeScrolled =
+          lastKnownScrollY > 40;
 
-        var elements =
-          page.querySelectorAll(
-            '[data-reveal]'
-          );
 
-        // -------------------------------------------------------
-        // Fallback for older browsers
-        // -------------------------------------------------------
+        if (
+          shouldBeScrolled !==
+          $scope.navScrolled
+        ) {
 
-        if (!('IntersectionObserver' in window)) {
+          $scope.navScrolled =
+            shouldBeScrolled;
 
-          Array.prototype.forEach.call(
-            elements,
-            function (element) {
-              element.classList.add(
-                'is-visible'
-              );
-            }
-          );
+          $scope.$applyAsync();
+
+        }
+
+      }
+
+
+      /* ============================================================
+         HERO PARALLAX
+      ============================================================ */
+
+      function updateHero() {
+
+        if (
+          !heroVisualEl ||
+          isMobile ||
+          prefersReducedMotion
+        ) {
 
           return;
+
         }
 
-        var observer =
-          new IntersectionObserver(
-            function (entries) {
 
-              entries.forEach(
-                function (entry) {
-
-                  if (
-                    entry.isIntersecting
-                  ) {
-                    entry.target.classList.add(
-                      'is-visible'
-                    );
-                  }
-
-                }
-              );
-
-            },
-            {
-              threshold: 0.12,
-              rootMargin: '0px 0px -8% 0px'
-            }
+        var offset =
+          Math.min(
+            lastKnownScrollY * 0.08,
+            60
           );
 
-        Array.prototype.forEach.call(
-          elements,
-          function (element) {
-            observer.observe(element);
-          }
-        );
 
-        addCleanup(function () {
-          observer.disconnect();
-        });
+        heroVisualEl.style.transform =
+          'translate3d(0,' +
+          offset +
+          'px,0)';
+
       }
 
-      // ---------------------------------------------------------
-      // Mouse / pointer depth effect
-      // Lightweight and optional.
-      // ---------------------------------------------------------
 
-      function setupPointerMotion() {
+      /* ============================================================
+         JOURNEY STAGE CHANGE
+         
+         IMPORTANT:
 
-        var page =
-          document.querySelector(
-            '.hms-cinematic'
+         public-home.html uses:
+
+         ng-switch="activeStep"
+
+         and:
+
+         ng-switch-when="0"
+         ng-switch-when="1"
+         ...
+         ng-switch-when="6"
+
+         Therefore ONLY ONE hospital UI stage exists
+         inside the device at any moment.
+
+         Old stage:
+              destroyed
+
+         New stage:
+              inserted
+
+         This prevents stacking/overlapping.
+      ============================================================ */
+
+      function setActiveStep(index) {
+
+        if (
+          !$scope.journeySteps ||
+          !$scope.journeySteps.length
+        ) {
+
+          return;
+
+        }
+
+
+        /* Keep index between 0 and 6. */
+
+        index =
+          Math.max(
+            0,
+            Math.min(
+              index,
+              $scope.journeySteps.length - 1
+            )
           );
 
-        if (!page) return;
 
-        var hero =
-          page.querySelector(
-            '.hms-hero'
-          );
+        /* Nothing to change. */
 
-        if (!hero) return;
+        if (
+          index ===
+          $scope.activeStep
+        ) {
 
-        function handlePointerMove(event) {
+          return;
 
-          if (
-            window.matchMedia(
-              '(prefers-reduced-motion: reduce)'
-            ).matches
-          ) {
+        }
+
+
+        /*
+         * Angular ng-switch changes the
+         * actual hospital screen here.
+         */
+        $scope.activeStep = index;
+
+
+        /*
+         * Restart device transition.
+         */
+        $scope.$applyAsync(function () {
+
+          if (!journeyDeviceEl) {
+
             return;
+
           }
+
+
+          journeyDeviceEl.classList.remove(
+            'hms-stage-changing'
+          );
+
+
+          /*
+           * Force browser reflow so the
+           * animation can restart.
+           */
+          void journeyDeviceEl.offsetWidth;
+
+
+          journeyDeviceEl.classList.add(
+            'hms-stage-changing'
+          );
+
+        });
+
+      }
+
+
+      /* ============================================================
+         FIND CURRENT JOURNEY STAGE
+         
+         The LEFT SIDE contains:
+
+         01 Registration
+         02 OPD
+         03 Admission
+         04 Ward
+         05 Bed
+         06 Monitoring
+         07 Reports
+
+         Each item has real vertical space.
+
+         When the item reaches the viewport
+         center, the RIGHT SIDE device changes
+         to the matching screen.
+      ============================================================ */
+
+      function calculateJourneyStep() {
+
+        /*
+         * On mobile the journey becomes
+         * normal vertical content.
+         */
+        if (
+          isMobile ||
+          !stepEls.length
+        ) {
+
+          return;
+
+        }
+
+
+        var viewportMiddle =
+          window.innerHeight * 0.5;
+
+
+        var closestIndex =
+          $scope.activeStep;
+
+
+        var closestDistance =
+          Infinity;
+
+
+        for (
+          var i = 0;
+          i < stepEls.length;
+          i++
+        ) {
 
           var rect =
-            hero.getBoundingClientRect();
+            stepEls[i].getBoundingClientRect();
 
-          var x =
-            (event.clientX - rect.left) /
-            rect.width;
 
-          var y =
-            (event.clientY - rect.top) /
-            rect.height;
+          /*
+           * Calculate the center of the
+           * current left-side journey item.
+           */
+          var center =
+            rect.top +
+            (rect.height * 0.5);
 
-          var moveX =
-            (x - 0.5) * 10;
 
-          var moveY =
-            (y - 0.5) * 8;
+          var distance =
+            Math.abs(
+              center -
+              viewportMiddle
+            );
 
-          hero.style.setProperty(
-            '--hero-mouse-x',
-            moveX.toFixed(2) + 'px'
-          );
 
-          hero.style.setProperty(
-            '--hero-mouse-y',
-            moveY.toFixed(2) + 'px'
-          );
+          /*
+           * Only visible journey items
+           * participate in the calculation.
+           */
+          var visible =
+            rect.bottom > 0 &&
+            rect.top < window.innerHeight;
+
+
+          if (
+            visible &&
+            distance < closestDistance
+          ) {
+
+            closestDistance =
+              distance;
+
+            closestIndex =
+              i;
+
+          }
+
         }
 
-        hero.addEventListener(
-          'pointermove',
-          handlePointerMove,
-          { passive: true }
-        );
 
-        addCleanup(function () {
-          hero.removeEventListener(
-            'pointermove',
-            handlePointerMove
+        /*
+         * Change right-side hospital UI
+         * only when the active stage changes.
+         */
+        if (
+          closestIndex !==
+          $scope.activeStep
+        ) {
+
+          setActiveStep(
+            closestIndex
           );
-        });
+
+        }
+
       }
 
-      // ---------------------------------------------------------
-      // Initialisation
-      // ---------------------------------------------------------
 
-      function initializeLanding() {
+      /* ============================================================
+         REVEAL ELEMENTS
+         
+         Content remains visible even if
+         JavaScript/observer timing fails.
+      ============================================================ */
 
-        if (destroyed) return;
+      function activateReveals() {
 
-        setupRevealAnimations();
-        setupPointerMotion();
+        if (!rootEl) {
 
-        // Initial state
-        handleScroll();
+          return;
 
-        // Make sure default content is visible
-        var page =
+        }
+
+
+        var revealEls =
+          rootEl.querySelectorAll(
+            '.hms-reveal'
+          );
+
+
+        for (
+          var i = 0;
+          i < revealEls.length;
+          i++
+        ) {
+
+          revealEls[i].classList.add(
+            'hms-active'
+          );
+
+        }
+
+      }
+
+
+      /* ============================================================
+         REFRESH LEFT JOURNEY ELEMENTS
+      ============================================================ */
+
+      function refreshStepElements() {
+
+        if (!rootEl) {
+
+          return;
+
+        }
+
+
+        stepEls =
+          Array.prototype.slice.call(
+            rootEl.querySelectorAll(
+              '[data-journey-step]'
+            )
+          );
+
+      }
+
+
+      /* ============================================================
+         SCROLL FRAME
+      ============================================================ */
+
+      function onScrollTick() {
+
+        lastKnownScrollY =
+          window.scrollY ||
+          window.pageYOffset ||
+          0;
+
+
+        updateNav();
+
+        updateHero();
+
+
+        /*
+         * Keep journey synchronization
+         * active unless reduced motion is enabled.
+         */
+        if (
+          !prefersReducedMotion
+        ) {
+
+          calculateJourneyStep();
+
+        }
+
+
+        ticking = false;
+
+      }
+
+
+      /* ============================================================
+         SCROLL EVENT
+      ============================================================ */
+
+      function onScroll() {
+
+        if (ticking) {
+
+          return;
+
+        }
+
+
+        window.requestAnimationFrame(
+          onScrollTick
+        );
+
+
+        ticking = true;
+
+      }
+
+
+      /* ============================================================
+         RESIZE
+      ============================================================ */
+
+      function onResize() {
+
+        var nextMobile =
+          window.innerWidth <
+          MOBILE_BREAKPOINT;
+
+
+        /*
+         * Detect desktop/mobile transition.
+         */
+        if (
+          nextMobile !==
+          isMobile
+        ) {
+
+          isMobile =
+            nextMobile;
+
+
+          /*
+           * Remove desktop parallax
+           * when entering mobile mode.
+           */
+          if (
+            isMobile &&
+            heroVisualEl
+          ) {
+
+            heroVisualEl.style.transform =
+              '';
+
+          }
+
+        }
+
+
+        /*
+         * Re-read all 7 left-side journey
+         * elements after responsive layout.
+         */
+        refreshStepElements();
+
+
+        /*
+         * Recalculate current stage.
+         */
+        onScrollTick();
+
+      }
+
+
+      /* ============================================================
+         INITIALIZE LANDING PAGE
+      ============================================================ */
+
+      $timeout(function () {
+
+        /*
+         * Find landing page root.
+         */
+        rootEl =
           document.querySelector(
             '.hms-cinematic'
           );
 
-        if (page) {
-          page.classList.add(
-            'hms-landing-ready'
-          );
+
+        /*
+         * Landing page may not exist if
+         * another Angular route is active.
+         */
+        if (!rootEl) {
+
+          return;
+
         }
-      }
 
-      // ---------------------------------------------------------
-      // Event listeners
-      // ---------------------------------------------------------
 
-      window.addEventListener(
-        'scroll',
-        handleScroll,
-        { passive: true }
-      );
+        /*
+         * Hero visual.
+         */
+        heroVisualEl =
+          rootEl.querySelector(
+            '.hms-hero__visual'
+          );
 
-      window.addEventListener(
-        'resize',
-        handleScroll
-      );
 
-      addCleanup(function () {
+        /*
+         * Single right-side hospital device.
+         */
+        journeyDeviceEl =
+          rootEl.querySelector(
+            '.hms-journey__device'
+          );
 
-        window.removeEventListener(
+
+        /*
+         * Find ALL seven left-side
+         * journey stages.
+         */
+        refreshStepElements();
+
+
+        /*
+         * Always start at Registration.
+         */
+        $scope.activeStep = 0;
+
+
+        /*
+         * Make landing content immediately visible.
+         */
+        activateReveals();
+
+
+        /*
+         * Scroll listener.
+         */
+        addListener(
+          window,
           'scroll',
-          handleScroll
+          onScroll,
+          {
+            passive: true
+          }
         );
 
-        window.removeEventListener(
+
+        /*
+         * Responsive listener.
+         */
+        addListener(
+          window,
           'resize',
-          handleScroll
+          onResize,
+          {
+            passive: true
+          }
         );
 
-      });
 
-      // Angular ng-view inserts the template
-      // asynchronously, so initialize after render.
-      $timeout(
-        initializeLanding,
-        100,
-        false
-      );
+        /*
+         * Initial state.
+         */
+        onScrollTick();
 
-      // ---------------------------------------------------------
-      // Destroy cleanup
-      // ---------------------------------------------------------
+
+      }, 50, false);
+
+
+      /* ============================================================
+         CLEANUP
+      ============================================================ */
 
       $scope.$on(
         '$destroy',
         function () {
 
-          destroyed = true;
+          for (
+            var i = 0;
+            i < cleanupFns.length;
+            i++
+          ) {
 
-          cleanupFunctions.forEach(
-            function (cleanup) {
+            cleanupFns[i]();
 
-              try {
-                cleanup();
-              } catch (error) {
-                // Landing cleanup should never
-                // affect the authenticated app.
-              }
+          }
 
-            }
-          );
 
-          cleanupFunctions = [];
+          cleanupFns = [];
+
+
+          rootEl = null;
+
+          heroVisualEl = null;
+
+          journeyDeviceEl = null;
+
+          stepEls = [];
+
         }
       );
 
