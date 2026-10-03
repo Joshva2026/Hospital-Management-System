@@ -28,53 +28,45 @@
       $scope.navScrolled = false;
 
       // Registration is always the first stage.
-      $scope.activeStep = 0;
+      $scope.activeStep = -1;
 
 
       $scope.journeySteps = [
-
         {
           num: '01',
-          label: 'Registration',
-          desc: 'Capture demographic and clinical data instantly, generating a unique digital ID that follows the patient through every stage.'
+          label: 'PATIENT REGISTRATION',
+          desc: 'Register and manage patient information from a centralized hospital record.'
         },
-
         {
           num: '02',
-          label: 'OPD',
-          desc: 'Doctors access unified records in real time for rapid diagnosis, prescriptions and structured consultation notes.'
+          label: 'OPD & VISITS',
+          desc: 'Manage outpatient visits, doctors, specialities, complaints and treatment records.'
         },
-
         {
           num: '03',
-          label: 'Admission',
+          label: 'ADMISSION',
           desc: 'Seamless transition from outpatient to inpatient care, with the admission linked directly to the patient record.'
         },
-
         {
           num: '04',
-          label: 'Ward',
+          label: 'WARD MANAGEMENT',
           desc: 'Live visibility into ward occupancy and allocation, so the care team always knows where every patient is.'
         },
-
         {
           num: '05',
-          label: 'Bed',
+          label: 'BED ALLOCATION',
           desc: 'Granular, bed-level tracking keeps capacity, transfers and discharges accurate across the entire facility.'
         },
-
         {
           num: '06',
-          label: 'Monitoring',
+          label: 'DAILY MONITORING',
           desc: 'Ongoing vitals and daily progress stay visible to the authorized care team throughout the stay.'
         },
-
         {
           num: '07',
-          label: 'Reports',
-          desc: 'Daily and operational reports roll up automatically from every module into one reporting layer.'
+          label: 'REPORTS & DISCHARGE',
+          desc: 'Daily and operational reports roll up automatically from every module into one reporting layer for administration and discharge.'
         }
-
       ];
 
 
@@ -551,16 +543,15 @@
 
 
         /*
-         * Keep journey synchronization
-         * active unless reduced motion is enabled.
+         * Disable old scroll observer because we are using 
+         * the new canvas-driven sequence now.
+         *
+         if (
+           !prefersReducedMotion
+         ) {
+           calculateJourneyStep();
+         }
          */
-        if (
-          !prefersReducedMotion
-        ) {
-
-          calculateJourneyStep();
-
-        }
 
 
         ticking = false;

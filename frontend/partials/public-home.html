@@ -8,743 +8,274 @@
 
     .hms-cinematic {
       --hms-navy: #0f172a;
-      --hms-navy-soft: #1e293b;
       --hms-teal: #0d7c78;
       --hms-teal-light: #11a39d;
       --hms-white: #ffffff;
-      --hms-bg-light: #f4f7f9;
-      --hms-text-muted: #64748b;
-      --hms-border: rgba(15, 23, 42, 0.08);
-
+      
       display: block;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--hms-bg-light);
-      color: var(--hms-navy);
-      overflow-x: hidden;
+      background: var(--hms-navy);
+      color: var(--hms-white);
       -webkit-font-smoothing: antialiased;
     }
 
-    .hms-cinematic * {
-      box-sizing: border-box;
-    }
+    .hms-cinematic * { box-sizing: border-box; }
+    .hms-cinematic a { text-decoration: none; color: inherit; }
 
-    .hms-cinematic a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .hms-cinematic .hms-eyebrow {
-      display: inline-block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--hms-teal);
-      margin-bottom: 18px;
-    }
-
-    /* -------------------------------------------------------------
-       Buttons
-    ------------------------------------------------------------- */
     .hms-cinematic .hms-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border: none;
       border-radius: 999px;
-      padding: 14px 30px;
+      padding: 16px 36px;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 1rem;
       cursor: pointer;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      transition: all 0.3s ease;
     }
-
     .hms-cinematic .hms-btn--primary {
       background: var(--hms-teal);
       color: var(--hms-white);
     }
-
     .hms-cinematic .hms-btn--primary:hover {
       background: var(--hms-teal-light);
       transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(13, 124, 120, 0.35);
+      box-shadow: 0 14px 30px rgba(13, 124, 120, 0.4);
     }
-
-    .hms-cinematic .hms-btn--ghost {
-      background: transparent;
-      color: var(--hms-navy);
-      border: 1px solid var(--hms-border);
-      padding: 14px 30px;
-      border-radius: 999px;
-    }
-
-    .hms-cinematic .hms-btn--ghost:hover {
-      border-color: var(--hms-navy);
-    }
-
     .hms-cinematic .hms-btn--nav {
-      padding: 10px 22px;
-      font-size: 0.88rem;
+      padding: 10px 24px;
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.1);
+      color: var(--hms-white);
+    }
+    .hms-cinematic .hms-btn--nav:hover {
+      background: var(--hms-white);
+      color: var(--hms-navy);
     }
 
-    .hms-cinematic .hms-btn--lg {
-      padding: 18px 42px;
-      font-size: 1.05rem;
-      margin-top: 8px;
-    }
-
-    /* -------------------------------------------------------------
-       Nav
-    ------------------------------------------------------------- */
+    /* Fixed Nav */
     .hms-cinematic .hms-nav {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 22px 5%;
-      transition: all 0.35s ease;
-      background: transparent;
+      padding: 24px 5%;
+      transition: all 0.4s ease;
+      color: var(--hms-white);
     }
-
     .hms-cinematic .hms-nav--scrolled {
-      background: rgba(244, 247, 249, 0.9);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--hms-border);
-      padding: 14px 5%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 16px 5%;
     }
-
     .hms-cinematic .hms-nav__brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-weight: 700;
+      font-size: 1.1rem;
       letter-spacing: 0.02em;
-      color: var(--hms-navy);
+    }
+    .hms-cinematic .hms-nav__brand i { color: #5eead4; }
+
+    /* Cinematic Structure */
+    .hms-cinematic-section {
+      position: relative;
+      height: 800vh; /* Provides the massive scroll track */
+    }
+    .hms-cinematic__sticky {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .hms-cinematic__image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+      opacity: 1;
+      visibility: visible;
+    }
+    .hms-cinematic__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.5) 50%, rgba(15,23,42,0.1) 100%);
+      pointer-events: none;
+      z-index: 2;
     }
 
-    .hms-cinematic .hms-nav__brand i {
-      color: var(--hms-teal);
+    .hms-cinematic__content {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
     }
 
-    /* -------------------------------------------------------------
-       Hero — editorial / asymmetrical
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-hero {
+    .hms-story-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 10%;
+      opacity: 0;
+      visibility: hidden;
+      transform: translate3d(0, 24px, 0);
+      transition: opacity 500ms ease, transform 500ms cubic-bezier(.22,1,.36,1), visibility 500ms;
+      pointer-events: none;
+    }
+    
+    .hms-story-stage.hms-active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate3d(0, 0, 0);
+      pointer-events: auto;
+    }
+
+    /* Internal cascading animations for cinematic entry */
+    .hms-story-stage .hms-eyebrow,
+    .hms-story-stage .hms-story-num {
+      opacity: 0;
+      transition: opacity 500ms ease 100ms;
+    }
+    .hms-story-stage.hms-active .hms-eyebrow,
+    .hms-story-stage.hms-active .hms-story-num {
+      opacity: 1;
+    }
+
+    .hms-story-stage h1,
+    .hms-story-stage h2 {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 500ms ease 50ms, transform 500ms cubic-bezier(.22,1,.36,1) 50ms;
+    }
+    .hms-story-stage.hms-active h1,
+    .hms-story-stage.hms-active h2 {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hms-story-stage p.hero-desc,
+    .hms-story-stage p.stage-desc,
+    .hms-story-stage > div > button {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 500ms ease 100ms, transform 500ms cubic-bezier(.22,1,.36,1) 100ms;
+    }
+    .hms-story-stage.hms-active p.hero-desc,
+    .hms-story-stage.hms-active p.stage-desc,
+    .hms-story-stage.hms-active > div > button {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hms-story-stage .hms-eyebrow {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #5eead4;
+      margin-bottom: 24px;
+    }
+    
+    .hms-story-stage h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 0 0 24px;
+      max-width: 800px;
+    }
+    .hms-story-stage h1 span { color: #5eead4; }
+    
+    .hms-story-stage p.hero-desc {
+      font-size: 1.25rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.6;
+      max-width: 540px;
+      margin: 0 0 40px;
+    }
+
+    .hms-story-num {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #5eead4;
+      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+      border-bottom: 2px solid rgba(94, 234, 212, 0.3);
+      padding-bottom: 8px;
+      display: inline-block;
+    }
+    
+    .hms-story-stage h2 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      margin: 0 0 20px;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      max-width: 600px;
+    }
+    
+    .hms-story-stage p.stage-desc {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0;
+    }
+
+    /* Final CTA */
+    .hms-final {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 140px 5% 80px;
-      background:
-        radial-gradient(circle at 85% 15%, rgba(13, 124, 120, 0.12), transparent 45%),
-        var(--hms-bg-light);
-      position: relative;
-    }
-
-    .hms-cinematic .hms-hero__grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 60px;
       align-items: center;
-      max-width: 1320px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .hms-cinematic .hms-hero__title {
-      font-size: clamp(2.6rem, 6vw, 4.6rem);
-      font-weight: 700;
-      line-height: 1.04;
-      letter-spacing: -0.02em;
-      margin: 0 0 28px;
-      color: var(--hms-navy);
-    }
-
-    .hms-cinematic .hms-hero__title-accent {
-      color: var(--hms-teal);
-    }
-
-    .hms-cinematic .hms-hero__desc {
-      font-size: 1.15rem;
-      color: var(--hms-text-muted);
-      max-width: 480px;
-      line-height: 1.6;
-      margin: 0 0 40px;
-    }
-
-    .hms-cinematic .hms-hero__actions {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .hms-cinematic .hms-hero__visual {
-      position: relative;
-      will-change: transform;
-    }
-
-    .hms-cinematic .hms-hero__panel {
       background: var(--hms-navy);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 40px 80px rgba(15, 23, 42, 0.25);
-      transform: perspective(1200px) rotateY(-6deg) rotateX(2deg);
-      transition: transform 0.6s ease;
-    }
-
-    .hms-cinematic:hover .hms-hero__panel {
-      transform: perspective(1200px) rotateY(-2deg) rotateX(0deg);
-    }
-
-    .hms-cinematic .hms-hero__panel-bar {
-      display: flex;
-      gap: 7px;
-      padding: 16px 20px;
-      background: var(--hms-navy-soft);
-    }
-
-    .hms-cinematic .hms-hero__panel-bar span {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.18);
-    }
-
-    .hms-cinematic .hms-hero__panel-body {
-      padding: 32px 28px 40px;
-    }
-
-    .hms-cinematic .hms-hero__stat-row {
-      display: flex;
-      gap: 32px;
-      margin-bottom: 32px;
-    }
-
-    .hms-cinematic .hms-hero__stat strong {
-      display: block;
-      font-size: 2rem;
-      color: var(--hms-white);
-      font-weight: 700;
-    }
-
-    .hms-cinematic .hms-hero__stat small {
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 0.78rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .hms-cinematic .hms-hero__bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      height: 120px;
-    }
-
-    .hms-cinematic .hms-hero__bar {
-      flex: 1;
-      height: var(--h);
-      background: linear-gradient(180deg, var(--hms-teal-light), var(--hms-teal));
-      border-radius: 6px 6px 2px 2px;
-    }
-
-    .hms-cinematic .hms-hero__ring {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(13, 124, 120, 0.25);
-    }
-
-    .hms-cinematic .hms-hero__ring--1 {
-      width: 440px;
-      height: 440px;
-      top: -40px;
-      right: -60px;
-    }
-
-    .hms-cinematic .hms-hero__ring--2 {
-      width: 300px;
-      height: 300px;
-      bottom: -40px;
-      right: 40px;
-      border-color: rgba(15, 23, 42, 0.08);
-    }
-
-    .hms-cinematic .hms-hero__scrollcue {
-      position: absolute;
-      bottom: 36px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--hms-text-muted);
-    }
-
-    .hms-cinematic .hms-hero__scrollcue span {
-      width: 1px;
-      height: 36px;
-      background: linear-gradient(180deg, var(--hms-teal), transparent);
-    }
-
-    /* -------------------------------------------------------------
-       Patient Journey — ONE pinned visual, morphs per step
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-journey {
-      padding: 100px 5% 60px;
-      max-width: 1320px;
-      margin: 0 auto;
-    }
-
-    .hms-cinematic .hms-journey__intro {
-      max-width: 640px;
-      margin: 0 auto 80px;
       text-align: center;
-    }
-
-    .hms-cinematic .hms-journey__title {
-      font-size: clamp(2.1rem, 4vw, 3.2rem);
-      font-weight: 700;
-      line-height: 1.15;
-      margin: 0;
-      color: var(--hms-navy);
-    }
-
-    .hms-cinematic .hms-journey__track {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 60px;
-    }
-
-    .hms-cinematic .hms-journey__sticky {
-      position: sticky;
-      top: 110px;
-      align-self: start;
-      height: 460px;
-    }
-
-    .hms-cinematic .hms-journey__device {
-      background: var(--hms-navy);
-      border-radius: 20px;
-      overflow: hidden;
-      height: 100%;
-      box-shadow: 0 40px 80px rgba(15, 23, 42, 0.25);
-      will-change: transform;
-    }
-
-    .hms-cinematic .hms-journey__device-bar {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 14px 20px;
-      background: var(--hms-navy-soft);
-    }
-
-    .hms-cinematic .hms-journey__device-bar span {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.18);
-    }
-
-    .hms-cinematic .hms-journey__device-bar small {
-      margin-left: auto;
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 0.78rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .hms-cinematic .hms-journey__device-body {
+      padding: 0 5%;
       position: relative;
-      height: calc(100% - 44px);
-      padding: 30px 28px;
+      z-index: 10;
     }
-
-    /* Default-visible: the active screen (index 0 by default from the
-       controller) has no dependency on JS to be seen. Non-active
-       screens are simply positioned off to the side, never opacity:0
-       as the ONLY thing hiding them along with pointer-events. */
-    .hms-cinematic .hms-journey__screen {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .hms-cinematic .hms-journey__stage {
-      width: 100%;
-      height: 100%;
-      animation: hmsStageEnter 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
-      transform-origin: center;
-      will-change: transform, opacity;
-    }
-
-    @keyframes hmsStageEnter {
-      from {
-        opacity: 0;
-        transform: translate3d(26px, 0, 0) scale(0.975);
-        clip-path: inset(0 0 0 7% round 14px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-        clip-path: inset(0 round 14px);
-      }
-    }
-
-    .hms-cinematic .hms-journey__device.hms-stage-changing {
-      animation: hmsDevicePulse 0.52s ease both;
-    }
-
-    @keyframes hmsDevicePulse {
-      0% {
-        transform: scale(1);
-      }
-
-      45% {
-        transform: scale(0.985);
-      }
-
-      100% {
-        transform: scale(1);
-      }
-    }
-
-    /* --- generic mock primitives (the morphing visual content) --- */
-    .hms-cinematic .hms-mock {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .hms-cinematic .hms-mock__row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .hms-cinematic .hms-mock__line {
-      height: 10px;
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 6px;
-    }
-
-    .hms-cinematic .hms-mock__line.w90 {
-      width: 90%;
-    }
-
-    .hms-cinematic .hms-mock__line.w80 {
-      width: 80%;
-    }
-
-    .hms-cinematic .hms-mock__line.w70 {
-      width: 70%;
-    }
-
-    .hms-cinematic .hms-mock__line.w60 {
-      width: 60%;
-    }
-
-    .hms-cinematic .hms-mock__line.w50 {
-      width: 50%;
-    }
-
-    .hms-cinematic .hms-mock__line.w40 {
-      width: 40%;
-    }
-
-    .hms-cinematic .hms-mock__line.w30 {
-      width: 30%;
-    }
-
-    .hms-cinematic .hms-mock__field {
-      height: 38px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .hms-cinematic .hms-mock__field.w50 {
-      width: 50%;
-    }
-
-    .hms-cinematic .hms-mock__dot {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: var(--hms-teal);
-      flex-shrink: 0;
-    }
-
-    .hms-cinematic .hms-mock__avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--hms-teal-light), var(--hms-teal));
-      flex-shrink: 0;
-    }
-
-    .hms-cinematic .hms-mock__pill,
-    .hms-cinematic .hms-mock__tag {
-      margin-top: auto;
-      align-self: flex-start;
-      background: rgba(13, 124, 120, 0.18);
+    .hms-final .hms-eyebrow {
       color: #5eead4;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 999px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
     }
-
-    .hms-cinematic .hms-mock__grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      flex: 1;
-    }
-
-    .hms-cinematic .hms-mock__card {
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .hms-cinematic .hms-mock__card.hms-mock--filled {
-      background: rgba(13, 124, 120, 0.25);
-      border-color: rgba(13, 124, 120, 0.4);
-    }
-
-    .hms-cinematic .hms-mock__ward-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 4px;
-    }
-
-    .hms-cinematic .hms-mock__bed {
-      flex: 1;
-      height: 34px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .hms-cinematic .hms-mock__bed.occupied {
-      background: var(--hms-teal);
-    }
-
-    .hms-cinematic .hms-mock__bed-detail {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      justify-content: center;
-    }
-
-    .hms-cinematic .hms-mock__bed-big {
-      height: 90px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .hms-cinematic .hms-mock__bed-big.occupied {
-      background: linear-gradient(135deg, var(--hms-teal-light), var(--hms-teal));
-    }
-
-    .hms-cinematic .hms-mock__pulse {
-      width: 100%;
-      height: 70px;
-    }
-
-    .hms-cinematic .hms-mock__pulse polyline {
-      fill: none;
-      stroke: #5eead4;
-      stroke-width: 2.5;
-    }
-
-    .hms-cinematic .hms-mock__bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      flex: 1;
-    }
-
-    .hms-cinematic .hms-mock__bars span {
-      flex: 1;
-      height: var(--h);
-      background: linear-gradient(180deg, var(--hms-teal-light), var(--hms-teal));
-      border-radius: 6px 6px 2px 2px;
-    }
-
-    /* --- scrolling step list (right/under column, real content, always visible) --- */
-    .hms-cinematic .hms-journey__steps {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      padding: 8px 0 80px;
-      min-height: 0;
-    }
-
-    .hms-cinematic .hms-journey__steps::before {
-      content: '';
-      position: absolute;
-      left: 27px;
-      top: 30px;
-      bottom: 108px;
-      width: 1px;
-      background: linear-gradient(180deg, rgba(13, 124, 120, 0.5), rgba(15, 23, 42, 0.10));
-      pointer-events: none;
-    }
-
-    .hms-cinematic .hms-journey__step {
-      position: relative;
-      display: grid;
-      grid-template-columns: 56px minmax(0, 1fr);
-      gap: 22px;
-      align-items: start;
-      min-height: 205px;
-      padding: 0 0 42px;
-      opacity: 0.42;
-      transition: opacity 0.45s ease, transform 0.45s ease;
-      transform: translateX(0);
-    }
-
-    .hms-cinematic .hms-journey__step.hms-active {
-      opacity: 1;
-      transform: translateX(6px);
-    }
-
-    .hms-cinematic .hms-journey__num {
-      position: relative;
-      z-index: 2;
-      width: 56px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(13, 124, 120, 0.28);
-      border-radius: 14px;
-      background: var(--hms-bg-light);
-      font-size: 0.95rem;
+    .hms-final h2 {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
       font-weight: 700;
-      color: var(--hms-text-muted);
-      flex-shrink: 0;
-      transition: all 0.45s ease;
-    }
-
-    .hms-cinematic .hms-journey__step.hms-active .hms-journey__num {
-      background: var(--hms-teal);
-      border-color: var(--hms-teal);
-      color: var(--hms-white);
-      box-shadow: 0 12px 26px rgba(13, 124, 120, 0.22);
-    }
-
-    .hms-cinematic .hms-journey__step-copy h3 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 10px;
-      color: var(--hms-navy);
-    }
-
-    .hms-cinematic .hms-journey__step-copy p {
-      color: var(--hms-text-muted);
-      line-height: 1.65;
-      margin: 0;
-      max-width: 420px;
-    }
-
-    /* -------------------------------------------------------------
-       Features
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-features {
-      background: var(--hms-white);
-      padding: 120px 5%;
-      border-top: 1px solid var(--hms-border);
-    }
-
-    .hms-cinematic .hms-features__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 28px;
-      max-width: 1320px;
-      margin: 70px auto 0;
-    }
-
-    .hms-cinematic .hms-feature-card {
-      background: var(--hms-bg-light);
-      border: 1px solid var(--hms-border);
-      border-radius: 16px;
-      padding: 36px 28px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .hms-cinematic .hms-feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    .hms-cinematic .hms-feature-card__icon {
-      font-size: 1.8rem;
-      color: var(--hms-teal);
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .hms-cinematic .hms-feature-card h4 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin: 0 0 10px;
-      color: var(--hms-navy);
-    }
-
-    .hms-cinematic .hms-feature-card p {
-      color: var(--hms-text-muted);
-      line-height: 1.6;
-      margin: 0;
-      font-size: 0.95rem;
-    }
-
-    /* -------------------------------------------------------------
-       Final CTA
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-final {
-      text-align: center;
-      padding: 160px 5%;
-      background: var(--hms-navy);
-      color: var(--hms-white);
-    }
-
-    .hms-cinematic .hms-final .hms-eyebrow {
-      color: #5eead4;
-    }
-
-    .hms-cinematic .hms-final h2 {
-      font-size: clamp(2.4rem, 5vw, 4rem);
-      font-weight: 700;
-      margin: 0 0 20px;
       line-height: 1.1;
+      margin: 0 0 24px;
+      max-width: 800px;
     }
-
-    .hms-cinematic .hms-final p {
+    .hms-final p {
       color: rgba(255, 255, 255, 0.65);
       max-width: 540px;
-      margin: 0 auto 36px;
-      font-size: 1.05rem;
+      margin: 0 auto 40px;
+      font-size: 1.15rem;
+      line-height: 1.6;
     }
 
-    /* -------------------------------------------------------------
-       Footer
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-footer {
+    /* Footer */
+    .hms-footer {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
@@ -754,16 +285,16 @@
       color: rgba(255, 255, 255, 0.45);
       font-size: 0.85rem;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 10;
     }
 
-    /* -------------------------------------------------------------
-       Login modal
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-modal-backdrop {
+    /* Login modal */
+    .hms-modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px);
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -771,7 +302,7 @@
       padding: 20px;
     }
 
-    .hms-cinematic .hms-modal-box {
+    .hms-modal-box {
       background: var(--hms-white);
       border-radius: 20px;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
@@ -780,377 +311,81 @@
       font-family: 'Inter', sans-serif;
       color: var(--hms-navy);
     }
-
-    .hms-cinematic .hms-modal-head {
-      padding: 14px 14px 0;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .hms-cinematic .hms-modal-body {
-      padding: 0 2.3rem 2.3rem;
-    }
-
-    .hms-cinematic .hms-modal-icon {
-      font-size: 2rem;
-      color: var(--hms-teal);
-      margin-bottom: 14px;
-    }
-
-    .hms-cinematic .hms-modal-submit {
-      background: var(--hms-teal);
-      color: var(--hms-white);
-    }
-
-    .hms-cinematic .hms-modal-submit:hover {
-      background: var(--hms-teal-light);
-    }
-
-    /* -------------------------------------------------------------
-       Reveal utility — progressive enhancement ONLY.
-       Default state is ALWAYS fully visible; the opacity:0 start
-       only exists inside the no-preference media query AND is
-       immediately reversed by JS adding .hms-active. If JS never
-       runs, the base .hms-reveal rule (opacity:1) wins.
-    ------------------------------------------------------------- */
-    .hms-cinematic .hms-reveal {
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .hms-cinematic .hms-reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .hms-cinematic .hms-reveal.hms-active {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    /* -------------------------------------------------------------
-       Reduced motion — disable complex transforms, keep content visible
-    ------------------------------------------------------------- */
-    @media (prefers-reduced-motion: reduce) {
-      .hms-cinematic * {
-        animation: none !important;
-        transition: none !important;
-      }
-
-      .hms-cinematic .hms-hero__panel {
-        transform: none !important;
-      }
-
-      .hms-cinematic .hms-hero__visual {
-        transform: none !important;
-      }
-
-      .hms-cinematic .hms-journey__screen,
-      .hms-cinematic .hms-journey__stage {
-        opacity: 1;
-        transform: none;
-        clip-path: none;
-        animation: none !important;
-      }
-
-      .hms-cinematic .hms-journey__step {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    /* -------------------------------------------------------------
-       Responsive — pinned desktop layout becomes stacked content.
-       Below 992px the controller also disables JS-driven morph/
-       parallax entirely; these rules are the CSS-only guarantee
-       that the layout still works even if that JS never runs.
-    ------------------------------------------------------------- */
-    @media (max-width: 992px) {
-      .hms-cinematic .hms-hero__grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hms-cinematic .hms-hero__visual {
-        order: -1;
-        max-width: 460px;
-        margin: 0 auto;
-        transform: none !important;
-      }
-
-      .hms-cinematic .hms-journey__track {
-        grid-template-columns: 1fr;
-      }
-
-      .hms-cinematic .hms-journey__sticky {
-        position: static;
-        height: 360px;
-        margin-bottom: 20px;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .hms-cinematic .hms-hero {
-        padding-top: 110px;
-      }
-
-      .hms-cinematic .hms-hero__title {
-        font-size: clamp(2.2rem, 9vw, 3rem);
-      }
-
-      .hms-cinematic .hms-hero__actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .hms-cinematic .hms-journey__steps {
-        gap: 44px;
-      }
-
-      .hms-cinematic .hms-final {
-        padding: 100px 5%;
-      }
-
-      .hms-cinematic .hms-footer {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
+    .hms-modal-head { padding: 14px 14px 0; display: flex; justify-content: flex-end; }
+    .hms-modal-body { padding: 0 2.3rem 2.3rem; }
+    .hms-modal-icon { font-size: 2rem; color: var(--hms-teal); margin-bottom: 14px; }
+    .hms-modal-submit { background: var(--hms-teal); color: var(--hms-white); }
+    .hms-modal-submit:hover { background: var(--hms-teal-light); }
   </style>
 
-  <!-- =========================================================
-       FIXED NAV
-  ========================================================== -->
+  <!-- NAV -->
   <nav class="hms-nav" ng-class="{'hms-nav--scrolled': navScrolled}">
     <div class="hms-nav__brand">
       <i class="fa-solid fa-hospital-user"></i>
-      <span>HMS&nbsp;Platform</span>
+      <span>HMS Platform</span>
     </div>
     <button type="button" class="hms-btn hms-btn--nav" ng-click="openLoginModal()">
       Admin Login
     </button>
   </nav>
 
-  <!-- =========================================================
-       HERO — editorial / asymmetrical, not centered
-  ========================================================== -->
-  <header class="hms-hero">
-    <div class="hms-hero__grid">
-      <div class="hms-hero__copy">
-        <span class="hms-eyebrow">Enterprise Hospital Platform</span>
-        <h1 class="hms-hero__title">
-          ONE HOSPITAL.<br>
-          <span class="hms-hero__title-accent">ONE CONNECTED<br>SYSTEM.</span>
-        </h1>
-        <p class="hms-hero__desc">
-          Every patient journey — registration, OPD, admission, ward, bed,
-          monitoring and reports — unified in a single operational system.
-        </p>
-        <div class="hms-hero__actions">
-          <button type="button" class="hms-btn hms-btn--primary" ng-click="openLoginModal()">
-            Admin Login
-          </button>
-          <a href="#hms-journey" class="hms-btn hms-btn--ghost">Explore the system</a>
-        </div>
-      </div>
+  <!-- THE CINEMATIC EXPERIENCE -->
+  <main class="hms-landing" id="hms-journey">
+    
+    <!-- Cinematic section with 800vh track for scroll duration -->
+    <section class="hms-cinematic-section">
+      
+      <!-- Sticky container for Visual + Story -->
+      <div class="hms-cinematic__sticky">
+        
+        <!-- Fullscreen Background Image -->
+        <img landing-sequence class="hms-cinematic__image" alt="" aria-hidden="true" src="assets/landing/hospital-sequence/frame-001.jpg">
+        
+        <!-- Subtle Overlay -->
+        <div class="hms-cinematic__overlay"></div>
 
-      <div class="hms-hero__visual" aria-hidden="true">
-        <div class="hms-hero__panel">
-          <div class="hms-hero__panel-bar">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="hms-hero__panel-body">
-            <div class="hms-hero__stat-row">
-              <div class="hms-hero__stat">
-                <strong>07</strong>
-                <small>Connected Modules</small>
-              </div>
-              <div class="hms-hero__stat">
-                <strong>24/7</strong>
-                <small>Live Operations</small>
-              </div>
-            </div>
-            <div class="hms-hero__bars">
-              <div class="hms-hero__bar" style="--h:38%"></div>
-              <div class="hms-hero__bar" style="--h:62%"></div>
-              <div class="hms-hero__bar" style="--h:48%"></div>
-              <div class="hms-hero__bar" style="--h:80%"></div>
-              <div class="hms-hero__bar" style="--h:56%"></div>
-              <div class="hms-hero__bar" style="--h:70%"></div>
+        <!-- Story Container -->
+        <div class="hms-cinematic__content">
+          
+          <!-- HERO (Active at step -1) -->
+          <div class="hms-story-stage" ng-class="{'hms-active': activeStep === -1}">
+            <span class="hms-eyebrow">HOSPITAL MANAGEMENT SYSTEM</span>
+            <h1>One Connected System<br><span>for Modern Hospital Operations</span></h1>
+            <p class="hero-desc">A centralized hospital management platform connecting patients, OPD, admissions, wards, beds, reports and administration.</p>
+            <div>
+              <button type="button" class="hms-btn hms-btn--primary" ng-click="openLoginModal()">Admin Login</button>
             </div>
           </div>
-        </div>
-        <div class="hms-hero__ring hms-hero__ring--1"></div>
-        <div class="hms-hero__ring hms-hero__ring--2"></div>
-      </div>
-    </div>
-    <div class="hms-hero__scrollcue">
-      <span></span>
-      Scroll
-    </div>
-  </header>
 
-  <!-- =========================================================
-       PATIENT JOURNEY — one pinned visual, morphs per step
-       (Ascenta-style: pinned visual + changing headline beside it)
-  ========================================================== -->
-  <section class="hms-journey" id="hms-journey">
-
-    <div class="hms-journey__intro hms-reveal">
-      <span class="hms-eyebrow">The Connected Workflow</span>
-      <h2 class="hms-journey__title">Every patient journey,<br>one continuous system.</h2>
-    </div>
-
-    <div class="hms-journey__track">
-
-      <!-- Pinned visual column — ONE device, content morphs inside it -->
-      <div class="hms-journey__sticky">
-        <div class="hms-journey__device">
-          <div class="hms-journey__device-bar">
-            <span></span><span></span><span></span>
-            <small ng-bind="journeySteps[activeStep].label"></small>
-          </div>
-
-          <div class="hms-journey__device-body">
-            <div class="hms-journey__screen" ng-switch="activeStep">
-
-              <div class="hms-journey__stage" ng-switch-when="0">
-                <div class="hms-mock hms-mock--registration">
-                  <div class="hms-mock__row"><span class="hms-mock__dot"></span>
-                    <div class="hms-mock__line w60"></div>
-                  </div>
-                  <div class="hms-mock__field"></div>
-                  <div class="hms-mock__field"></div>
-                  <div class="hms-mock__field w50"></div>
-                  <div class="hms-mock__pill">New Patient ID Generated</div>
-                </div>
-              </div>
-
-              <div class="hms-journey__stage" ng-switch-when="1">
-                <div class="hms-mock hms-mock--opd">
-                  <div class="hms-mock__row">
-                    <div class="hms-mock__avatar"></div>
-                    <div class="hms-mock__line w70"></div>
-                  </div>
-                  <div class="hms-mock__line w90"></div>
-                  <div class="hms-mock__line w60"></div>
-                  <div class="hms-mock__tag">OPD Consultation Active</div>
-                </div>
-              </div>
-
-              <div class="hms-journey__stage" ng-switch-when="2">
-                <div class="hms-mock hms-mock--admission">
-                  <div class="hms-mock__grid">
-                    <div class="hms-mock__card"></div>
-                    <div class="hms-mock__card hms-mock--filled"></div>
-                    <div class="hms-mock__card"></div>
-                    <div class="hms-mock__card"></div>
-                  </div>
-                  <div class="hms-mock__pill">Admitted &mdash; Ward Assigned</div>
-                </div>
-              </div>
-
-              <div class="hms-journey__stage" ng-switch-when="3">
-                <div class="hms-mock hms-mock--ward">
-                  <div class="hms-mock__ward-row" ng-repeat="r in [1,2,3]">
-                    <span class="hms-mock__bed" ng-repeat="b in [1,2,3,4]"
-                      ng-class="{occupied: (r+b) % 2 === 0}"></span>
-                  </div>
-                  <div class="hms-mock__tag">Ward&nbsp;B &middot; 12 Beds</div>
-                </div>
-              </div>
-
-              <div class="hms-journey__stage" ng-switch-when="4">
-                <div class="hms-mock hms-mock--bed">
-                  <div class="hms-mock__bed-detail">
-                    <span class="hms-mock__bed-big occupied"></span>
-                    <div class="hms-mock__line w80"></div>
-                    <div class="hms-mock__line w50"></div>
-                  </div>
-                  <div class="hms-mock__pill">Bed&nbsp;14 &middot; Occupied</div>
-                </div>
-              </div>
-
-              <div class="hms-journey__stage" ng-switch-when="5">
-                <div class="hms-mock hms-mock--monitoring">
-                  <svg viewBox="0 0 200 60" class="hms-mock__pulse" preserveAspectRatio="none">
-                    <polyline points="0,30 25,30 35,8 45,52 55,30 80,30 90,15 100,45 110,30 200,30" />
-                  </svg>
-                  <div class="hms-mock__row">
-                    <div class="hms-mock__line w40"></div>
-                    <div class="hms-mock__line w30"></div>
-                  </div>
-                  <div class="hms-mock__tag">Vitals Stable</div>
-                </div>
-              </div>
-
-              <div class="hms-journey__stage" ng-switch-when="6">
-                <div class="hms-mock hms-mock--reports">
-                  <div class="hms-mock__bars">
-                    <span style="--h:45%"></span><span style="--h:70%"></span><span style="--h:55%"></span>
-                    <span style="--h:85%"></span><span style="--h:60%"></span>
-                  </div>
-                  <div class="hms-mock__pill">Daily Report Generated</div>
-                </div>
-              </div>
-
+          <!-- 7 WORKFLOW STAGES (Active at step 0 to 6) -->
+          <div class="hms-story-stage" ng-repeat="step in journeySteps" ng-class="{'hms-active': activeStep === $index}">
+            <div>
+              <span class="hms-story-num">{{step.num}}</span>
+              <h2>{{step.label}}</h2>
+              <p class="stage-desc">{{step.desc}}</p>
             </div>
           </div>
+
         </div>
       </div>
+    </section>
 
-      <!-- Scrolling step list — real content, always fully visible/readable -->
-      <div class="hms-journey__steps">
-        <div class="hms-journey__step" ng-repeat="step in journeySteps" data-journey-step="{{$index}}"
-          ng-class="{'hms-active': $index === activeStep}">
-          <span class="hms-journey__num">{{step.num}}</span>
-          <div class="hms-journey__step-copy">
-            <h3>{{step.label}}</h3>
-            <p>{{step.desc}}</p>
-          </div>
-        </div>
-      </div>
+    <!-- FINAL CTA (Releases from sticky, scrolls naturally) -->
+    <section class="hms-final">
+      <span class="hms-eyebrow">Ready when you are</span>
+      <h2>ONE CONNECTED SYSTEM<br>FOR EVERY HOSPITAL WORKFLOW.</h2>
+      <p>Everything your hospital team needs, connected in one operational platform.</p>
+      <button type="button" class="hms-btn hms-btn--primary" ng-click="openLoginModal()" style="padding: 18px 42px; font-size: 1.1rem;">
+        Admin Login
+      </button>
+    </section>
 
-    </div>
-  </section>
+    <footer class="hms-footer">
+      <span>&copy; 2026 HMS Platform. All rights reserved.</span>
+      <span>Secure Enterprise Architecture</span>
+    </footer>
+  </main>
 
-  <!-- =========================================================
-       PRODUCT EXPERIENCE / CORE CAPABILITIES
-  ========================================================== -->
-  <section class="hms-features">
-    <div class="hms-journey__intro hms-reveal">
-      <span class="hms-eyebrow">Core Capabilities</span>
-      <h2 class="hms-journey__title">Built from the actual<br>hospital operating model.</h2>
-    </div>
-
-    <div class="hms-features__grid">
-      <div class="hms-feature-card hms-reveal" ng-repeat="f in featureCards">
-        <i class="hms-feature-card__icon" ng-class="f.icon"></i>
-        <h4>{{f.title}}</h4>
-        <p>{{f.desc}}</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================
-       FINAL CTA
-  ========================================================== -->
-  <section class="hms-final">
-    <span class="hms-eyebrow">Ready when you are</span>
-    <h2>YOUR HOSPITAL.<br>ONE CONNECTED SYSTEM.</h2>
-    <p>Everything your hospital team needs, connected in one operational system.</p>
-    <button type="button" class="hms-btn hms-btn--primary hms-btn--lg" ng-click="openLoginModal()">
-      Admin Login
-    </button>
-  </section>
-
-  <footer class="hms-footer">
-    <span>&copy; 2026 HMS Platform. All rights reserved.</span>
-    <span>Secure Enterprise Architecture</span>
-  </footer>
 
   <!-- =========================================================
        LOGIN MODAL — existing login mechanism, untouched logic
