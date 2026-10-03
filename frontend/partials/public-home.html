@@ -1,265 +1,1269 @@
 <div class="hms-cinematic" ng-controller="LandingController">
+  <style>
+    .hms-cinematic {
+      --ink: #07131c;
+      --navy: #071824;
+      --navy2: #0c2630;
+      --teal: #0d7c78;
+      --mint: #67d5c9;
+      --white: #fff;
+      --muted: #a9bdc2;
+      --line: rgba(255, 255, 255, .13);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow: hidden;
+      line-height: 1.45
+    }
 
-  <!-- =========================================================
-       FIXED NAV
-  ========================================================== -->
-  <nav class="hms-nav" ng-class="{'hms-nav--scrolled': navScrolled}">
-    <div class="hms-nav__brand">
-      <i class="fa-solid fa-hospital-user"></i>
-      <span>HMS&nbsp;Platform</span>
+    .hms-cinematic * {
+      box-sizing: border-box
+    }
+
+    .hms-cinematic button,
+    .hms-cinematic a {
+      font: inherit
+    }
+
+    .hms-cinematic a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    .hms-nav {
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 82px;
+      padding: 0 clamp(20px, 4vw, 64px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: .45s ease;
+      border-bottom: 1px solid transparent
+    }
+
+    .hms-nav.is-scrolled {
+      height: 68px;
+      background: rgba(7, 24, 36, .82);
+      backdrop-filter: blur(16px);
+      border-color: var(--line)
+    }
+
+    .hms-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .16em
+    }
+
+    .hms-brand-mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(103, 213, 201, .6);
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--mint)
+    }
+
+    .hms-nav-links {
+      display: flex;
+      gap: 30px;
+      color: #c6d4d7;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase
+    }
+
+    .hms-nav-links a:hover {
+      color: #fff
+    }
+
+    .hms-login {
+      border: 1px solid rgba(103, 213, 201, .55);
+      background: rgba(13, 124, 120, .16);
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer
+    }
+
+    .hms-login:hover {
+      background: var(--teal)
+    }
+
+    .hms-hero {
+      min-height: 100vh;
+      position: relative;
+      display: grid;
+      align-items: center;
+      padding: 130px clamp(24px, 7vw, 110px) 90px;
+      background: radial-gradient(circle at 78% 35%, rgba(13, 124, 120, .27), transparent 28%), linear-gradient(125deg, #06131d 0%, #09222d 55%, #071824 100%)
+    }
+
+    .hms-hero:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(7, 24, 36, .98) 0%, rgba(7, 24, 36, .83) 42%, rgba(7, 24, 36, .18) 100%)
+    }
+
+    .hms-hero-grid {
+      position: absolute;
+      inset: 0;
+      opacity: .32;
+      background-image: linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: linear-gradient(90deg, #000, transparent 85%)
+    }
+
+    .hms-hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 850px
+    }
+
+    .hms-kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .25em;
+      color: var(--mint);
+      font-weight: 700;
+      margin-bottom: 28px
+    }
+
+    .hms-hero h1 {
+      font-size: clamp(54px, 8.2vw, 132px);
+      line-height: .9;
+      letter-spacing: -.065em;
+      margin: 0 0 32px;
+      font-weight: 700
+    }
+
+    .hms-hero h1 span {
+      color: #9fc0c3
+    }
+
+    .hms-hero-copy {
+      max-width: 570px;
+      color: #b6c7cb;
+      font-size: clamp(16px, 1.5vw, 20px);
+      margin: 0 0 38px
+    }
+
+    .hms-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .hms-primary {
+      border: 0;
+      background: var(--teal);
+      color: #fff;
+      padding: 15px 23px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer
+    }
+
+    .hms-secondary {
+      border: 1px solid var(--line);
+      padding: 14px 22px;
+      border-radius: 999px;
+      color: #d8e5e7;
+      cursor: pointer
+    }
+
+    .hms-hero-art {
+      position: absolute;
+      z-index: 2;
+      right: 5vw;
+      top: 20%;
+      width: min(42vw, 620px);
+      height: 62vh;
+      min-height: 430px;
+      transform: rotate(-4deg);
+    }
+
+    .hms-art-glow {
+      position: absolute;
+      inset: 10%;
+      background: rgba(72, 211, 199, .2);
+      filter: blur(70px);
+      border-radius: 50%
+    }
+
+    .hms-dashboard {
+      position: absolute;
+      inset: 5% 0;
+      background: rgba(10, 32, 42, .92);
+      border: 1px solid rgba(142, 224, 216, .28);
+      border-radius: 26px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, .48);
+      overflow: hidden;
+      transform: perspective(1200px) rotateY(-10deg)
+    }
+
+    .hms-d-top {
+      height: 52px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px
+    }
+
+    .hms-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6e878b
+    }
+
+    .hms-d-body {
+      display: grid;
+      grid-template-columns: 125px 1fr;
+      height: calc(100% - 52px)
+    }
+
+    .hms-d-side {
+      border-right: 1px solid var(--line);
+      padding: 20px 12px
+    }
+
+    .hms-side-line {
+      height: 9px;
+      border-radius: 8px;
+      background: #173741;
+      margin: 15px 0
+    }
+
+    .hms-side-line.active {
+      background: rgba(103, 213, 201, .75)
+    }
+
+    .hms-d-main {
+      padding: 25px
+    }
+
+    .hms-d-title {
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #789398
+    }
+
+    .hms-d-number {
+      font-size: 42px;
+      font-weight: 700;
+      margin: 5px 0 22px
+    }
+
+    .hms-d-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px
+    }
+
+    .hms-mini {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .025);
+      border-radius: 14px
+    }
+
+    .hms-mini b {
+      display: block;
+      font-size: 22px
+    }
+
+    .hms-mini span {
+      font-size: 10px;
+      color: #789398;
+      text-transform: uppercase;
+      letter-spacing: .1em
+    }
+
+    .hms-wave {
+      height: 80px;
+      margin-top: 18px;
+      border-bottom: 1px solid rgba(103, 213, 201, .4);
+      background: linear-gradient(165deg, transparent 42%, rgba(103, 213, 201, .3) 43%, transparent 44%)
+    }
+
+    .hms-hero-scroll {
+      position: absolute;
+      bottom: 32px;
+      left: clamp(24px, 7vw, 110px);
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #7f999e;
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase
+    }
+
+    .hms-scroll-line {
+      width: 70px;
+      height: 1px;
+      background: #587378
+    }
+
+    .hms-journey {
+      height: 760vh;
+      position: relative;
+      background: #eef4f3;
+      color: var(--ink)
+    }
+
+    .hms-journey-pin {
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(260px, .8fr) minmax(420px, 1.2fr);
+      align-items: center;
+      gap: 5vw;
+      padding: 80px clamp(24px, 7vw, 110px)
+    }
+
+    .hms-journey-copy {
+      position: relative;
+      z-index: 4
+    }
+
+    .hms-overline {
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--teal);
+      margin-bottom: 18px
+    }
+
+    .hms-journey-copy h2 {
+      font-size: clamp(42px, 5.8vw, 88px);
+      line-height: .92;
+      letter-spacing: -.055em;
+      margin: 0 0 24px
+    }
+
+    .hms-journey-copy p {
+      max-width: 470px;
+      color: #5d7277;
+      font-size: 17px
+    }
+
+    .hms-stage-list {
+      margin-top: 34px;
+      display: grid;
+      gap: 10px
+    }
+
+    .hms-stage {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #9aabad;
+      transition: .35s ease;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase
+    }
+
+    .hms-stage-num {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #c9d6d5;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 10px
+    }
+
+    .hms-stage.is-active {
+      color: var(--ink);
+      font-weight: 800
+    }
+
+    .hms-stage.is-active .hms-stage-num {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: #fff
+    }
+
+    .hms-journey-visual-wrap {
+      height: min(67vh, 650px);
+      position: relative;
+      display: grid;
+      place-items: center
+    }
+
+    .hms-journey-visual {
+      width: min(100%, 650px);
+      height: min(100%, 530px);
+      position: relative;
+      transition: transform .12s linear
+    }
+
+    .hms-journey-progress-track {
+      position: absolute;
+      left: -25px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #d2dedd;
+      z-index: 5
+    }
+
+    .hms-journey-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 0;
+      background: var(--teal);
+      transition: height .1s linear
+    }
+
+    .hms-stage-card {
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      border: 1px solid #cfdddb;
+      background: #fff;
+      box-shadow: 0 35px 80px rgba(20, 58, 61, .16);
+      padding: 28px;
+      opacity: .15;
+      transform: translateY(35px) scale(.96);
+      transition: opacity .5s ease, transform .7s cubic-bezier(.16, 1, .3, 1);
+      overflow: hidden
+    }
+
+    .hms-stage-card.is-active {
+      opacity: 1;
+      transform: none
+    }
+
+    .hms-stage-card:after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      bottom: -150px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: rgba(13, 124, 120, .08)
+    }
+
+    .hms-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px
+    }
+
+    .hms-card-label {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      font-weight: 800
+    }
+
+    .hms-card-id {
+      font-family: monospace;
+      color: #83999b;
+      font-size: 11px
+    }
+
+    .hms-profile {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 18px;
+      align-items: center
+    }
+
+    .hms-avatar {
+      width: 74px;
+      height: 74px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #d8eeeb, #f4faf9);
+      display: grid;
+      place-items: center;
+      color: var(--teal);
+      font-size: 28px
+    }
+
+    .hms-profile h3 {
+      margin: 0 0 5px;
+      font-size: 24px
+    }
+
+    .hms-profile p {
+      margin: 0;
+      color: #809194
+    }
+
+    .hms-data-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 25px
+    }
+
+    .hms-data {
+      padding: 15px;
+      border-radius: 15px;
+      background: #f4f8f7;
+      border: 1px solid #e1eae8
+    }
+
+    .hms-data small {
+      display: block;
+      color: #8a9c9e;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .1em
+    }
+
+    .hms-data b {
+      display: block;
+      margin-top: 6px;
+      font-size: 16px
+    }
+
+    .hms-bars {
+      display: grid;
+      gap: 11px;
+      margin-top: 28px
+    }
+
+    .hms-bar {
+      height: 10px;
+      background: #edf2f1;
+      border-radius: 20px;
+      overflow: hidden
+    }
+
+    .hms-bar i {
+      display: block;
+      height: 100%;
+      background: var(--teal);
+      border-radius: 20px
+    }
+
+    .hms-bed-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 25px
+    }
+
+    .hms-bed {
+      height: 70px;
+      border-radius: 13px;
+      border: 1px solid #dbe6e4;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 800
+    }
+
+    .hms-bed.free {
+      background: #eef8f5;
+      color: #16796e
+    }
+
+    .hms-bed.busy {
+      background: #fff3e7;
+      color: #a56316
+    }
+
+    .hms-report {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 24px
+    }
+
+    .hms-report-box {
+      height: 150px;
+      border-radius: 16px;
+      background: #f5f8f7;
+      border: 1px solid #dfe9e7;
+      padding: 15px
+    }
+
+    .hms-report-line {
+      height: 7px;
+      background: #d4e3e1;
+      border-radius: 9px;
+      margin: 12px 0
+    }
+
+    .hms-report-line:nth-child(2) {
+      width: 70%
+    }
+
+    .hms-report-line:nth-child(3) {
+      width: 86%
+    }
+
+    .hms-report-line:nth-child(4) {
+      width: 54%
+    }
+
+    .hms-system {
+      background: #071824;
+      padding: 170px clamp(24px, 7vw, 110px);
+      position: relative
+    }
+
+    .hms-system-grid {
+      max-width: 1350px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: 8vw;
+      align-items: center
+    }
+
+    .hms-system h2 {
+      font-size: clamp(46px, 6vw, 92px);
+      line-height: .92;
+      letter-spacing: -.06em;
+      margin: 0 0 28px
+    }
+
+    .hms-system p {
+      color: #9eb2b6;
+      font-size: 17px;
+      max-width: 460px
+    }
+
+    .hms-product {
+      position: relative;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, .13);
+      background: #0c2630;
+      padding: 16px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, .35)
+    }
+
+    .hms-product-inner {
+      border-radius: 19px;
+      background: #f5f8f7;
+      color: #122329;
+      padding: 18px
+    }
+
+    .hms-product-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px
+    }
+
+    .hms-product-title {
+      font-weight: 800
+    }
+
+    .hms-product-pill {
+      font-size: 10px;
+      padding: 7px 10px;
+      background: #e1f3ef;
+      color: #14766d;
+      border-radius: 999px
+    }
+
+    .hms-product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px
+    }
+
+    .hms-product-card {
+      padding: 16px;
+      background: #fff;
+      border: 1px solid #e2e9e8;
+      border-radius: 15px
+    }
+
+    .hms-product-card strong {
+      display: block;
+      font-size: 22px
+    }
+
+    .hms-product-card small {
+      color: #839497;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: 9px
+    }
+
+    .hms-product-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px
+    }
+
+    .hms-product-row {
+      height: 12px;
+      background: #e9efee;
+      border-radius: 10px
+    }
+
+    .hms-product-row:nth-child(2) {
+      width: 88%
+    }
+
+    .hms-product-row:nth-child(3) {
+      width: 65%
+    }
+
+    .hms-product-row:nth-child(4) {
+      width: 76%
+    }
+
+    .hms-final {
+      min-height: 88vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 100px 24px;
+      background: radial-gradient(circle at 50% 30%, rgba(13, 124, 120, .28), transparent 32%), #071824
+    }
+
+    .hms-final h2 {
+      font-size: clamp(52px, 8vw, 120px);
+      line-height: .88;
+      letter-spacing: -.065em;
+      margin: 0 0 28px
+    }
+
+    .hms-final p {
+      color: #9eb2b6;
+      max-width: 520px;
+      margin: 0 auto 34px;
+      font-size: 17px
+    }
+
+    .hms-footer {
+      padding: 28px clamp(24px, 7vw, 110px);
+      display: flex;
+      justify-content: space-between;
+      color: #6f858a;
+      font-size: 11px;
+      letter-spacing: .08em;
+      border-top: 1px solid var(--line);
+      background: #071824
+    }
+
+    .hms-reveal {
+      opacity: 0;
+      transform: translateY(35px);
+      transition: opacity .9s ease, transform .9s cubic-bezier(.16, 1, .3, 1)
+    }
+
+    .hms-reveal.is-visible {
+      opacity: 1;
+      transform: none
+    }
+
+    .hms-login-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(3, 14, 21, .82);
+      backdrop-filter: blur(14px);
+      display: grid;
+      place-items: center;
+      padding: 20px
+    }
+
+    .hms-login-box {
+      width: min(440px, 100%);
+      background: #fff;
+      color: #14242a;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 35px 90px rgba(0, 0, 0, .45)
+    }
+
+    .hms-login-box h3 {
+      font-size: 25px;
+      margin: 8px 0
+    }
+
+    .hms-login-box p {
+      color: #728286;
+      margin-bottom: 24px
+    }
+
+    .hms-login-close {
+      border: 0;
+      background: #eef3f2;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      float: right;
+      cursor: pointer
+    }
+
+    .hms-login-box label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0 0 7px
+    }
+
+    .hms-login-box input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #dce5e3;
+      border-radius: 12px;
+      padding: 0 14px;
+      margin-bottom: 16px;
+      outline: 0
+    }
+
+    .hms-login-box input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(13, 124, 120, .1)
+    }
+
+    .hms-login-submit {
+      width: 100%;
+      height: 50px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer
+    }
+
+    .hms-login-error {
+      background: #fff0f0;
+      color: #a22d2d;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      margin-bottom: 14px
+    }
+
+    @media(max-width:900px) {
+      .hms-nav-links {
+        display: none
+      }
+
+      .hms-hero {
+        padding-top: 125px
+      }
+
+      .hms-hero-art {
+        position: relative;
+        right: auto;
+        top: auto;
+        width: min(90vw, 560px);
+        height: 400px;
+        margin: 55px auto 0;
+        transform: none
+      }
+
+      .hms-hero {
+        display: block
+      }
+
+      .hms-hero-content {
+        max-width: none
+      }
+
+      .hms-journey {
+        height: auto
+      }
+
+      .hms-journey-pin {
+        position: relative;
+        height: auto;
+        min-height: 100vh;
+        display: block;
+        padding: 110px 24px 70px
+      }
+
+      .hms-journey-visual-wrap {
+        height: 480px;
+        margin-top: 45px
+      }
+
+      .hms-system-grid {
+        grid-template-columns: 1fr
+      }
+
+      .hms-system {
+        padding: 110px 24px
+      }
+
+      .hms-footer {
+        display: block
+      }
+
+      .hms-footer div+div {
+        margin-top: 8px
+      }
+    }
+
+    @media(max-width:560px) {
+      .hms-hero h1 {
+        font-size: 54px
+      }
+
+      .hms-hero-art {
+        height: 330px
+      }
+
+      .hms-d-body {
+        grid-template-columns: 72px 1fr
+      }
+
+      .hms-d-side {
+        padding: 12px 8px
+      }
+
+      .hms-d-main {
+        padding: 16px
+      }
+
+      .hms-d-number {
+        font-size: 28px
+      }
+
+      .hms-data-grid,
+      .hms-product-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .hms-bed-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .hms-stage-card {
+        padding: 20px
+      }
+
+      .hms-profile {
+        grid-template-columns: 56px 1fr
+      }
+
+      .hms-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px
+      }
+
+      .hms-profile h3 {
+        font-size: 18px
+      }
+
+      .hms-report {
+        grid-template-columns: 1fr
+      }
+
+      .hms-final h2 {
+        font-size: 55px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      .hms-cinematic * {
+        scroll-behavior: auto !important;
+        animation: none !important;
+        transition: none !important
+      }
+
+      .hms-reveal {
+        opacity: 1;
+        transform: none
+      }
+    }
+  </style>
+
+  <nav class="hms-nav">
+    <div class="hms-brand"><span class="hms-brand-mark"><i class="fa-solid fa-plus"></i></span> VINCY HOSPITAL</div>
+    <div class="hms-nav-links"><a href="#workflow">Workflow</a><a href="#system">System</a><a href="#access">Access</a>
     </div>
-    <button type="button" class="hms-btn hms-btn--nav" ng-click="openLoginModal()">
-      Admin Login
-    </button>
+    <button class="hms-login" ng-click="openLoginModal()">Admin Login</button>
   </nav>
 
-  <!-- =========================================================
-       HERO — editorial / asymmetrical, not centered
-  ========================================================== -->
-  <header class="hms-hero">
-    <div class="hms-hero__grid">
-      <div class="hms-hero__copy">
-        <span class="hms-eyebrow">Enterprise Hospital Platform</span>
-        <h1 class="hms-hero__title">
-          ONE HOSPITAL.<br>
-          <span class="hms-hero__title-accent">ONE CONNECTED<br>SYSTEM.</span>
-        </h1>
-        <p class="hms-hero__desc">
-          Every patient journey — registration, OPD, admission, ward, bed,
-          monitoring and reports — unified in a single operational system.
+  <section class="hms-hero" id="top">
+    <div class="hms-hero-grid"></div>
+    <div class="hms-hero-content">
+      <div class="hms-kicker">Hospital Management System / 2026</div>
+      <h1>One hospital.<br><span>One connected system.</span></h1>
+      <p class="hms-hero-copy">A single operational flow connecting patient registration, OPD, admissions, wards, beds,
+        monitoring and reports.</p>
+      <div class="hms-actions"><button class="hms-primary" ng-click="openLoginModal()">Enter system <i
+            class="fa-solid fa-arrow-right"></i></button><a class="hms-secondary" href="#workflow">Explore the
+          journey</a></div>
+    </div>
+    <div class="hms-hero-art" aria-hidden="true">
+      <div class="hms-art-glow"></div>
+      <div class="hms-dashboard">
+        <div class="hms-d-top"><i class="hms-dot"></i><i class="hms-dot"></i><i class="hms-dot"></i><span
+            style="margin-left:auto;color:#70898e;font-size:9px;letter-spacing:.12em">LIVE OPERATIONS</span></div>
+        <div class="hms-d-body">
+          <div class="hms-d-side">
+            <div class="hms-side-line active"></div>
+            <div class="hms-side-line"></div>
+            <div class="hms-side-line"></div>
+            <div class="hms-side-line"></div>
+            <div class="hms-side-line"></div>
+          </div>
+          <div class="hms-d-main">
+            <div class="hms-d-title">Hospital overview</div>
+            <div class="hms-d-number">248 <span style="font-size:12px;color:#6f898e;font-weight:500">active
+                records</span></div>
+            <div class="hms-d-grid">
+              <div class="hms-mini"><b>42</b><span>OPD today</span></div>
+              <div class="hms-mini"><b>18</b><span>Admissions</span></div>
+              <div class="hms-mini"><b>86%</b><span>Bed occupancy</span></div>
+              <div class="hms-mini"><b>12</b><span>Reports</span></div>
+            </div>
+            <div class="hms-wave"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hms-hero-scroll"><span class="hms-scroll-line"></span> Scroll to enter the system</div>
+  </section>
+
+  <section class="hms-journey" id="workflow">
+    <div class="hms-journey-pin">
+      <div class="hms-journey-copy hms-reveal" data-reveal>
+        <div class="hms-overline">The connected workflow</div>
+        <h2>Every patient journey, connected.</h2>
+        <p>The same patient record moves through every operational stage. Scroll through the journey.</p>
+        <div class="hms-stage-list">
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 0}" data-stage="0"><span
+              class="hms-stage-num">01</span> Registration</div>
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 1}" data-stage="1"><span
+              class="hms-stage-num">02</span> OPD</div>
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 2}" data-stage="2"><span
+              class="hms-stage-num">03</span> Admission</div>
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 3}" data-stage="3"><span
+              class="hms-stage-num">04</span> Ward</div>
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 4}" data-stage="4"><span
+              class="hms-stage-num">05</span> Bed</div>
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 5}" data-stage="5"><span
+              class="hms-stage-num">06</span> Monitoring</div>
+          <div class="hms-stage" ng-class="{'is-active': journeyIndex === 6}" data-stage="6"><span
+              class="hms-stage-num">07</span> Reports</div>
+        </div>
+      </div>
+      <div class="hms-journey-visual-wrap">
+        <div class="hms-journey-progress-track">
+          <div class="hms-journey-progress"></div>
+        </div>
+        <div class="hms-journey-visual">
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 0}" data-stage="0">
+            <div class="hms-card-head"><span class="hms-card-label">01 / Registration</span><span
+                class="hms-card-id">PAT-2026-000101</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-user-plus"></i></div>
+              <div>
+                <h3>Patient registration</h3>
+                <p>One record starts the journey.</p>
+              </div>
+            </div>
+            <div class="hms-data-grid">
+              <div class="hms-data"><small>Identity</small><b>Verified</b></div>
+              <div class="hms-data"><small>Mobile</small><b>Linked</b></div>
+              <div class="hms-data"><small>Record</small><b>Created</b></div>
+            </div>
+          </article>
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 1}" data-stage="1">
+            <div class="hms-card-head"><span class="hms-card-label">02 / OPD</span><span
+                class="hms-card-id">VISIT-02641</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-stethoscope"></i></div>
+              <div>
+                <h3>OPD consultation</h3>
+                <p>Clinical activity stays attached to the patient.</p>
+              </div>
+            </div>
+            <div class="hms-bars">
+              <div class="hms-bar"><i style="width:88%"></i></div>
+              <div class="hms-bar"><i style="width:63%"></i></div>
+              <div class="hms-bar"><i style="width:76%"></i></div>
+            </div>
+          </article>
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 2}" data-stage="2">
+            <div class="hms-card-head"><span class="hms-card-label">03 / Admission</span><span
+                class="hms-card-id">ADM-01842</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-hospital-user"></i></div>
+              <div>
+                <h3>Admission created</h3>
+                <p>OPD becomes an inpatient workflow without losing context.</p>
+              </div>
+            </div>
+            <div class="hms-data-grid">
+              <div class="hms-data"><small>Doctor</small><b>Assigned</b></div>
+              <div class="hms-data"><small>Ward</small><b>Selected</b></div>
+              <div class="hms-data"><small>Status</small><b>Active</b></div>
+            </div>
+          </article>
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 3}" data-stage="3">
+            <div class="hms-card-head"><span class="hms-card-label">04 / Ward</span><span
+                class="hms-card-id">WARD-03</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-bed-pulse"></i></div>
+              <div>
+                <h3>Ward allocation</h3>
+                <p>Ward context is visible to the operational team.</p>
+              </div>
+            </div>
+            <div class="hms-bed-grid">
+              <div class="hms-bed busy">B-01</div>
+              <div class="hms-bed free">B-02</div>
+              <div class="hms-bed busy">B-03</div>
+              <div class="hms-bed free">B-04</div>
+            </div>
+          </article>
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 4}" data-stage="4">
+            <div class="hms-card-head"><span class="hms-card-label">05 / Bed</span><span
+                class="hms-card-id">BED-B-02</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-bed"></i></div>
+              <div>
+                <h3>Bed assignment</h3>
+                <p>Availability and allocation remain centralized.</p>
+              </div>
+            </div>
+            <div class="hms-data-grid">
+              <div class="hms-data"><small>Bed</small><b>B-02</b></div>
+              <div class="hms-data"><small>Ward</small><b>General</b></div>
+              <div class="hms-data"><small>State</small><b>Occupied</b></div>
+            </div>
+          </article>
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 5}" data-stage="5">
+            <div class="hms-card-head"><span class="hms-card-label">06 / Monitoring</span><span
+                class="hms-card-id">DAILY-0310</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-heart-pulse"></i></div>
+              <div>
+                <h3>Daily monitoring</h3>
+                <p>Progress and operational observations remain connected.</p>
+              </div>
+            </div>
+            <div class="hms-bars">
+              <div class="hms-bar"><i style="width:82%"></i></div>
+              <div class="hms-bar"><i style="width:91%"></i></div>
+              <div class="hms-bar"><i style="width:69%"></i></div>
+            </div>
+          </article>
+          <article class="hms-stage-card" ng-class="{'is-active': journeyIndex === 6}" data-stage="6">
+            <div class="hms-card-head"><span class="hms-card-label">07 / Reports</span><span
+                class="hms-card-id">REPORT-2026</span></div>
+            <div class="hms-profile">
+              <div class="hms-avatar"><i class="fa-solid fa-chart-column"></i></div>
+              <div>
+                <h3>Operational reports</h3>
+                <p>The complete journey becomes usable hospital intelligence.</p>
+              </div>
+            </div>
+            <div class="hms-report">
+              <div class="hms-report-box"><b>Daily activity</b>
+                <div class="hms-report-line"></div>
+                <div class="hms-report-line"></div>
+                <div class="hms-report-line"></div>
+              </div>
+              <div class="hms-report-box"><b>Patient flow</b>
+                <div class="hms-report-line"></div>
+                <div class="hms-report-line"></div>
+                <div class="hms-report-line"></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hms-system" id="system">
+    <div class="hms-system-grid">
+      <div class="hms-reveal" data-reveal>
+        <div class="hms-overline" style="color:var(--mint)">One operational surface</div>
+        <h2>Built around the hospital, not around pages.</h2>
+        <p>Patients, visits, admissions, wards, beds, doctors and reports stay within one centralized operational flow.
         </p>
-        <div class="hms-hero__actions">
-          <button type="button" class="hms-btn hms-btn--primary" ng-click="openLoginModal()">
-            Admin Login
-          </button>
-          <a href="#hms-journey" class="hms-btn hms-btn--ghost">Explore the system</a>
-        </div>
       </div>
-
-      <div class="hms-hero__visual" aria-hidden="true">
-        <div class="hms-hero__panel">
-          <div class="hms-hero__panel-bar">
-            <span></span><span></span><span></span>
+      <div class="hms-product hms-reveal" data-reveal>
+        <div class="hms-product-inner">
+          <div class="hms-product-top"><span class="hms-product-title">Hospital Overview</span><span
+              class="hms-product-pill">Connected</span></div>
+          <div class="hms-product-grid">
+            <div class="hms-product-card"><strong>248</strong><small>Patients</small></div>
+            <div class="hms-product-card"><strong>42</strong><small>OPD</small></div>
+            <div class="hms-product-card"><strong>86%</strong><small>Occupancy</small></div>
           </div>
-          <div class="hms-hero__panel-body">
-            <div class="hms-hero__stat-row">
-              <div class="hms-hero__stat">
-                <strong>07</strong>
-                <small>Connected Modules</small>
-              </div>
-              <div class="hms-hero__stat">
-                <strong>24/7</strong>
-                <small>Live Operations</small>
-              </div>
-            </div>
-            <div class="hms-hero__bars">
-              <div class="hms-hero__bar" style="--h:38%"></div>
-              <div class="hms-hero__bar" style="--h:62%"></div>
-              <div class="hms-hero__bar" style="--h:48%"></div>
-              <div class="hms-hero__bar" style="--h:80%"></div>
-              <div class="hms-hero__bar" style="--h:56%"></div>
-              <div class="hms-hero__bar" style="--h:70%"></div>
-            </div>
+          <div class="hms-product-list">
+            <div class="hms-product-row"></div>
+            <div class="hms-product-row"></div>
+            <div class="hms-product-row"></div>
+            <div class="hms-product-row"></div>
           </div>
         </div>
-        <div class="hms-hero__ring hms-hero__ring--1"></div>
-        <div class="hms-hero__ring hms-hero__ring--2"></div>
-      </div>
-    </div>
-    <div class="hms-hero__scrollcue">
-      <span></span>
-      Scroll
-    </div>
-  </header>
-
-  <!-- =========================================================
-       PATIENT JOURNEY — one pinned visual, transforming per step
-       (mirrors the pinned-product / changing-headline mechanic)
-  ========================================================== -->
-  <section class="hms-journey" id="hms-journey">
-
-    <div class="hms-journey__intro">
-      <span class="hms-eyebrow">The Connected Workflow</span>
-      <h2 class="hms-journey__title">Every patient journey,<br>one continuous system.</h2>
-    </div>
-
-    <div class="hms-journey__track">
-
-      <!-- Pinned visual column -->
-      <div class="hms-journey__sticky">
-        <div class="hms-journey__device">
-          <div class="hms-journey__device-bar">
-            <span></span><span></span><span></span>
-            <small ng-bind="journeySteps[activeStep].label"></small>
-          </div>
-
-          <div class="hms-journey__device-body">
-            <div class="hms-journey__screen" ng-repeat="step in journeySteps"
-              ng-class="{'hms-active': $index === activeStep}">
-
-              <!-- 01 Registration -->
-              <div class="hms-mock hms-mock--registration" ng-if="$index === 0">
-                <div class="hms-mock__row"><span class="hms-mock__dot"></span>
-                  <div class="hms-mock__line w60"></div>
-                </div>
-                <div class="hms-mock__field"></div>
-                <div class="hms-mock__field"></div>
-                <div class="hms-mock__field w50"></div>
-                <div class="hms-mock__pill">New Patient ID Generated</div>
-              </div>
-
-              <!-- 02 OPD -->
-              <div class="hms-mock hms-mock--opd" ng-if="$index === 1">
-                <div class="hms-mock__row">
-                  <div class="hms-mock__avatar"></div>
-                  <div class="hms-mock__line w70"></div>
-                </div>
-                <div class="hms-mock__line w90"></div>
-                <div class="hms-mock__line w60"></div>
-                <div class="hms-mock__tag">OPD Consultation Active</div>
-              </div>
-
-              <!-- 03 Admission -->
-              <div class="hms-mock hms-mock--admission" ng-if="$index === 2">
-                <div class="hms-mock__grid">
-                  <div class="hms-mock__card"></div>
-                  <div class="hms-mock__card hms-mock--filled"></div>
-                  <div class="hms-mock__card"></div>
-                  <div class="hms-mock__card"></div>
-                </div>
-                <div class="hms-mock__pill">Admitted &mdash; Ward Assigned</div>
-              </div>
-
-              <!-- 04 Ward -->
-              <div class="hms-mock hms-mock--ward" ng-if="$index === 3">
-                <div class="hms-mock__ward-row" ng-repeat="r in [1,2,3]">
-                  <span class="hms-mock__bed" ng-repeat="b in [1,2,3,4]" ng-class="{occupied: (r+b) % 2 === 0}"></span>
-                </div>
-                <div class="hms-mock__tag">Ward&nbsp;B &middot; 12 Beds</div>
-              </div>
-
-              <!-- 05 Bed -->
-              <div class="hms-mock hms-mock--bed" ng-if="$index === 4">
-                <div class="hms-mock__bed-detail">
-                  <span class="hms-mock__bed-big occupied"></span>
-                  <div class="hms-mock__line w80"></div>
-                  <div class="hms-mock__line w50"></div>
-                </div>
-                <div class="hms-mock__pill">Bed&nbsp;14 &middot; Occupied</div>
-              </div>
-
-              <!-- 06 Monitoring -->
-              <div class="hms-mock hms-mock--monitoring" ng-if="$index === 5">
-                <svg viewBox="0 0 200 60" class="hms-mock__pulse" preserveAspectRatio="none">
-                  <polyline points="0,30 25,30 35,8 45,52 55,30 80,30 90,15 100,45 110,30 200,30" />
-                </svg>
-                <div class="hms-mock__row">
-                  <div class="hms-mock__line w40"></div>
-                  <div class="hms-mock__line w30"></div>
-                </div>
-                <div class="hms-mock__tag">Vitals Stable</div>
-              </div>
-
-              <!-- 07 Reports -->
-              <div class="hms-mock hms-mock--reports" ng-if="$index === 6">
-                <div class="hms-mock__bars">
-                  <span style="--h:45%"></span><span style="--h:70%"></span><span style="--h:55%"></span>
-                  <span style="--h:85%"></span><span style="--h:60%"></span>
-                </div>
-                <div class="hms-mock__pill">Daily Report Generated</div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scrolling step list -->
-      <div class="hms-journey__steps">
-        <div class="hms-journey__step" ng-repeat="step in journeySteps" data-journey-step="{{$index}}"
-          ng-class="{'hms-active': $index === activeStep}">
-          <span class="hms-journey__num">{{step.num}}</span>
-          <div class="hms-journey__step-copy">
-            <h3>{{step.label}}</h3>
-            <p>{{step.desc}}</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- =========================================================
-       PRODUCT EXPERIENCE / CORE CAPABILITIES
-  ========================================================== -->
-  <section class="hms-features">
-    <div class="hms-journey__intro">
-      <span class="hms-eyebrow">Core Capabilities</span>
-      <h2 class="hms-journey__title">Built from the actual<br>hospital operating model.</h2>
-    </div>
-
-    <div class="hms-features__grid">
-      <div class="hms-feature-card" ng-repeat="f in featureCards">
-        <i class="hms-feature-card__icon" ng-class="f.icon"></i>
-        <h4>{{f.title}}</h4>
-        <p>{{f.desc}}</p>
       </div>
     </div>
   </section>
 
-  <!-- =========================================================
-       FINAL CTA
-  ========================================================== -->
-  <section class="hms-final">
-    <span class="hms-eyebrow">Ready when you are</span>
-    <h2>YOUR HOSPITAL.<br>ONE CONNECTED SYSTEM.</h2>
-    <p>Everything your hospital team needs, connected in one operational system.</p>
-    <button type="button" class="hms-btn hms-btn--primary hms-btn--lg" ng-click="openLoginModal()">
-      Admin Login
-    </button>
+  <section class="hms-final" id="access">
+    <div class="hms-reveal" data-reveal>
+      <div class="hms-overline" style="color:var(--mint)">Hospital Management System</div>
+      <h2>Your hospital.<br>One connected system.</h2>
+      <p>Enter the existing Vincy Hospital administration system and continue managing the hospital from one centralized
+        workspace.</p><button class="hms-primary" ng-click="openLoginModal()">Admin Login <i
+          class="fa-solid fa-arrow-right"></i></button>
+    </div>
   </section>
-
   <footer class="hms-footer">
-    <span>&copy; 2026 HMS Platform. All rights reserved.</span>
-    <span>Secure Enterprise Architecture</span>
+    <div>© 2026 Vincy Hospital</div>
+    <div>Hospital Management System · Centralized Operations</div>
   </footer>
 
-  <!-- =========================================================
-       LOGIN MODAL — existing login mechanism, untouched logic
-  ========================================================== -->
-  <div class="hms-modal-backdrop" ng-if="showLoginModal" ng-click="closeLoginModal()">
-    <div class="hms-modal-box" ng-click="$event.stopPropagation()">
-      <div class="hms-modal-head">
-        <button type="button" class="btn-close" ng-click="closeLoginModal()" aria-label="Close"></button>
-      </div>
-      <div class="hms-modal-body text-center" ng-controller="LoginController">
-        <i class="fa-solid fa-user-lock hms-modal-icon"></i>
-        <h3 class="fw-bold mb-2">Admin Portal</h3>
-        <p class="text-muted mb-4">Sign in to access the hospital dashboard.</p>
-
-        <form name="loginForm" ng-submit="submit(loginForm)" novalidate class="text-start">
-          <div class="form-group mb-3">
-            <label for="loginEmail" class="fw-medium mb-1">Email Address</label>
-            <input type="email" id="loginEmail" name="email" class="form-control form-control-lg bg-light border-0"
-              ng-model="credentials.email" required autofocus placeholder="Enter your email">
-          </div>
-          <div class="form-group mb-4">
-            <label for="loginPassword" class="fw-medium mb-1">Password</label>
-            <input type="password" id="loginPassword" name="password"
-              class="form-control form-control-lg bg-light border-0" ng-model="credentials.password" required
-              placeholder="Enter your password">
-          </div>
-          <div class="alert alert-danger border-0 rounded-3" ng-if="errorMessage">
-            <i class="fa-solid fa-circle-exclamation me-2"></i>{{errorMessage}}
-          </div>
-          <button type="submit" class="btn w-100 py-3 rounded-pill fw-bold hms-modal-submit"
-            ng-disabled="loginForm.$invalid || loading">
-            <span ng-if="!loading">Sign In</span>
-            <span ng-if="loading"><i class="fa-solid fa-spinner fa-spin me-2"></i> Authenticating...</span>
-          </button>
+  <div class="hms-login-backdrop" ng-if="showLoginModal" ng-click="closeLoginModal()">
+    <div class="hms-login-box" ng-click="$event.stopPropagation()">
+      <button class="hms-login-close" ng-click="closeLoginModal()"><i class="fa-solid fa-xmark"></i></button>
+      <div style="color:var(--teal);font-size:26px"><i class="fa-solid fa-hospital-user"></i></div>
+      <h3>Admin Portal</h3>
+      <p>Sign in to access the existing hospital administration system.</p>
+      <div ng-controller="LoginController">
+        <form name="loginForm" ng-submit="submit(loginForm)" novalidate>
+          <label for="hmsEmail">Email address</label><input id="hmsEmail" name="email" type="email"
+            ng-model="credentials.email" required placeholder="Enter your email" autocomplete="username">
+          <label for="hmsPassword">Password</label><input id="hmsPassword" name="password" type="password"
+            ng-model="credentials.password" required placeholder="Enter your password" autocomplete="current-password">
+          <div class="hms-login-error" ng-if="errorMessage">{{errorMessage}}</div>
+          <button class="hms-login-submit" type="submit" ng-disabled="loginForm.$invalid || loading"><span
+              ng-if="!loading">Sign in</span><span ng-if="loading"><i class="fa-solid fa-spinner fa-spin"></i>
+              Authenticating...</span></button>
         </form>
       </div>
     </div>
   </div>
-
 </div>
