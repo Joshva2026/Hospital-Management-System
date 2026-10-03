@@ -18,16 +18,12 @@
 </head>
 <body ng-controller="RootController" ng-cloak>
 
-  <!-- ============ LANDING PAGE (shown when not authenticated) ============ -->
-  <div ng-if="!auth.isAuthenticated()" class="landing-wrapper">
-    <div ng-include="'partials/landing.html'"></div>
-  </div>
-
-  <!-- ============ APP SHELL (shown when authenticated) ============ -->
-  <div ng-if="auth.isAuthenticated()" class="app-shell flex-column">
-
+  <!-- Unified Application Container -->
+  <div ng-class="{'app-shell flex-column': auth.isAuthenticated()}">
+    
+    <!-- ============ APP SHELL HEADER (shown when authenticated) ============ -->
     <!-- Premium Top Navigation -->
-    <header class="premium-topnav">
+    <header class="premium-topnav" ng-if="auth.isAuthenticated()">
       <div class="topnav-container">
         <!-- Left: Brand -->
         <div class="topnav-brand">
@@ -101,9 +97,9 @@
       <div class="mobile-nav-backdrop" ng-class="{'show': sidebarOpen}" ng-click="toggleSidebar()"></div>
     </header>
 
-    <!-- Main content -->
-    <main class="main-content">
-      <div class="page-title-bar">
+    <!-- Main content (Handles both Public Landing and Authenticated App) -->
+    <main ng-class="{'main-content': auth.isAuthenticated(), 'landing-wrapper': !auth.isAuthenticated()}">
+      <div class="page-title-bar" ng-if="auth.isAuthenticated()">
         <h2>{{pageTitle}}</h2>
       </div>
 
@@ -113,8 +109,9 @@
         <button class="toast-close" ng-click="toast.message=null">&times;</button>
       </div>
 
-      <div class="page-body" ng-view></div>
+      <div ng-class="{'page-body': auth.isAuthenticated()}" ng-view></div>
     </main>
+
   </div>
 
   <!-- ============ Scripts ============ -->
@@ -148,5 +145,3 @@
   <script src="js/controllers/profile.controller.js"></script>
 </body>
 </html>
-
-

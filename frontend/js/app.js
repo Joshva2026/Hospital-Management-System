@@ -10,7 +10,7 @@
 
   app.config(['$routeProvider', '$locationProvider', function ($routeProvider) {
     $routeProvider
-      .when('/', { template: '<div></div>', title: 'Welcome' }) // Empty template because index.html handles landing view via ng-include outside ng-view
+      .when('/', { templateUrl: 'partials/public-home.html?v=2', controller: 'LandingController', title: 'Welcome' })
       .when('/dashboard', { templateUrl: 'partials/dashboard.html', controller: 'DashboardController', title: 'Dashboard' })
       .when('/patients', { templateUrl: 'partials/patients.html', controller: 'PatientsController', title: 'Patients' })
       .when('/patients/register', { templateUrl: 'partials/patient-form.html', controller: 'PatientFormController', title: 'Register Patient' })

@@ -1,0 +1,265 @@
+<div class="hms-cinematic" ng-controller="LandingController">
+
+  <!-- =========================================================
+       FIXED NAV
+  ========================================================== -->
+  <nav class="hms-nav" ng-class="{'hms-nav--scrolled': navScrolled}">
+    <div class="hms-nav__brand">
+      <i class="fa-solid fa-hospital-user"></i>
+      <span>HMS&nbsp;Platform</span>
+    </div>
+    <button type="button" class="hms-btn hms-btn--nav" ng-click="openLoginModal()">
+      Admin Login
+    </button>
+  </nav>
+
+  <!-- =========================================================
+       HERO — editorial / asymmetrical, not centered
+  ========================================================== -->
+  <header class="hms-hero">
+    <div class="hms-hero__grid">
+      <div class="hms-hero__copy">
+        <span class="hms-eyebrow">Enterprise Hospital Platform</span>
+        <h1 class="hms-hero__title">
+          ONE HOSPITAL.<br>
+          <span class="hms-hero__title-accent">ONE CONNECTED<br>SYSTEM.</span>
+        </h1>
+        <p class="hms-hero__desc">
+          Every patient journey — registration, OPD, admission, ward, bed,
+          monitoring and reports — unified in a single operational system.
+        </p>
+        <div class="hms-hero__actions">
+          <button type="button" class="hms-btn hms-btn--primary" ng-click="openLoginModal()">
+            Admin Login
+          </button>
+          <a href="#hms-journey" class="hms-btn hms-btn--ghost">Explore the system</a>
+        </div>
+      </div>
+
+      <div class="hms-hero__visual" aria-hidden="true">
+        <div class="hms-hero__panel">
+          <div class="hms-hero__panel-bar">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="hms-hero__panel-body">
+            <div class="hms-hero__stat-row">
+              <div class="hms-hero__stat">
+                <strong>07</strong>
+                <small>Connected Modules</small>
+              </div>
+              <div class="hms-hero__stat">
+                <strong>24/7</strong>
+                <small>Live Operations</small>
+              </div>
+            </div>
+            <div class="hms-hero__bars">
+              <div class="hms-hero__bar" style="--h:38%"></div>
+              <div class="hms-hero__bar" style="--h:62%"></div>
+              <div class="hms-hero__bar" style="--h:48%"></div>
+              <div class="hms-hero__bar" style="--h:80%"></div>
+              <div class="hms-hero__bar" style="--h:56%"></div>
+              <div class="hms-hero__bar" style="--h:70%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="hms-hero__ring hms-hero__ring--1"></div>
+        <div class="hms-hero__ring hms-hero__ring--2"></div>
+      </div>
+    </div>
+    <div class="hms-hero__scrollcue">
+      <span></span>
+      Scroll
+    </div>
+  </header>
+
+  <!-- =========================================================
+       PATIENT JOURNEY — one pinned visual, transforming per step
+       (mirrors the pinned-product / changing-headline mechanic)
+  ========================================================== -->
+  <section class="hms-journey" id="hms-journey">
+
+    <div class="hms-journey__intro">
+      <span class="hms-eyebrow">The Connected Workflow</span>
+      <h2 class="hms-journey__title">Every patient journey,<br>one continuous system.</h2>
+    </div>
+
+    <div class="hms-journey__track">
+
+      <!-- Pinned visual column -->
+      <div class="hms-journey__sticky">
+        <div class="hms-journey__device">
+          <div class="hms-journey__device-bar">
+            <span></span><span></span><span></span>
+            <small ng-bind="journeySteps[activeStep].label"></small>
+          </div>
+
+          <div class="hms-journey__device-body">
+            <div class="hms-journey__screen" ng-repeat="step in journeySteps"
+              ng-class="{'hms-active': $index === activeStep}">
+
+              <!-- 01 Registration -->
+              <div class="hms-mock hms-mock--registration" ng-if="$index === 0">
+                <div class="hms-mock__row"><span class="hms-mock__dot"></span>
+                  <div class="hms-mock__line w60"></div>
+                </div>
+                <div class="hms-mock__field"></div>
+                <div class="hms-mock__field"></div>
+                <div class="hms-mock__field w50"></div>
+                <div class="hms-mock__pill">New Patient ID Generated</div>
+              </div>
+
+              <!-- 02 OPD -->
+              <div class="hms-mock hms-mock--opd" ng-if="$index === 1">
+                <div class="hms-mock__row">
+                  <div class="hms-mock__avatar"></div>
+                  <div class="hms-mock__line w70"></div>
+                </div>
+                <div class="hms-mock__line w90"></div>
+                <div class="hms-mock__line w60"></div>
+                <div class="hms-mock__tag">OPD Consultation Active</div>
+              </div>
+
+              <!-- 03 Admission -->
+              <div class="hms-mock hms-mock--admission" ng-if="$index === 2">
+                <div class="hms-mock__grid">
+                  <div class="hms-mock__card"></div>
+                  <div class="hms-mock__card hms-mock--filled"></div>
+                  <div class="hms-mock__card"></div>
+                  <div class="hms-mock__card"></div>
+                </div>
+                <div class="hms-mock__pill">Admitted &mdash; Ward Assigned</div>
+              </div>
+
+              <!-- 04 Ward -->
+              <div class="hms-mock hms-mock--ward" ng-if="$index === 3">
+                <div class="hms-mock__ward-row" ng-repeat="r in [1,2,3]">
+                  <span class="hms-mock__bed" ng-repeat="b in [1,2,3,4]" ng-class="{occupied: (r+b) % 2 === 0}"></span>
+                </div>
+                <div class="hms-mock__tag">Ward&nbsp;B &middot; 12 Beds</div>
+              </div>
+
+              <!-- 05 Bed -->
+              <div class="hms-mock hms-mock--bed" ng-if="$index === 4">
+                <div class="hms-mock__bed-detail">
+                  <span class="hms-mock__bed-big occupied"></span>
+                  <div class="hms-mock__line w80"></div>
+                  <div class="hms-mock__line w50"></div>
+                </div>
+                <div class="hms-mock__pill">Bed&nbsp;14 &middot; Occupied</div>
+              </div>
+
+              <!-- 06 Monitoring -->
+              <div class="hms-mock hms-mock--monitoring" ng-if="$index === 5">
+                <svg viewBox="0 0 200 60" class="hms-mock__pulse" preserveAspectRatio="none">
+                  <polyline points="0,30 25,30 35,8 45,52 55,30 80,30 90,15 100,45 110,30 200,30" />
+                </svg>
+                <div class="hms-mock__row">
+                  <div class="hms-mock__line w40"></div>
+                  <div class="hms-mock__line w30"></div>
+                </div>
+                <div class="hms-mock__tag">Vitals Stable</div>
+              </div>
+
+              <!-- 07 Reports -->
+              <div class="hms-mock hms-mock--reports" ng-if="$index === 6">
+                <div class="hms-mock__bars">
+                  <span style="--h:45%"></span><span style="--h:70%"></span><span style="--h:55%"></span>
+                  <span style="--h:85%"></span><span style="--h:60%"></span>
+                </div>
+                <div class="hms-mock__pill">Daily Report Generated</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrolling step list -->
+      <div class="hms-journey__steps">
+        <div class="hms-journey__step" ng-repeat="step in journeySteps" data-journey-step="{{$index}}"
+          ng-class="{'hms-active': $index === activeStep}">
+          <span class="hms-journey__num">{{step.num}}</span>
+          <div class="hms-journey__step-copy">
+            <h3>{{step.label}}</h3>
+            <p>{{step.desc}}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PRODUCT EXPERIENCE / CORE CAPABILITIES
+  ========================================================== -->
+  <section class="hms-features">
+    <div class="hms-journey__intro">
+      <span class="hms-eyebrow">Core Capabilities</span>
+      <h2 class="hms-journey__title">Built from the actual<br>hospital operating model.</h2>
+    </div>
+
+    <div class="hms-features__grid">
+      <div class="hms-feature-card" ng-repeat="f in featureCards">
+        <i class="hms-feature-card__icon" ng-class="f.icon"></i>
+        <h4>{{f.title}}</h4>
+        <p>{{f.desc}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FINAL CTA
+  ========================================================== -->
+  <section class="hms-final">
+    <span class="hms-eyebrow">Ready when you are</span>
+    <h2>YOUR HOSPITAL.<br>ONE CONNECTED SYSTEM.</h2>
+    <p>Everything your hospital team needs, connected in one operational system.</p>
+    <button type="button" class="hms-btn hms-btn--primary hms-btn--lg" ng-click="openLoginModal()">
+      Admin Login
+    </button>
+  </section>
+
+  <footer class="hms-footer">
+    <span>&copy; 2026 HMS Platform. All rights reserved.</span>
+    <span>Secure Enterprise Architecture</span>
+  </footer>
+
+  <!-- =========================================================
+       LOGIN MODAL — existing login mechanism, untouched logic
+  ========================================================== -->
+  <div class="hms-modal-backdrop" ng-if="showLoginModal" ng-click="closeLoginModal()">
+    <div class="hms-modal-box" ng-click="$event.stopPropagation()">
+      <div class="hms-modal-head">
+        <button type="button" class="btn-close" ng-click="closeLoginModal()" aria-label="Close"></button>
+      </div>
+      <div class="hms-modal-body text-center" ng-controller="LoginController">
+        <i class="fa-solid fa-user-lock hms-modal-icon"></i>
+        <h3 class="fw-bold mb-2">Admin Portal</h3>
+        <p class="text-muted mb-4">Sign in to access the hospital dashboard.</p>
+
+        <form name="loginForm" ng-submit="submit(loginForm)" novalidate class="text-start">
+          <div class="form-group mb-3">
+            <label for="loginEmail" class="fw-medium mb-1">Email Address</label>
+            <input type="email" id="loginEmail" name="email" class="form-control form-control-lg bg-light border-0"
+              ng-model="credentials.email" required autofocus placeholder="Enter your email">
+          </div>
+          <div class="form-group mb-4">
+            <label for="loginPassword" class="fw-medium mb-1">Password</label>
+            <input type="password" id="loginPassword" name="password"
+              class="form-control form-control-lg bg-light border-0" ng-model="credentials.password" required
+              placeholder="Enter your password">
+          </div>
+          <div class="alert alert-danger border-0 rounded-3" ng-if="errorMessage">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>{{errorMessage}}
+          </div>
+          <button type="submit" class="btn w-100 py-3 rounded-pill fw-bold hms-modal-submit"
+            ng-disabled="loginForm.$invalid || loading">
+            <span ng-if="!loading">Sign In</span>
+            <span ng-if="loading"><i class="fa-solid fa-spinner fa-spin me-2"></i> Authenticating...</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

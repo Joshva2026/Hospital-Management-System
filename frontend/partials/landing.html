@@ -1,33 +1,51 @@
 <div class="public-landing-container" ng-controller="LandingController">
   <style>
-    /* Premium Medical Palette */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* Color & Variables */
     :root {
+      --l-bg: #030712;
+      --l-surface: #0b1120;
+      --l-surface-light: #1e293b;
+      --l-text: #f8fafc;
+      --l-text-muted: #94a3b8;
+      --l-accent: #0d9488;
+      --l-accent-hover: #115e59;
+      --l-accent-glow: rgba(13, 148, 136, 0.4);
+      --l-border: rgba(255, 255, 255, 0.1);
+      
+      /* Login specific to preserve original look */
       --medical-teal: #0D7C78;
       --navy: #1E293B;
       --bg-light: #F4F7F9;
       --white: #FFFFFF;
-      --text-muted: #64748B;
     }
 
-    body {
-      margin: 0;
+    /* Base Reset for Landing Page (Scoped) */
+    .public-landing-container {
       font-family: 'Inter', sans-serif;
-      background: var(--bg-light);
-      color: var(--navy);
+      background: var(--l-bg);
+      color: var(--l-text);
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
+    
+    .public-landing-container * {
+      box-sizing: border-box;
+    }
 
-    /* Cinematic Animations */
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .public-landing-container a {
+      text-decoration: none;
+      color: inherit;
+    }
 
-    /* Navigation */
-    .cinematic-nav {
+    /* Cinematic Nav */
+    .c-nav {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 24px 48px;
+      top: 0; left: 0; right: 0;
+      padding: 24px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -35,442 +53,405 @@
       transition: all 0.4s ease;
       background: transparent;
     }
-    .cinematic-nav.scrolled {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 16px 48px;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    .c-nav.scrolled {
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--l-border);
+      padding: 16px 40px;
     }
-    .nav-brand {
-      color: var(--white);
-      font-size: 1.5rem;
+    .c-nav-brand {
+      font-size: 1.25rem;
       font-weight: 700;
-      text-decoration: none;
+      letter-spacing: 1px;
       display: flex;
       align-items: center;
       gap: 12px;
-      transition: color 0.4s;
+      color: var(--l-text);
     }
-    .cinematic-nav.scrolled .nav-brand {
-      color: var(--medical-teal);
-    }
-    .nav-links {
-      display: none;
-    }
-    @media (min-width: 992px) {
-      .nav-links {
-        display: flex;
-        gap: 32px;
-        align-items: center;
-      }
-    }
-    .nav-links a {
-      color: var(--white);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.3s;
-      opacity: 0.9;
-    }
-    .nav-links a:hover {
-      opacity: 1;
-    }
-    .cinematic-nav.scrolled .nav-links a {
-      color: var(--navy);
-    }
-    .cinematic-nav.scrolled .nav-links a:hover {
-      color: var(--medical-teal);
-    }
-    .btn-admin {
-      background: var(--medical-teal);
-      color: var(--white);
+    .c-nav-btn {
+      background: var(--l-accent);
+      color: var(--l-text);
       border: none;
-      padding: 12px 28px;
-      border-radius: 40px;
+      padding: 10px 24px;
+      border-radius: 30px;
       font-weight: 600;
       font-size: 0.9rem;
-      transition: all 0.3s ease;
       cursor: pointer;
+      transition: all 0.3s;
     }
-    .btn-admin:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(13, 124, 120, 0.3);
-      background: #0b6965;
+    .c-nav-btn:hover {
+      background: var(--l-accent-hover);
+      box-shadow: 0 0 20px var(--l-accent-glow);
+    }
+
+    /* Utility */
+    .c-section {
+      padding: 120px 5%;
+      position: relative;
+    }
+    
+    .c-reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .c-reveal.c-active {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* Hero Section */
-    .hero-cinematic {
+    .c-hero {
       height: 100vh;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--navy);
       overflow: hidden;
     }
-    .hero-video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      transform: translateX(-50%) translateY(-50%);
-      z-index: 0;
-      object-fit: cover;
-    }
-    /* Fallback image in case video doesn't load or mobile */
-    .hero-bg-fallback {
+    .c-hero-bg {
       position: absolute;
       inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop');
+      background-image: url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2000&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
-      z-index: -1;
+      transform: scale(1.1);
+      animation: slowZoom 20s infinite alternate linear;
     }
-    .hero-overlay {
+    @keyframes slowZoom {
+      0% { transform: scale(1.05); }
+      100% { transform: scale(1.15); }
+    }
+    .c-hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to right, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.4));
+      background: radial-gradient(circle at center, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.95) 100%);
       z-index: 1;
     }
-    .hero-content {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      color: var(--white);
-      max-width: 900px;
-      padding: 0 24px;
-      animation: fadeIn 1s ease-out;
-    }
-    .hero-eyebrow {
-      font-size: 1rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: var(--medical-teal);
-      margin-bottom: 24px;
-      display: block;
-    }
-    .hero-title {
-      font-size: clamp(3rem, 6vw, 5.5rem);
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 32px;
-    }
-    .hero-desc {
-      font-size: clamp(1.1rem, 2vw, 1.3rem);
-      font-weight: 300;
-      opacity: 0.9;
-      max-width: 700px;
-      margin: 0 auto 48px;
-      line-height: 1.6;
-    }
-    .hero-actions {
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .btn-explore {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: var(--white);
-      padding: 16px 36px;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: all 0.3s;
-      backdrop-filter: blur(4px);
-    }
-    .btn-explore:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--white);
-      color: var(--white);
-    }
-    .btn-primary-hero {
-      background: var(--medical-teal);
-      color: var(--white);
-      padding: 16px 36px;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: transform 0.3s, box-shadow 0.3s;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-primary-hero:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(13, 124, 120, 0.4);
-    }
-
-    /* Sections Shared */
-    .section-padding {
-      padding: 140px 24px;
-    }
-    .section-label {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--medical-teal);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      display: block;
-    }
-    .section-title {
-      font-size: clamp(2.5rem, 4vw, 3.5rem);
-      font-weight: 700;
-      color: var(--navy);
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin-bottom: 32px;
-    }
-
-    /* Intro */
-    .section-intro {
-      background: var(--white);
-      text-align: center;
-    }
-    .intro-desc {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      max-width: 800px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-
-    /* Specialities */
-    .section-specialities {
-      background: var(--bg-light);
-    }
-    .speciality-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 32px;
-      max-width: 1200px;
-      margin: 64px auto 0;
-    }
-    .spec-card {
-      background: var(--white);
-      border-radius: 16px;
-      overflow: hidden;
-      color: var(--navy);
-      transition: all 0.4s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    }
-    .spec-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(30, 41, 59, 0.08);
-    }
-    .spec-img-wrap {
-      height: 240px;
-      overflow: hidden;
-      position: relative;
-    }
-    .spec-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.8s ease;
-    }
-    .spec-card:hover .spec-img {
-      transform: scale(1.05);
-    }
-    .spec-content {
-      padding: 32px;
-    }
-    .spec-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--navy);
-    }
-    .spec-desc {
-      color: var(--text-muted);
-      line-height: 1.6;
-      font-size: 1rem;
-    }
-
-    /* Journey */
-    .section-journey {
-      background: var(--white);
-    }
-    .journey-container {
-      max-width: 1200px;
-      margin: 80px auto 0;
-      display: flex;
-      justify-content: space-between;
-      position: relative;
-    }
-    .journey-line {
-      position: absolute;
-      top: 40px;
-      left: 5%;
-      right: 5%;
-      height: 2px;
-      background: #E2E8F0;
-      z-index: 1;
-    }
-    .journey-step {
+    .c-hero-content {
       position: relative;
       z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       text-align: center;
-      width: 16%;
+      max-width: 1000px;
     }
-    .step-num {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--bg-light);
-      color: var(--medical-teal);
-      font-size: 1.5rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .c-hero-eyebrow {
+      display: inline-block;
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--l-accent);
       margin-bottom: 24px;
-      border: 4px solid var(--white);
-      transition: all 0.4s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.2s;
     }
-    .journey-step:hover .step-num {
-      transform: scale(1.1);
-      background: var(--medical-teal);
-      color: var(--white);
-    }
-    .step-title {
+    .c-hero-title {
+      font-size: clamp(3rem, 7vw, 6.5rem);
       font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      color: var(--navy);
-    }
-    @media (max-width: 992px) {
-      .journey-container {
-        flex-direction: column;
-        gap: 48px;
-      }
-      .journey-line {
-        top: 0;
-        bottom: 0;
-        left: 40px;
-        width: 2px;
-        height: 100%;
-        right: auto;
-      }
-      .journey-step {
-        width: 100%;
-        flex-direction: row;
-        text-align: left;
-        align-items: center;
-        gap: 32px;
-      }
-      .step-num {
-        margin-bottom: 0;
-      }
-    }
-
-    /* Facilities Banner */
-    .section-facilities {
-      height: 70vh;
-      background-image: url('https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=2000&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    .facilities-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(30, 41, 59, 0.6);
-    }
-    .facilities-content {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      color: var(--white);
-      padding: 0 24px;
-    }
-    
-    /* Services/Info Grid */
-    .section-services {
-      background: var(--navy);
-      color: var(--white);
-      text-align: center;
-    }
-    .services-grid {
-      max-width: 1100px;
-      margin: 64px auto 0;
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 48px;
-    }
-    .service-item i {
-      font-size: 3rem;
-      color: var(--medical-teal);
-      margin-bottom: 24px;
-    }
-    .service-item h4 {
-      font-weight: 600;
-      font-size: 1.3rem;
-    }
-
-    /* CTA Section */
-    .section-cta {
-      background: var(--medical-teal);
-      color: var(--white);
-      text-align: center;
-    }
-    
-    /* Footer */
-    .landing-footer {
-      background: #0f172a;
-      color: rgba(255,255,255,0.7);
-      padding: 80px 40px 40px;
-      text-align: center;
-    }
-
-    /* Animations & Utilities */
-    .reveal {
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin: 0 0 32px;
       opacity: 0;
       transform: translateY(30px);
-      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.4s;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
+    .c-hero-desc {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: var(--l-text-muted);
+      max-width: 600px;
+      margin: 0 auto 48px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.6s;
     }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal, .spec-card, .spec-img, .step-num, .btn-primary-hero, .btn-admin {
-        transition: none !important;
-        transform: none !important;
-        animation: none !important;
-      }
-      .reveal {
-        opacity: 1;
-      }
-      .section-facilities {
-        background-attachment: scroll;
-      }
+    .c-hero-actions {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.8s;
+    }
+    @keyframes heroIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .c-btn-primary {
+      background: var(--l-accent);
+      color: var(--l-text);
+      padding: 16px 36px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+    .c-btn-primary:hover {
+      background: var(--l-accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px var(--l-accent-glow);
+    }
+    .c-btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--l-text);
+      border: 1px solid var(--l-border);
+      padding: 16px 36px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .c-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Modal Tweaks */
+    /* Scroll Storytelling (Patient Journey) */
+    .c-story-section {
+      background: var(--l-bg);
+      padding: 160px 5%;
+      position: relative;
+    }
+    .c-story-header {
+      text-align: center;
+      margin-bottom: 100px;
+    }
+    .c-story-subtitle {
+      color: var(--l-accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 16px;
+    }
+    .c-story-title {
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 0;
+    }
+    
+    .c-journey {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .c-journey::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 40px;
+      width: 2px;
+      background: var(--l-border);
+      z-index: 1;
+    }
+    .c-j-step {
+      display: flex;
+      gap: 40px;
+      padding: 60px 0;
+      position: relative;
+      z-index: 2;
+      opacity: 0.3;
+      transition: all 0.6s;
+    }
+    .c-j-step.c-active {
+      opacity: 1;
+    }
+    .c-j-marker {
+      width: 80px; height: 80px;
+      background: var(--l-surface);
+      border: 1px solid var(--l-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--l-text-muted);
+      flex-shrink: 0;
+      transition: all 0.6s;
+      position: relative;
+    }
+    .c-j-step.c-active .c-j-marker {
+      border-color: var(--l-accent);
+      color: var(--l-accent);
+      background: rgba(13, 148, 136, 0.1);
+      box-shadow: 0 0 30px var(--l-accent-glow);
+    }
+    .c-j-content {
+      padding-top: 10px;
+    }
+    .c-j-content h3 {
+      font-size: 2rem;
+      margin: 0 0 16px;
+      font-weight: 600;
+    }
+    .c-j-content p {
+      color: var(--l-text-muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Operations / Features */
+    .c-features {
+      background: var(--l-surface);
+      padding: 160px 5%;
+      border-top: 1px solid var(--l-border);
+      border-bottom: 1px solid var(--l-border);
+    }
+    .c-f-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 80px auto 0;
+    }
+    .c-f-card {
+      background: var(--l-surface-light);
+      border: 1px solid var(--l-border);
+      border-radius: 20px;
+      padding: 48px 32px;
+      transition: all 0.4s;
+    }
+    .c-f-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .c-f-icon {
+      font-size: 2.5rem;
+      color: var(--l-accent);
+      margin-bottom: 32px;
+    }
+    .c-f-card h4 {
+      font-size: 1.5rem;
+      margin: 0 0 16px;
+      font-weight: 600;
+    }
+    .c-f-card p {
+      color: var(--l-text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* UI Preview */
+    .c-preview {
+      padding: 160px 5%;
+      text-align: center;
+      background: var(--l-bg);
+      overflow: hidden;
+    }
+    .c-preview-container {
+      max-width: 1200px;
+      margin: 80px auto 0;
+      position: relative;
+    }
+    .c-ui-mock {
+      background: var(--l-surface-light);
+      border: 1px solid var(--l-border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      transform: perspective(1000px) rotateX(5deg);
+      transition: all 1s ease;
+    }
+    .c-ui-mock.c-active {
+      transform: perspective(1000px) rotateX(0deg);
+    }
+    .c-ui-header {
+      background: #151e2e;
+      padding: 12px 24px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--l-border);
+    }
+    .c-ui-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #334155;
+    }
+    .c-ui-body {
+      padding: 0;
+      background: #0f172a;
+    }
+    .c-ui-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      opacity: 0.8;
+      filter: saturate(0.8) contrast(1.1);
+    }
+
+    /* Stats */
+    .c-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1000px;
+      margin: 120px auto 0;
+      border-top: 1px solid var(--l-border);
+      padding-top: 80px;
+    }
+    .c-stat-item h5 {
+      font-size: 3.5rem;
+      font-weight: 300;
+      color: var(--l-text);
+      margin: 0 0 8px;
+    }
+    .c-stat-item p {
+      color: var(--l-accent);
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin: 0;
+    }
+    @media (max-width: 768px) {
+      .c-stats { grid-template-columns: 1fr; text-align: center; gap: 48px; }
+    }
+
+    /* Final CTA */
+    .c-final {
+      padding: 200px 5%;
+      text-align: center;
+      background: radial-gradient(circle at center, var(--l-surface) 0%, var(--l-bg) 100%);
+    }
+    .c-final h2 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 700;
+      margin: 0 0 48px;
+      line-height: 1.1;
+    }
+
+    /* Footer */
+    .c-footer {
+      border-top: 1px solid var(--l-border);
+      padding: 40px 5%;
+      display: flex;
+      justify-content: space-between;
+      color: var(--l-text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Modal Backdrop Override specifically for this landing page context */
     .modal-backdrop-custom {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(4px);
-      z-index: 1050;
+      background: rgba(3, 7, 18, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -478,190 +459,188 @@
     .modal-box {
       background: var(--white);
       border-radius: 20px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
       width: 100%;
       max-width: 450px;
       margin: 24px;
+      font-family: 'Inter', sans-serif;
+      color: var(--navy);
     }
+    .modal-header-custom {
+      border: 0;
+      padding: 1rem 1rem 0;
+    }
+    .modal-body-custom {
+      padding: 0 2.5rem 2.5rem;
+    }
+
   </style>
 
-  <!-- Navigation -->
-  <nav class="cinematic-nav" id="cinematicNav">
-    <a href="#" class="nav-brand">
-      <i class="fa-solid fa-hospital-user"></i>
-      <span>Vincy Hospital</span>
-    </a>
-    <div class="nav-links">
-      <a href="#">Home</a>
-      <a href="#about">About</a>
-      <a href="#specialities">Specialities</a>
-      <a href="#journey">Patient Journey</a>
+  <!-- Navbar -->
+  <nav class="c-nav" id="cNav">
+    <div class="c-nav-brand">
+      <i class="fa-solid fa-hospital-user" style="color: var(--l-accent)"></i>
+      HMS Platform
     </div>
-    <button class="btn-admin" ng-click="openLoginModal()">Admin Portal</button>
+    <button class="c-nav-btn" ng-click="openLoginModal()">Admin Login</button>
   </nav>
 
-  <!-- Hero Section with Video -->
-  <header class="hero-cinematic">
-    <div class="hero-bg-fallback"></div>
-    <video autoplay muted loop playsinline class="hero-video">
-      <source src="https://cdn.pixabay.com/video/2020/07/22/45330-441617462_large.mp4" type="video/mp4">
-      <source src="https://assets.mixkit.co/videos/preview/mixkit-medical-team-walking-in-the-hallway-of-a-hospital-41613-large.mp4" type="video/mp4">
-    </video>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <span class="hero-eyebrow">Vincy Hospital</span>
-      <h1 class="hero-title">Advanced Care.<br>Compassionate Healing.</h1>
-      <p class="hero-desc">Comprehensive multi-speciality healthcare supported by modern medical facilities, experienced doctors and coordinated patient care.</p>
-      <div class="hero-actions">
-        <a href="#about" class="btn-explore">Explore Our Care</a>
-        <button class="btn-primary-hero" ng-click="openLoginModal()">Admin Login</button>
+  <!-- Cinematic Hero -->
+  <header class="c-hero">
+    <div class="c-hero-bg"></div>
+    <div class="c-hero-overlay"></div>
+    <div class="c-hero-content">
+      <span class="c-hero-eyebrow">Enterprise Healthcare Platform</span>
+      <h1 class="c-hero-title">One Hospital.<br>One Connected System.</h1>
+      <p class="c-hero-desc">Experience seamless hospital operations, centralized patient management, and streamlined clinical workflows in a single, secure ecosystem.</p>
+      <div class="c-hero-actions">
+        <button class="c-btn-primary" ng-click="openLoginModal()">Admin Login</button>
+        <a href="#features" class="c-btn-secondary">Explore System</a>
       </div>
     </div>
   </header>
 
-  <!-- Introduction -->
-  <section id="about" class="section-intro section-padding reveal">
-    <span class="section-label">The Vincy Experience</span>
-    <h2 class="section-title">Care Designed Around You.</h2>
-    <p class="intro-desc">Vincy Hospital brings together multi-speciality expertise, modern facilities and coordinated care to provide patients with a connected healthcare experience.</p>
-  </section>
-
-  <!-- Facilities Cinematic Break -->
-  <section class="section-facilities">
-    <div class="facilities-overlay"></div>
-    <div class="facilities-content reveal">
-      <span class="section-label" style="color: var(--white); opacity: 0.8;">Infrastructure</span>
-      <h2 class="section-title" style="color: var(--white); font-size: clamp(2rem, 4vw, 3rem);">Modern clinical environments.</h2>
-      <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; opacity: 0.9;">Designed for comfort, equipped for excellence.</p>
+  <!-- Scrolling Story / Patient Journey -->
+  <section class="c-story-section" id="story">
+    <div class="c-story-header c-reveal">
+      <span class="c-story-subtitle">The Connected Workflow</span>
+      <h2 class="c-story-title">Everything connected.<br>Nothing lost.</h2>
     </div>
-  </section>
 
-  <!-- Specialities -->
-  <section id="specialities" class="section-specialities section-padding">
-    <div class="text-center reveal">
-      <span class="section-label">Centers of Excellence</span>
-      <h2 class="section-title">Specialised Medical Care</h2>
-      <p class="intro-desc" style="max-width: 600px;">Comprehensive care across a wide spectrum of medical disciplines.</p>
-    </div>
-    
-    <div class="speciality-grid">
-      <!-- Speciality Cards (Iterating over existing API data) -->
-      <div class="spec-card reveal" ng-repeat="spec in specialities" style="transition-delay: {{$index * 50}}ms">
-        <div class="spec-img-wrap">
-          <div class="spec-img" ng-style="{'background-image': 'url(' + (spec.image || 'https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?q=80&w=800') + ')'}"></div>
+    <div class="c-journey">
+      <div class="c-j-step c-scroll-step">
+        <div class="c-j-marker"><i class="fa-solid fa-user-plus"></i></div>
+        <div class="c-j-content">
+          <h3>Registration</h3>
+          <p>Instantly capture demographic and clinical data, generating unique digital IDs that follow the patient throughout their entire journey.</p>
         </div>
-        <div class="spec-content">
-          <h3 class="spec-title">{{spec.name}}</h3>
-          <p class="spec-desc">{{spec.desc || 'Comprehensive diagnostic and therapeutic services delivered by our expert specialists.'}}</p>
-          
-          <div ng-if="spec.doctors.length > 0" class="mt-4 pt-3 border-top">
-            <h6 class="text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700; color: var(--medical-teal);">Specialists</h6>
-            <div class="d-flex flex-column gap-3">
-              <div class="d-flex align-items-center gap-3" ng-repeat="doc in spec.doctors">
-                <img ng-src="{{doc.image || 'https://ui-avatars.com/api/?name='+doc.name+'&background=F4F7F9&color=1E293B'}}" alt="{{doc.name}}" class="rounded-circle object-fit-cover shadow-sm" style="width: 48px; height: 48px; border: 2px solid #fff;">
-                <div>
-                  <div class="fw-bold" style="font-size: 0.95rem; color: var(--navy);">{{doc.name}}</div>
-                  <div class="text-muted" style="font-size: 0.8rem;">{{doc.qualification}} <span ng-if="doc.experience">&bull; {{doc.experience}} yrs exp.</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
+      </div>
+      
+      <div class="c-j-step c-scroll-step">
+        <div class="c-j-marker"><i class="fa-solid fa-stethoscope"></i></div>
+        <div class="c-j-content">
+          <h3>OPD Consultation</h3>
+          <p>Doctors access unified medical records instantly, allowing for rapid diagnosis, accurate prescriptions, and structured clinical notes.</p>
+        </div>
+      </div>
+
+      <div class="c-j-step c-scroll-step">
+        <div class="c-j-marker"><i class="fa-solid fa-bed-pulse"></i></div>
+        <div class="c-j-content">
+          <h3>Admission & Ward</h3>
+          <p>Seamless transition from outpatient to inpatient care. Real-time bed availability tracking and ward allocation ensures optimal resource utilization.</p>
+        </div>
+      </div>
+
+      <div class="c-j-step c-scroll-step">
+        <div class="c-j-marker"><i class="fa-solid fa-heart-circle-check"></i></div>
+        <div class="c-j-content">
+          <h3>Daily Monitoring</h3>
+          <p>Continuous tracking of vitals, treatments, and daily progress reports accessible to the entire authorized care team.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Patient Journey -->
-  <section id="journey" class="section-journey section-padding">
-    <div class="text-center reveal">
-      <span class="section-label">Patient Journey</span>
-      <h2 class="section-title">A seamless approach to recovery.</h2>
+  <!-- Cinematic Features -->
+  <section class="c-features" id="features">
+    <div class="c-story-header c-reveal">
+      <span class="c-story-subtitle">Core Capabilities</span>
+      <h2 class="c-story-title">Intelligent Hospital Operations.</h2>
     </div>
-    
-    <div class="journey-container reveal">
-      <div class="journey-line"></div>
-      
-      <div class="journey-step">
-        <div class="step-num">01</div>
-        <div class="step-title">Registration</div>
+
+    <div class="c-f-grid">
+      <div class="c-f-card c-reveal">
+        <i class="fa-solid fa-users c-f-icon"></i>
+        <h4>Patient Management</h4>
+        <p>Comprehensive patient profiles, historical records, and interaction logs organized securely in one centralized database.</p>
       </div>
-      
-      <div class="journey-step">
-        <div class="step-num">02</div>
-        <div class="step-title">Consultation</div>
+      <div class="c-f-card c-reveal" style="transition-delay: 100ms">
+        <i class="fa-solid fa-bed c-f-icon"></i>
+        <h4>Ward & Bed Control</h4>
+        <p>Live visibility into hospital capacity. Monitor bed occupancy, ward status, and facilitate smooth transfers or discharges.</p>
       </div>
-      
-      <div class="journey-step">
-        <div class="step-num">03</div>
-        <div class="step-title">Diagnosis</div>
+      <div class="c-f-card c-reveal" style="transition-delay: 200ms">
+        <i class="fa-solid fa-user-doctor c-f-icon"></i>
+        <h4>Doctor Management</h4>
+        <p>Streamlined roster scheduling, OPD assignment, and performance tracking for all medical professionals.</p>
       </div>
-      
-      <div class="journey-step">
-        <div class="step-num">04</div>
-        <div class="step-title">Admission</div>
+      <div class="c-f-card c-reveal">
+        <i class="fa-solid fa-chart-line c-f-icon"></i>
+        <h4>Advanced Reporting</h4>
+        <p>Generate detailed operational reports, financial summaries, and clinical outcomes with powerful analytics tools.</p>
       </div>
-      
-      <div class="journey-step">
-        <div class="step-num">05</div>
-        <div class="step-title">Monitoring</div>
+      <div class="c-f-card c-reveal" style="transition-delay: 100ms">
+        <i class="fa-solid fa-file-medical c-f-icon"></i>
+        <h4>Admission Workflows</h4>
+        <p>Digitized admission and discharge processes reducing administrative overhead and patient wait times.</p>
       </div>
-      
-      <div class="journey-step">
-        <div class="step-num">06</div>
-        <div class="step-title">Discharge</div>
+      <div class="c-f-card c-reveal" style="transition-delay: 200ms">
+        <i class="fa-solid fa-shield-halved c-f-icon"></i>
+        <h4>Secure & Compliant</h4>
+        <p>Role-based access control and encrypted data storage ensuring medical records remain private and protected.</p>
       </div>
     </div>
   </section>
 
-  <!-- Services / Info -->
-  <section class="section-services section-padding">
-    <div class="reveal">
-      <h2 class="section-title" style="color: var(--white); margin-bottom: 16px;">Exceptional Healthcare Core</h2>
+  <!-- UI Preview & Intelligence -->
+  <section class="c-preview">
+    <div class="c-story-header c-reveal">
+      <span class="c-story-subtitle">System Visualization</span>
+      <h2 class="c-story-title">Designed for clarity.</h2>
     </div>
-    <div class="services-grid reveal">
-      <div class="service-item">
-        <i class="fa-solid fa-stethoscope"></i>
-        <h4>Outpatient Care</h4>
+
+    <div class="c-preview-container c-reveal">
+      <div class="c-ui-mock" id="uiMock">
+        <div class="c-ui-header">
+          <div class="c-ui-dot" style="background: #ef4444"></div>
+          <div class="c-ui-dot" style="background: #eab308"></div>
+          <div class="c-ui-dot" style="background: #22c55e"></div>
+        </div>
+        <div class="c-ui-body">
+          <!-- Abstract representation of a dashboard UI using Unsplash medical tech imagery as a placeholder -->
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" class="c-ui-img" alt="System Dashboard Concept">
+        </div>
       </div>
-      <div class="service-item">
-        <i class="fa-solid fa-bed-pulse"></i>
-        <h4>Inpatient Care</h4>
+    </div>
+
+    <div class="c-stats c-reveal">
+      <div class="c-stat-item">
+        <h5>24/7</h5>
+        <p>Hospital Operations</p>
       </div>
-      <div class="service-item">
-        <i class="fa-solid fa-truck-medical"></i>
-        <h4>Emergency Care</h4>
+      <div class="c-stat-item">
+        <h5>100%</h5>
+        <p>Data Centralization</p>
       </div>
-      <div class="service-item">
-        <i class="fa-solid fa-microscope"></i>
-        <h4>Diagnostics</h4>
+      <div class="c-stat-item">
+        <h5>Unified</h5>
+        <p>Patient Profiles</p>
       </div>
     </div>
   </section>
 
   <!-- Final CTA -->
-  <section class="section-cta section-padding">
-    <div class="reveal">
-      <h2 class="section-title" style="color: var(--white);">Secure Medical Management.</h2>
-      <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto;">Authorized personnel can securely access the hospital dashboard below.</p>
-      <button class="btn-primary-hero" ng-click="openLoginModal()" style="background: var(--navy); padding: 18px 48px; font-size: 1.1rem;">Admin Login</button>
+  <section class="c-final">
+    <div class="c-reveal">
+      <h2>Your hospital.<br>One connected system.</h2>
+      <button class="c-btn-primary" ng-click="openLoginModal()" style="padding: 20px 48px; font-size: 1.1rem; margin-top: 24px;">Admin Login</button>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="landing-footer">
-    <i class="fa-solid fa-hospital" style="font-size: 2.5rem; color: var(--medical-teal); margin-bottom: 24px;"></i>
-    <h3 style="font-weight: 700; color: var(--white); margin-bottom: 12px; letter-spacing: 1px;">Vincy Hospital</h3>
-    <p style="margin-bottom: 48px;">Administration & Management System</p>
-    <p style="font-size: 0.85rem; opacity: 0.5;">&copy; 2026 Vincy Hospital. All rights reserved.</p>
+  <footer class="c-footer">
+    <div>&copy; 2026 HMS Platform. All rights reserved.</div>
+    <div>Secure Enterprise Architecture</div>
   </footer>
 
-  <!-- Login Modal (Preserves Existing Flow) -->
+  <!-- Login Modal (Preserves Existing Flow & Logic exactly as requested) -->
   <div class="modal-backdrop-custom" ng-if="showLoginModal">
-    <div class="modal-box animate-slide-up">
-      <div class="modal-header-custom border-0 pb-0 pt-4 pe-4 d-flex justify-content-end">
+    <div class="modal-box">
+      <div class="modal-header-custom d-flex justify-content-end">
         <button class="btn-close" ng-click="closeLoginModal()"></button>
       </div>
-      <div class="modal-body-custom pt-0 px-5 pb-5 text-center" ng-controller="LoginController">
+      <div class="modal-body-custom text-center" ng-controller="LoginController">
         <i class="fa-solid fa-user-lock fs-1 mb-4" style="color: var(--medical-teal);"></i>
         <h3 class="fw-bold mb-2" style="color: var(--navy);">Admin Portal</h3>
         <p class="text-muted mb-4">Sign in to access the hospital dashboard.</p>
@@ -686,32 +665,55 @@
   </div>
 
   <script>
-    // Simple script to handle nav background on scroll & reveal animations
+    // Isolated vanilla JS for the new landing page interactions
     setTimeout(function() {
-      var nav = document.getElementById('cinematicNav');
-      window.addEventListener('scroll', function() {
-        if (window.scrollY > 50) {
-          nav.classList.add('scrolled');
-        } else {
-          nav.classList.remove('scrolled');
-        }
+      // Nav Scroll
+      const nav = document.getElementById('cNav');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
       });
-      
-      // Reveal animations for scroll
-      var reveals = document.querySelectorAll('.reveal');
-      function reveal() {
-        var windowHeight = window.innerHeight;
-        var elementVisible = 100;
-        
-        for (var i = 0; i < reveals.length; i++) {
-          var elementTop = reveals[i].getBoundingClientRect().top;
-          if (elementTop < windowHeight - elementVisible) {
-            reveals[i].classList.add('active');
+
+      // Intersection Observer for reveals & steps
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('c-active');
           }
-        }
-      }
-      window.addEventListener('scroll', reveal);
-      reveal(); // initial trigger
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+
+      document.querySelectorAll('.c-reveal').forEach(el => observer.observe(el));
+      
+      // Step-by-step journey highlight
+      const stepObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('c-active');
+          } else {
+            // Optional: remove if scrolled past, creating a focused effect
+            const rect = entry.target.getBoundingClientRect();
+            if (rect.top > window.innerHeight) {
+              entry.target.classList.remove('c-active');
+            }
+          }
+        });
+      }, { threshold: 0.6 });
+      
+      document.querySelectorAll('.c-scroll-step').forEach(el => stepObserver.observe(el));
+
+      // Mock UI Parallax Flattening
+      const mockObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('c-active');
+          }
+        });
+      }, { threshold: 0.3 });
+      
+      const uiMock = document.getElementById('uiMock');
+      if (uiMock) mockObserver.observe(uiMock);
+
     }, 100);
   </script>
 </div>
