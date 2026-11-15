@@ -1,38 +1,66 @@
 <div class="animate-fade-in pb-5">
-  <div class="page-header mb-4">
-    <div class="d-flex flex-column">
-      <h2 class="fw-bold mb-1" style="font-size: 2rem;">Wards &amp; Beds</h2>
-      <p class="text-muted mb-0">Monitor ward capacity, bed availability, and live occupancy.</p>
+
+  <!-- UNIFIED PAGE HEADER -->
+  <div class="postlogin-page-header mb-4">
+    <div>
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <a href="#!/dashboard"><i class="fa-solid fa-hospital me-1"></i> Hospital</a>
+        <i class="fa-solid fa-chevron-right breadcrumb-sep"></i>
+        <span class="breadcrumb-active">Wards &amp; Beds</span>
+      </nav>
+      <h1 class="page-header-title">Wards &amp; Bed Management</h1>
+      <p class="page-header-subtitle">
+        Monitor ward capacity, bed availability, and live occupancy across all hospital facilities.
+      </p>
     </div>
-    <div class="d-flex gap-3 align-items-center mt-3 mt-md-0">
-      <button class="btn btn-outline-secondary shadow-sm px-4" ng-click="openNewWard()"><i class="fa-solid fa-hospital me-2 text-primary"></i> Add Ward</button>
-      <button class="btn btn-primary shadow-sm px-4" ng-click="openNewBed()"><i class="fa-solid fa-bed me-2"></i> Add Bed</button>
+
+    <!-- Actions -->
+    <div class="page-header-actions">
+      <button type="button" class="btn btn-sm btn-outline-secondary shadow-sm rounded-pill px-3" ng-click="openNewWard()">
+        <i class="fa-solid fa-hospital me-1 text-primary"></i> Add Ward
+      </button>
+      <button type="button" class="btn btn-sm btn-primary shadow-sm rounded-pill px-3" ng-click="openNewBed()">
+        <i class="fa-solid fa-bed me-1"></i> Add Bed
+      </button>
     </div>
   </div>
 
-  <!-- STATUS LEGEND & QUICK FILTER -->
+  <!-- LIVE STATUS LEGEND CARD -->
   <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 bg-surface">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <!-- Live Status Legend Indicators -->
       <div class="d-flex align-items-center gap-4 flex-wrap">
-        <span class="fw-bold small text-uppercase text-muted" style="letter-spacing: 0.5px;">Bed Status:</span>
+        <span class="fw-bold small text-uppercase text-muted" style="letter-spacing: 0.5px;">Live Bed Status:</span>
+
         <div class="d-flex align-items-center gap-2">
-          <span class="bed-legend-box bed-available-box"></span>
-          <span class="small fw-semibold">AVAILABLE</span>
+          <span class="bed-legend-box bed-available-box" style="background-color: #10b981;"></span>
+          <span class="small fw-semibold text-body">
+            Available (<strong class="text-success">{{availableBedsCount}}</strong>)
+          </span>
         </div>
+
         <div class="d-flex align-items-center gap-2">
-          <span class="bed-legend-box bed-occupied-box"></span>
-          <span class="small fw-semibold">OCCUPIED</span>
+          <span class="bed-legend-box bed-occupied-box" style="background-color: #ef4444;"></span>
+          <span class="small fw-semibold text-body">
+            Occupied (<strong class="text-danger">{{occupiedBedsCount}}</strong>)
+          </span>
         </div>
+
         <div class="d-flex align-items-center gap-2">
-          <span class="bed-legend-box bed-maintenance-box"></span>
-          <span class="small fw-semibold">MAINTENANCE</span>
+          <span class="bed-legend-box bed-maintenance-box" style="background-color: #f59e0b;"></span>
+          <span class="small fw-semibold text-body">
+            Maintenance (<strong class="text-warning">{{maintenanceBedsCount}}</strong>)
+          </span>
         </div>
       </div>
+
+      <!-- Total Summary & Ward Filter Reset -->
       <div class="d-flex align-items-center gap-3">
-        <div class="text-muted small">
-          <strong>{{wards.length}}</strong> Wards &middot; <strong>{{beds.length}}</strong> Beds Total
-        </div>
-        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" ng-if="selectedWardId" ng-click="clearWardFilter()">
+        <span class="badge bg-body-tertiary text-body border rounded-pill px-3 py-2 small">
+          <strong>{{wards.length}}</strong> Wards &nbsp;&bull;&nbsp; <strong>{{totalBedsCount}}</strong> Beds Total
+        </span>
+        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+          ng-if="selectedWardId" ng-click="clearWardFilter()">
           <i class="fa-solid fa-filter-circle-xmark me-1"></i> Show All Wards
         </button>
       </div>
@@ -41,71 +69,102 @@
 
   <!-- SKELETON WHILE LOADING -->
   <div class="row g-4 mb-4" ng-if="loading">
-    <div class="col-12" ng-repeat="i in [1,2,3]">
-      <div class="card p-4 border-0 shadow-sm rounded-4 bg-surface skeleton" style="height: 220px;"></div>
+    <div class="col-12 col-xl-6" ng-repeat="i in [1,2,3,4]">
+      <div class="card p-4 border-0 shadow-sm rounded-4 bg-surface skeleton" style="height: 240px;"></div>
     </div>
   </div>
 
-  <!-- EACH WARD AS A CARD WITH GRID OF BED TILES -->
+  <!-- 2-COLUMN WARD CARDS GRID ON DESKTOP, 1-COLUMN ON MOBILE -->
   <div class="row g-4 mb-4 animate-slide-up" ng-if="!loading && wards.length">
-    <div class="col-12" ng-repeat="w in wards" ng-if="!selectedWardId || selectedWardId === w.ward_id">
-      <div class="card p-4 border-0 shadow-sm rounded-4 bg-surface">
+    <div class="col-12 col-xl-6" ng-repeat="w in wards" ng-if="!selectedWardId || selectedWardId === w.ward_id">
+      <div class="card p-4 border-0 shadow-sm rounded-4 bg-surface h-100 d-flex flex-column justify-content-between">
         
-        <!-- Ward Header & Summary Line -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-3 border-bottom gap-2">
-          <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <h4 class="fw-bold text-body m-0">{{w.ward_name}}</h4>
-              <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle rounded-pill px-2 py-1 small">{{w.ward_type}}</span>
-              <status-badge status="w.status"></status-badge>
-            </div>
-            <!-- Summary Line Per Ward (Available / Occupied / Maintenance) -->
-            <div class="ward-summary-line small text-muted">
-              <i class="fa-solid fa-layer-group me-1"></i> Floor {{w.floor || 'N/A'}} &nbsp;&bull;&nbsp;
-              <strong>Total:</strong> {{w.total_beds || w.beds.length || 0}} &nbsp;|&nbsp;
-              <strong class="text-success">Available:</strong> {{w.available_beds || 0}} &nbsp;|&nbsp;
-              <strong class="text-danger">Occupied:</strong> {{w.occupied_beds || 0}} &nbsp;|&nbsp;
-              <strong class="text-warning">Maintenance:</strong> {{w.maintenance_beds || 0}}
-            </div>
-          </div>
-          
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" ng-click="openEditWard(w)" title="Edit Ward">
-              <i class="fa-solid fa-pen me-1"></i> Edit Ward
-            </button>
-            <button class="btn btn-sm btn-outline-primary rounded-pill px-3" ng-click="openNewBed(w.ward_id)" title="Add Bed to this Ward">
-              <i class="fa-solid fa-plus me-1"></i> Add Bed
-            </button>
-          </div>
-        </div>
+        <div>
+          <!-- Ward Header: Name, Floor, Type & Action Buttons -->
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start pb-3 mb-3 border-bottom gap-2">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <h4 class="fw-bold text-body m-0" style="font-size: 1.25rem;">{{w.ward_name}}</h4>
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle rounded-pill px-2 py-1 small">
+                  {{w.ward_type}}
+                </span>
+                <status-badge status="w.status"></status-badge>
+                
+                <!-- Ward Status Pill ("Full" or "N free") -->
+                <span class="badge rounded-pill px-2 py-1 fw-bold"
+                  ng-class="{'bg-danger text-white': w.occupancyPct >= 100, 'bg-warning text-dark': w.occupancyPct >= 80 && w.occupancyPct < 100, 'bg-success text-white': w.occupancyPct < 80}">
+                  {{ w.occupancyPct >= 100 ? 'Full' : (w.calculatedAvail + ' free') }}
+                </span>
+              </div>
 
-        <!-- Grid of Bed Tiles -->
-        <div class="bed-tiles-grid" ng-if="w.beds && w.beds.length">
-          <div class="bed-tile"
-               ng-repeat="b in w.beds"
-               ng-class="{
-                 'bed-tile-available': b.status === 'AVAILABLE',
-                 'bed-tile-occupied': b.status === 'OCCUPIED',
-                 'bed-tile-maintenance': b.status === 'MAINTENANCE'
-               }"
-               title="Bed {{b.bed_number}} - {{b.status}}{{b.current_patient_name ? ' (Patient: ' + b.current_patient_name + ')' : ''}}"
-               ng-click="openEditBed(b)">
-            <div class="bed-tile-top">
-              <i class="fa-solid fa-bed bed-tile-icon"></i>
-              <span class="bed-tile-type-badge">{{b.bed_type || 'Gen'}}</span>
+              <!-- Floor & Detailed Bed Counts -->
+              <div class="small text-muted mt-1">
+                <i class="fa-solid fa-layer-group me-1"></i> Floor {{w.floor || 'N/A'}} &nbsp;&bull;&nbsp;
+                <strong>Total:</strong> {{w.calculatedTotal}} &nbsp;|&nbsp;
+                <strong class="text-success">Available:</strong> {{w.calculatedAvail}} &nbsp;|&nbsp;
+                <strong class="text-danger">Occupied:</strong> {{w.calculatedOcc}} &nbsp;|&nbsp;
+                <strong class="text-warning">Maint:</strong> {{w.calculatedMaint}}
+              </div>
             </div>
-            <div class="bed-tile-number">{{b.bed_number}}</div>
-            <div class="bed-tile-status">{{b.status}}</div>
-            <div class="bed-tile-patient text-truncate" ng-if="b.status === 'OCCUPIED' && b.current_patient_name" title="{{b.current_patient_name}}">
-              {{b.current_patient_name}}
+            
+            <!-- Edit / Add Bed buttons -->
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2"
+                ng-click="openEditWard(w)" title="Edit Ward">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-2"
+                ng-click="openNewBed(w.ward_id)" title="Add Bed to this Ward">
+                <i class="fa-solid fa-plus"></i> Bed
+              </button>
             </div>
           </div>
-        </div>
 
-        <!-- Empty Bed State for Ward -->
-        <div class="p-4 text-center text-muted" ng-if="!w.beds || !w.beds.length">
-          <i class="fa-solid fa-bed text-muted opacity-50 fs-3 mb-2 d-block"></i>
-          <span>No beds have been added to this ward yet.</span>
+          <!-- Ward Occupancy Progress Bar -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center small mb-1">
+              <span class="text-muted fw-medium" style="font-size: 11.5px;">Occupancy Rate</span>
+              <span class="fw-bold" ng-class="{'text-danger': w.occupancyPct >= 100, 'text-warning': w.occupancyPct >= 80 && w.occupancyPct < 100, 'text-success': w.occupancyPct < 80}">
+                {{w.occupancyPct}}% ({{w.calculatedOcc}}/{{w.calculatedTotal}} occupied)
+              </span>
+            </div>
+            <div class="progress" style="height: 6px; border-radius: 3px; background: rgba(0,0,0,0.06);">
+              <div class="progress-bar" ng-class="w.progressClass" role="progressbar"
+                ng-style="{ 'width': w.occupancyPct + '%' }"></div>
+            </div>
+          </div>
+
+          <!-- Grid of Bed Tiles (min-height 44px, click handlers preserved) -->
+          <div class="bed-tiles-grid" ng-if="w.beds && w.beds.length">
+            <div class="bed-tile"
+                 ng-repeat="b in w.beds"
+                 ng-class="{
+                   'bed-tile-available': b.status === 'AVAILABLE',
+                   'bed-tile-occupied': b.status === 'OCCUPIED',
+                   'bed-tile-maintenance': b.status === 'MAINTENANCE'
+                 }"
+                 title="Bed {{b.bed_number}} - {{b.status}}{{b.current_patient_name ? ' (Patient: ' + b.current_patient_name + ')' : ''}}"
+                 ng-click="openEditBed(b)"
+                 tabindex="0"
+                 role="button">
+              <div class="bed-tile-top">
+                <i class="fa-solid fa-bed bed-tile-icon"></i>
+                <span class="bed-tile-type-badge">{{b.bed_type || 'Gen'}}</span>
+              </div>
+              <div class="bed-tile-number">{{b.bed_number}}</div>
+              <div class="bed-tile-status">{{b.status}}</div>
+              <div class="bed-tile-patient text-truncate" ng-if="b.status === 'OCCUPIED' && b.current_patient_name"
+                   title="{{b.current_patient_name}}">
+                {{b.current_patient_name}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty Bed State for Ward -->
+          <div class="p-4 text-center text-muted" ng-if="!w.beds || !w.beds.length">
+            <i class="fa-solid fa-bed text-muted opacity-50 fs-3 mb-2 d-block"></i>
+            <span class="small">No beds have been added to this ward yet.</span>
+          </div>
         </div>
 
       </div>
@@ -117,23 +176,27 @@
     <div class="d-inline-flex align-items-center justify-content-center bg-body-tertiary rounded-circle mb-3" style="width: 70px; height: 70px;">
       <i class="fa-solid fa-hospital-user fs-2 text-muted"></i>
     </div>
-    <h4 class="fw-bold text-body mb-2">No wards found. Try a different search.</h4>
+    <h4 class="fw-bold text-body mb-2">No Wards Configured</h4>
+    <p class="text-muted small mb-4">Set up hospital clinical wards and units to start assigning inpatient beds.</p>
+    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" ng-click="openNewWard()">
+      <i class="fa-solid fa-plus me-2"></i> Add First Ward
+    </button>
   </div>
 
-  <!-- Ward Modal -->
+  <!-- WARD MODAL -->
   <div class="modal-backdrop-custom" ng-if="showWardModal" body-scroll-lock>
     <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-surface" style="max-width: 500px;">
       <div class="modal-header-custom border-bottom px-4 py-3 rounded-top-4 d-flex justify-content-between align-items-center">
-        <h5 class="m-0 fw-bold text-body"><i class="fa-solid fa-hospital-user text-primary me-2"></i> {{isWardEdit ? 'Edit Ward' : 'Add New Ward'}}</h5>
-        <button class="btn-close" ng-click="closeWardModal()"></button>
+        <h5 class="m-0 fw-bold text-body"><i class="fa-solid fa-hospital text-primary me-2"></i> {{isWardEdit ? 'Edit Ward' : 'Add New Ward'}}</h5>
+        <button type="button" class="btn-close" ng-click="closeWardModal()"></button>
       </div>
       <form name="wardFormEl" ng-submit="submitWard(wardFormEl)" novalidate>
         <div class="modal-body-custom p-4">
-          <div class="form-group mb-4">
+          <div class="form-group mb-3">
             <label class="fw-medium text-body mb-1">Ward Name <span class="text-danger">*</span></label>
-            <input type="text" name="wardName" class="form-control shadow-sm" ng-model="wardForm.wardName" required minlength="2" placeholder="e.g. General Ward A">
+            <input type="text" name="wardName" class="form-control shadow-sm" ng-model="wardForm.wardName" required placeholder="e.g. ICU-A or General Male">
           </div>
-          <div class="row g-3">
+          <div class="row g-3 mb-0">
             <div class="col-md-8 form-group mb-0">
               <label class="fw-medium text-body mb-1">Ward Type <span class="text-danger">*</span></label>
               <select name="wardType" class="form-select shadow-sm" ng-model="wardForm.wardType" required>
@@ -162,12 +225,12 @@
     </div>
   </div>
 
-  <!-- Bed Modal -->
+  <!-- BED MODAL -->
   <div class="modal-backdrop-custom" ng-if="showBedModal" body-scroll-lock>
     <div class="modal-box modal-lg border-0 shadow-lg rounded-4 animate-slide-up bg-surface" style="max-width: 500px;">
       <div class="modal-header-custom border-bottom px-4 py-3 rounded-top-4 d-flex justify-content-between align-items-center">
         <h5 class="m-0 fw-bold text-body"><i class="fa-solid fa-bed text-primary me-2"></i> {{isBedEdit ? 'Edit Bed' : 'Add New Bed'}}</h5>
-        <button class="btn-close" ng-click="closeBedModal()"></button>
+        <button type="button" class="btn-close" ng-click="closeBedModal()"></button>
       </div>
       <form name="bedFormEl" ng-submit="submitBed(bedFormEl)" novalidate>
         <div class="modal-body-custom p-4">
@@ -215,4 +278,5 @@
       </form>
     </div>
   </div>
+
 </div>

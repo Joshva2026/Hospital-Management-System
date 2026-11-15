@@ -2018,8 +2018,9 @@ canvas {
 }
 
 .bed-tile {
+  min-height: 48px;
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px 12px;
   text-align: center;
   cursor: pointer;
   border: 2px solid transparent;

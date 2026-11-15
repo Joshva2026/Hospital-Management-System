@@ -14,6 +14,11 @@
       $scope.isWardEdit = false;
       $scope.isBedEdit = false;
 
+      $scope.totalBedsCount = 0;
+      $scope.availableBedsCount = 0;
+      $scope.occupiedBedsCount = 0;
+      $scope.maintenanceBedsCount = 0;
+
       function mapBedsToWards() {
         var bedMap = {};
         ($scope.beds || []).forEach(function (b) {
@@ -22,7 +27,22 @@
         });
         ($scope.wards || []).forEach(function (w) {
           w.beds = bedMap[w.ward_id] || [];
+          var occ = w.beds.filter(function (b) { return b.status === 'OCCUPIED'; }).length;
+          var avail = w.beds.filter(function (b) { return b.status === 'AVAILABLE'; }).length;
+          var maint = w.beds.filter(function (b) { return b.status === 'MAINTENANCE'; }).length;
+          var total = w.beds.length;
+          w.calculatedTotal = total;
+          w.calculatedOcc = occ;
+          w.calculatedAvail = avail;
+          w.calculatedMaint = maint;
+          w.occupancyPct = total > 0 ? Math.round((occ / total) * 100) : 0;
+          w.progressClass = w.occupancyPct >= 100 ? 'bg-danger' : (w.occupancyPct >= 80 ? 'bg-warning' : 'bg-success');
         });
+
+        $scope.totalBedsCount = ($scope.beds || []).length;
+        $scope.availableBedsCount = ($scope.beds || []).filter(function (b) { return b.status === 'AVAILABLE'; }).length;
+        $scope.occupiedBedsCount = ($scope.beds || []).filter(function (b) { return b.status === 'OCCUPIED'; }).length;
+        $scope.maintenanceBedsCount = ($scope.beds || []).filter(function (b) { return b.status === 'MAINTENANCE'; }).length;
       }
 
       function loadData() {
