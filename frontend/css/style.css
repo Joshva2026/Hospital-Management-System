@@ -2933,3 +2933,25 @@ canvas {
 [data-bs-theme="dark"] .dropdown-header-title {
   color: #64748b;
 }
+
+
+/* Card Header & Body enhancements */
+.card-header-custom {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--surface);
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.card-body-custom {
+  padding: 20px;
+}
+
+[data-bs-theme="dark"] .card-header-custom {
+  background-color: var(--surface);
+  border-color: var(--border);
+}
