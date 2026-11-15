@@ -12,3 +12,4 @@ for i in range(1, 193):
     im.save(os.path.join(DST, name), 'JPEG', quality=78, optimize=True, progressive=True)
 
 print('Created 192 mobile frames in', DST)
+

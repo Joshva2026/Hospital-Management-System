@@ -60,10 +60,51 @@
         } catch (e) {}
       }
 
+      $scope.activeDropdown = null;
+
+      $scope.toggleDropdown = function (name, $event) {
+        if ($event) $event.stopPropagation();
+        $scope.activeDropdown = ($scope.activeDropdown === name) ? null : name;
+      };
+
+      $scope.closeDropdowns = function () {
+        $scope.activeDropdown = null;
+      };
+
+      $scope.onDropdownKey = function ($event, name) {
+        if ($event.key === 'Enter' || $event.key === ' ') {
+          $event.preventDefault();
+          $scope.toggleDropdown(name, $event);
+        } else if ($event.key === 'Escape') {
+          $scope.closeDropdowns();
+        }
+      };
+
+      // Close dropdowns & mobile menu on Escape
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && ($scope.activeDropdown || $scope.sidebarOpen)) {
+          $scope.$applyAsync(function () {
+            $scope.activeDropdown = null;
+            $scope.sidebarOpen = false;
+          });
+        }
+      });
+
+      $scope.mobileGroups = { opd: false, ops: false, reports: false, insights: false };
+
+      $scope.toggleMobileGroup = function (name) {
+        $scope.mobileGroups[name] = !$scope.mobileGroups[name];
+      };
+
+      $scope.isMobileGroupOpen = function (name) {
+        return !!$scope.mobileGroups[name];
+      };
+
       $rootScope.$on('$routeChangeSuccess', function (event, current) {
         $scope.pageTitle = (current && current.title) || 'Dashboard';
-        // Auto-close mobile nav on mobile after navigation
+        // Auto-close mobile nav & dropdowns on navigation
         $scope.sidebarOpen = false;
+        $scope.activeDropdown = null;
       });
 
       $scope.isActive = function (path) {
