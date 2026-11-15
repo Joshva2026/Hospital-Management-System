@@ -95,6 +95,15 @@ const declarations = [
       properties: { limit: { type: 'INTEGER', description: 'Max rows, 1-50 (default 20)' } },
     },
   },
+  {
+    name: 'get_monthly_report',
+    description: 'Monthly totals: new registrations, admissions, discharges, OPD visits, completed and no-show appointments. Pass the month as YYYY-MM.',
+    parameters: {
+      type: 'OBJECT',
+      properties: { month: { type: 'STRING', description: 'Month in YYYY-MM format, e.g. 2026-10' } },
+      required: ['month'],
+    },
+  },
 ];
 
 // Handlers: all read-only, all parameterized.
@@ -255,6 +264,21 @@ const handlers = {
     `, [lim]);
     return rows;
   },
+
+  async get_monthly_report({ month } = {}) {
+    if (!/^\d{4}-\d{2}$/.test(month || '')) return { error: 'month must be in YYYY-MM format.' };
+    const { rows } = await query(`
+      WITH r AS (SELECT $1::date AS s, ($1::date + INTERVAL '1 month')::date AS e)
+      SELECT
+        (SELECT COUNT(*) FROM patients p, r WHERE p.registration_date >= r.s AND p.registration_date < r.e) AS new_registrations,
+        (SELECT COUNT(*) FROM admissions a, r WHERE a.admission_date >= r.s AND a.admission_date < r.e) AS admissions,
+        (SELECT COUNT(*) FROM discharges d, r WHERE d.discharge_date >= r.s AND d.discharge_date < r.e) AS discharges,
+        (SELECT COUNT(*) FROM patient_visits v, r WHERE v.visit_date >= r.s AND v.visit_date < r.e) AS opd_visits,
+        (SELECT COUNT(*) FROM appointments a, r WHERE a.appointment_date >= r.s AND a.appointment_date < r.e AND a.status = 'COMPLETED') AS appointments_completed,
+        (SELECT COUNT(*) FROM appointments a, r WHERE a.appointment_date >= r.s AND a.appointment_date < r.e AND a.status = 'NO_SHOW') AS appointments_no_show
+    `, [`${month}-01`]);
+    return { month, ...rows[0] };
+  },
 };
 
 // Runs one tool call. Errors become a result the model can read, never a crash.
@@ -269,5 +293,5 @@ async function runTool(name, args, admin) {
   }
 }
 
-module.exports = { declarations, runTool };
+module.exports = { declarations, runTool, handlers };
 

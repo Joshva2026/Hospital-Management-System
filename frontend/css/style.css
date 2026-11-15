@@ -1761,6 +1761,20 @@ canvas {
   }
 }
 
+.assistant-modes { display: flex; gap: 6px; padding: 8px; background: #fff; border-bottom: 1px solid #e9ecef; }
+.assistant-modes button {
+  flex: 1; border: 1px solid #cbd5e1; background: #fff; border-radius: 999px;
+  padding: 6px 10px; font-size: 13px; color: #475569;
+}
+.assistant-modes button.active { background: #0d6efd; border-color: #0d6efd; color: #fff; }
+.assistant-chips { display: flex; gap: 6px; overflow-x: auto; padding: 8px 10px; background: #fff; border-top: 1px solid #e9ecef; }
+.assistant-chip {
+  flex: 0 0 auto; border: 1px solid #c7d2fe; background: #eef2ff; color: #3730a3;
+  border-radius: 999px; padding: 5px 11px; font-size: 12.5px; white-space: nowrap;
+}
+.assistant-chip:hover { background: #e0e7ff; }
+.assistant-chip:disabled { opacity: .5; }
+
 /* ===== DARK MODE OVERRIDES ===== */
 [data-bs-theme="dark"] body {
   background-color: var(--bg-color);

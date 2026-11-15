@@ -9,6 +9,15 @@
       <button type="button" class="btn-close btn-close-white" ng-click="toggle()" aria-label="Close"></button>
     </header>
 
+    <div class="assistant-modes">
+      <button type="button" ng-class="{active: mode === 'quick'}" ng-click="setMode('quick')">
+        <i class="fa-solid fa-bolt"></i> Quick Desk
+      </button>
+      <button type="button" ng-class="{active: mode === 'ai'}" ng-click="setMode('ai')">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
+      </button>
+    </div>
+
     <div class="assistant-body" id="assistantBody">
       <div class="assistant-msg" ng-repeat="m in messages" ng-class="m.role">
         <div class="bubble" ng-class="{error: m.error}" ng-bind="m.text"></div>
@@ -18,13 +27,18 @@
       </div>
     </div>
 
+    <div class="assistant-chips" ng-if="mode === 'quick' && suggestions.length">
+      <button type="button" class="assistant-chip" ng-repeat="s in suggestions"
+              ng-click="pick(s)" ng-disabled="sending">{{s.label}}</button>
+    </div>
+
     <form class="assistant-input" ng-submit="send()">
-      <input type="text" ng-model="input" maxlength="1000" autocomplete="off"
-             placeholder="Ask about patients, beds, doctors..." ng-disabled="sending">
+      <input type="text" ng-model="input" maxlength="300" autocomplete="off"
+             placeholder="{{ mode === 'quick' ? 'Ask Quick Desk...' : 'Ask the AI assistant...' }}"
+             ng-disabled="sending">
       <button type="submit" class="btn btn-primary" ng-disabled="sending || !input" aria-label="Send">
         <i class="fa-solid fa-paper-plane"></i>
       </button>
     </form>
   </section>
 </div>
-
