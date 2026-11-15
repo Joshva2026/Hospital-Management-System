@@ -1691,7 +1691,6 @@ canvas {
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.45;
-  white-space: pre-wrap;
   background: #fff;
   color: #212529;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
@@ -1706,6 +1705,15 @@ canvas {
   background: #fff3cd;
   color: #664d03;
 }
+
+.assistant-msg .bubble .ai-section { font-weight: 700; margin: 10px 0 4px; color: #0f172a; }
+.assistant-msg .bubble code { background: rgba(0, 0, 0, .06); padding: 0 4px; border-radius: 4px; font-size: 13px; }
+.assistant-msg.user .bubble code { background: rgba(255, 255, 255, .2); }
+.assistant-msg .bubble p { margin: 0 0 6px; }
+.assistant-msg .bubble p:last-child { margin-bottom: 0; }
+.assistant-msg .bubble ul { margin: 2px 0 6px; padding-left: 18px; }
+.assistant-msg .bubble li { margin-bottom: 3px; }
+.assistant-msg .bubble strong { font-weight: 700; }
 
 .assistant-input {
   display: flex;
