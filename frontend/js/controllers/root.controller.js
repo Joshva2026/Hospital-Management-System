@@ -65,6 +65,9 @@
       $scope.toggleDropdown = function (name, $event) {
         if ($event) $event.stopPropagation();
         $scope.activeDropdown = ($scope.activeDropdown === name) ? null : name;
+        if ($scope.activeDropdown) {
+          $scope.sidebarOpen = false;
+        }
       };
 
       $scope.closeDropdowns = function () {
@@ -120,6 +123,9 @@
 
       $scope.toggleSidebar = function () {
         $scope.sidebarOpen = !$scope.sidebarOpen;
+        if ($scope.sidebarOpen) {
+          $scope.activeDropdown = null;
+        }
       };
       
       $scope.closeSidebar = function () {

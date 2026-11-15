@@ -14,6 +14,23 @@
         var loaded = [];
         for (var i = 0; i < totalFrames; i++) { frames.push(null); loaded.push(false); }
 
+        var targetFrameIndex = 0;
+        var lastRenderedIndex = -1;
+        var rafId = null;
+
+        // Initialize frame 0 from the element if already loaded
+        if (imageElement.complete && imageElement.naturalWidth > 0) {
+          loaded[0] = true;
+          frames[0] = imageElement;
+          lastRenderedIndex = 0;
+        } else {
+          imageElement.onload = function () {
+            loaded[0] = true;
+            if (!frames[0]) frames[0] = imageElement;
+            lastRenderedIndex = 0;
+          };
+        }
+
         function loadFrame(index) {
           if (frames[index]) return;
           var img = new Image();
@@ -23,23 +40,52 @@
           img.onload = function () {
             loaded[index] = true;
             if (index === 0) setFrame(0);
+            if (Math.abs(targetFrameIndex - index) <= 2) {
+              setFrame(targetFrameIndex);
+            }
           };
         }
 
-        for (var i = 0; i < 20; i++) loadFrame(i);
+        // Always load frame-001 first
+        loadFrame(0);
+        for (var i = 1; i < 20; i++) loadFrame(i);
         setTimeout(function () {
           for (var i = 20; i < totalFrames; i++) loadFrame(i);
         }, 150);
 
-        var targetFrameIndex = 0;
-        var lastRenderedIndex = -1;
-        var rafId = null;
-
         function setFrame(index) {
           index = Math.max(0, Math.min(totalFrames - 1, index));
-          if (loaded[index] && lastRenderedIndex !== index) {
-            imageElement.src = frames[index].src;
-            lastRenderedIndex = index;
+          if (loaded[index]) {
+            if (lastRenderedIndex !== index) {
+              imageElement.src = frames[index].src;
+              lastRenderedIndex = index;
+            }
+            return;
+          }
+
+          // Fallback to nearest loaded frame so the screen is never blank or empty
+          for (var d = 1; d < totalFrames; d++) {
+            if (index - d >= 0 && loaded[index - d]) {
+              var fallbackPrev = index - d;
+              if (lastRenderedIndex !== fallbackPrev) {
+                imageElement.src = frames[fallbackPrev].src;
+                lastRenderedIndex = fallbackPrev;
+              }
+              return;
+            }
+            if (index + d < totalFrames && loaded[index + d]) {
+              var fallbackNext = index + d;
+              if (lastRenderedIndex !== fallbackNext) {
+                imageElement.src = frames[fallbackNext].src;
+                lastRenderedIndex = fallbackNext;
+              }
+              return;
+            }
+          }
+
+          if (loaded[0] && lastRenderedIndex !== 0) {
+            imageElement.src = frames[0].src;
+            lastRenderedIndex = 0;
           }
         }
 

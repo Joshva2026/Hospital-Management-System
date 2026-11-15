@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MARY Hospital &mdash; Management System</title>
+  <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -296,9 +297,8 @@
       </div>
 
       <!-- Full-Width Mobile Navigation Panel (Below Topbar) -->
-      <!-- Full-Width Mobile Navigation Panel (Below Topbar) -->
       <div class="topbar-mobile-panel d-lg-none" ng-show="sidebarOpen">
-        <div class="mobile-nav-scroll">
+        <div class="topbar-mobile-content mobile-nav-scroll">
           <a href="#!/dashboard" class="mobile-nav-link" ng-class="{active: isActive('/dashboard')}" ng-click="closeSidebar()">
             <i class="fa-solid fa-gauge-high"></i> Dashboard
           </a>
@@ -314,7 +314,7 @@
             </button>
             <div class="mobile-group-items" ng-show="isMobileGroupOpen('opd')">
               <a href="#!/visits" ng-class="{active: isActive('/visits')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-hospital-user"></i> OPD / Visits
+                <i class="fa-solid fa-hospital-user"></i> Visits
               </a>
               <a href="#!/appointments" ng-class="{active: isActive('/appointments')}" ng-click="closeSidebar()">
                 <i class="fa-solid fa-calendar-check"></i> Appointments
@@ -382,8 +382,8 @@
           <a href="#!/profile" class="mobile-nav-link" ng-class="{active: isActive('/profile')}" ng-click="closeSidebar()">
             <i class="fa-solid fa-user"></i> My Profile
           </a>
-          <button type="button" class="mobile-nav-link text-danger w-100 text-start border-0 bg-transparent" ng-click="logout()">
-            <i class="fa-solid fa-power-off"></i> Logout
+          <button type="button" class="mobile-nav-link text-danger w-100 text-start border-0 bg-transparent" ng-click="logout(); closeSidebar()">
+            <i class="fa-solid fa-power-off"></i> Sign Out
           </button>
         </div>
       </div>

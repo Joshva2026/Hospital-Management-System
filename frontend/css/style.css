@@ -2222,7 +2222,7 @@ canvas {
   html,
   .app-shell,
   .main-content {
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100vw;
   }
 
@@ -2780,9 +2780,11 @@ canvas {
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
   background: var(--surface);
-  z-index: 1018;
+  z-index: 1040;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   border-top: 1px solid var(--border);
   box-shadow: 0 16px 24px rgba(0, 0, 0, 0.12);
   display: block;
@@ -2804,11 +2806,29 @@ canvas {
   }
 }
 
-.topbar-mobile-content {
-  padding: 16px;
+.topbar-mobile-content,
+.mobile-nav-scroll {
+  padding: 16px 16px 48px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-height: calc(100% + 1px);
+}
+
+@media (max-width: 991.98px) {
+  .app-topbar {
+    overflow: visible !important;
+  }
+  .topbar-nav {
+    display: none !important;
+  }
+  .topbar-nav .topbar-dropdown-menu,
+  .topbar-dropdown:not(.topbar-user-dropdown) .topbar-dropdown-menu {
+    display: none !important;
+  }
+  .topbar-dropdown:hover .topbar-dropdown-menu:not(.topbar-user-menu) {
+    display: none !important;
+  }
 }
 
 .mobile-nav-link {
