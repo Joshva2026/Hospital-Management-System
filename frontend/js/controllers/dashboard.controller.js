@@ -2,12 +2,15 @@
   'use strict';
 
   angular.module('hmsApp').controller('DashboardController', [
-    '$scope', '$timeout', '$q', 'ApiService', 'ToastService',
-    function ($scope, $timeout, $q, ApiService, ToastService) {
+    '$scope', '$timeout', '$q', 'ApiService', 'ToastService', 'AuthService',
+    function ($scope, $timeout, $q, ApiService, ToastService, AuthService) {
+      $scope.admin = AuthService.currentAdmin || { fullName: 'Doctor' };
+      $scope.today = new Date();
       $scope.summary = null;
       $scope.loading = true;
       $scope.selectedRange = 14;
       $scope.trends = {};
+      $scope.wardBedStats = [];
 
       var charts = {};
 
@@ -67,7 +70,7 @@
             labels: labels,
             datasets: [{
               data: data,
-              backgroundColor: ['#007AFF', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9', '#8b5cf6', '#14b8a6', '#f97316'],
+              backgroundColor: ['#0d7c78', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9', '#8b5cf6', '#f97316'],
             }],
           },
           options: {
@@ -113,6 +116,27 @@
           var specDist = results[4].data || [];
           var bedOcc = results[5].data || [];
 
+          // Process Ward Bed Stats for clean progress bars
+          $scope.wardBedStats = bedOcc.map(function (w) {
+            var occupied = parseInt(w.occupied, 10) || 0;
+            var available = parseInt(w.available, 10) || 0;
+            var maintenance = parseInt(w.maintenance, 10) || 0;
+            var total = occupied + available + maintenance;
+            var pct = total > 0 ? Math.round((occupied / total) * 100) : 0;
+            var colorClass = pct >= 100 ? 'bg-danger' : (pct >= 80 ? 'bg-warning' : 'bg-success');
+            var textClass = pct >= 100 ? 'text-danger' : (pct >= 80 ? 'text-warning' : 'text-success');
+            return {
+              ward_name: w.ward_name,
+              occupied: occupied,
+              available: available,
+              maintenance: maintenance,
+              total: total,
+              pct: pct,
+              colorClass: colorClass,
+              textClass: textClass
+            };
+          });
+
           // Compute trend indicators vs yesterday
           if (trend.length >= 2) {
             var todayT = trend[trend.length - 1];
@@ -142,15 +166,16 @@
             charts.trend = renderLineChart('chartDailyTrend',
               trend.map(function (d) { return d.date.slice(5); }),
               [
-                { label: 'Registrations', data: trend.map(function (d) { return d.registrations; }), borderColor: '#007AFF', backgroundColor: 'rgba(0,122,255,0.1)', tension: 0.3, fill: true },
+                { label: 'Registrations', data: trend.map(function (d) { return d.registrations; }), borderColor: '#0d7c78', backgroundColor: 'rgba(13,124,120,0.1)', tension: 0.3, fill: true },
                 { label: 'OPD Visits', data: trend.map(function (d) { return d.opd_visits; }), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true },
               ]);
 
+            // Task 3: Admissions = teal (#0d7c78), Discharges = indigo (#6366f1)
             charts.admDis = renderBarChart('chartAdmDis',
               admDis.map(function (d) { return d.date.slice(5); }),
               [
-                { label: 'Admissions', data: admDis.map(function (d) { return d.admissions; }), backgroundColor: '#007AFF' },
-                { label: 'Discharges', data: admDis.map(function (d) { return d.discharges; }), backgroundColor: '#10b981' },
+                { label: 'Admissions', data: admDis.map(function (d) { return d.admissions; }), backgroundColor: '#0d7c78' },
+                { label: 'Discharges', data: admDis.map(function (d) { return d.discharges; }), backgroundColor: '#6366f1' },
               ]);
 
             charts.typeDist = renderPieChart('chartTypeDist',
@@ -159,7 +184,7 @@
 
             charts.specDist = renderBarChart('chartSpecDist',
               specDist.slice(0, 8).map(function (d) { return d.speciality_name; }),
-              [{ label: 'Visits', data: specDist.slice(0, 8).map(function (d) { return d.visit_count; }), backgroundColor: '#007AFF' }],
+              [{ label: 'Visits', data: specDist.slice(0, 8).map(function (d) { return d.visit_count; }), backgroundColor: '#0d7c78' }],
               true);
 
             charts.bedOcc = renderBarChart('chartBedOcc',
