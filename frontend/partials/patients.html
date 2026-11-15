@@ -10,6 +10,39 @@
     </div>
   </div>
 
+  <div class="card border-0 shadow-sm rounded-4 mb-4" ng-if="showDuplicates">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="fa-solid fa-copy text-warning me-2"></i> Duplicate Patients</h5>
+        <button type="button" class="btn-close" aria-label="Close" ng-click="closeDuplicates()"></button>
+      </div>
+
+      <div ng-if="duplicatesLoading" class="text-muted">
+        <i class="fa-solid fa-spinner fa-spin me-2"></i> Checking for duplicates...
+      </div>
+
+      <div ng-if="!duplicatesLoading && duplicatesChecked && duplicateGroups.length === 0"
+           class="alert alert-success border-0 mb-0">
+        <i class="fa-solid fa-circle-check me-2"></i> No duplicate patients found.
+      </div>
+
+      <div ng-if="!duplicatesLoading && duplicateGroups.length > 0">
+        <p class="text-muted small mb-3">{{duplicateGroups.length}} mobile number(s) are used by more than one active patient.</p>
+        <div class="list-group">
+          <div class="list-group-item border-0 bg-body-tertiary rounded-3 mb-2" ng-repeat="group in duplicateGroups">
+            <div class="fw-semibold mb-2"><i class="fa-solid fa-phone me-2"></i> {{group.mobile}}</div>
+            <div class="d-flex flex-column gap-1">
+              <div ng-repeat="id in group.ids track by $index" class="d-flex justify-content-between align-items-center">
+                <span>{{group.names[$index]}} <span class="text-muted small">({{id}})</span></span>
+                <a class="btn btn-sm btn-outline-primary" ng-href="#!/patients/{{id}}">View</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card p-4 mb-4 border-0 shadow-sm rounded-4 bg-surface">
     <div class="row g-3">
       <div class="col-md-4">
