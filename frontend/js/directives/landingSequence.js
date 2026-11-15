@@ -2,9 +2,8 @@
   'use strict';
 
   /**
-   * Scroll-scrubbed frame sequence drawn on a <canvas>.
-   * Usage: <canvas landing-sequence class="hms-cinematic__image"></canvas>
-   * Must sit inside a .hms-cinematic-section (the scroll track).
+   * Scroll-scrubbed frame sequence on a <canvas>.
+   * Phones get smaller frames and a smaller memory window.
    */
   angular.module('hmsApp').directive('landingSequence', ['$window', function ($window) {
     return {
@@ -16,23 +15,27 @@
 
         var ctx = canvas.getContext('2d');
         var TOTAL = 192;
-        var FRAME_PATH = 'assets/landing/hospital-sequence/frame-';
+        var isSmall = $window.innerWidth < 768;
+        var FRAME_PATH = isSmall
+          ? 'assets/landing/hospital-sequence-mobile/frame-'
+          : 'assets/landing/hospital-sequence/frame-';
+        var WINDOW = isSmall ? 8 : 12;   // frames kept in memory around the current position
         var reduceMotion = false;
         try {
           reduceMotion = $window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         } catch (e) { reduceMotion = false; }
 
-        var frames = new Array(TOTAL);   // HTMLImageElement or null
+        var frames = new Array(TOTAL);   // Image objects, or null when released
         var ready = new Array(TOTAL);    // true once decoded
-        var target = 0;                  // frame wanted by scroll position
-        var current = 0;                 // frame currently drawn (eased)
+        var target = 0;
+        var current = 0;
+        var lastCenter = -1;
         var drawnIndex = -1;
         var rafId = null;
         var inView = true;
         var destroyed = false;
         var stage = null;
 
-        // Frame path, zero-padded to 3 digits (frame-001.jpg ... frame-192.jpg).
         function src(i) {
           return FRAME_PATH + String(i + 1).padStart(3, '0') + '.jpg';
         }
@@ -42,31 +45,35 @@
           var img = new Image();
           frames[i] = img;
           img.onload = function () {
-            ready[i] = true;
-            if (i === Math.round(current)) requestDraw();
+            if (frames[i] === img) {
+              ready[i] = true;
+              requestDraw();
+            }
           };
-          img.onerror = function () { frames[i] = null; };
+          img.onerror = function () {
+            if (frames[i] === img) { frames[i] = null; ready[i] = false; }
+          };
           img.src = src(i);
         }
 
-        // Priority loading: a sparse set first, then the rest in small batches,
-        // so the first paint is fast and the main thread is not blocked.
-        function preload() {
-          var order = [0];
-          for (var i = 8; i < TOTAL; i += 8) order.push(i);
-          order.forEach(loadFrame);
+        // Keep only frames near the current position. Release the rest so memory stays low.
+        function updateWindow(center) {
+          if (center === lastCenter) return;
+          lastCenter = center;
 
-          var rest = [];
-          for (var j = 0; j < TOTAL; j++) if (!frames[j]) rest.push(j);
-          var pos = 0;
-          (function batch() {
-            if (destroyed) return;
-            for (var k = 0; k < 6 && pos < rest.length; k++, pos++) loadFrame(rest[pos]);
-            if (pos < rest.length) setTimeout(batch, 120);
-          })();
+          for (var i = 0; i < TOTAL; i++) {
+            if (Math.abs(i - center) > WINDOW && frames[i]) {
+              frames[i] = null;
+              ready[i] = false;
+            }
+          }
+          // Load the nearest frames first.
+          for (var d = 0; d <= WINDOW; d++) {
+            loadFrame(center - d);
+            loadFrame(center + d);
+          }
         }
 
-        // Draw an image with "object-fit: cover" behavior.
         function drawCover(img) {
           var cw = canvas.width, ch = canvas.height;
           var iw = img.naturalWidth, ih = img.naturalHeight;
@@ -77,26 +84,25 @@
 
         function resize() {
           var dpr = Math.min($window.devicePixelRatio || 1, 2);
-          var w = canvas.clientWidth, h = canvas.clientHeight;
-          canvas.width = Math.round(w * dpr);
-          canvas.height = Math.round(h * dpr);
-          drawnIndex = -1; // force a redraw at the new size
+          canvas.width = Math.max(1, Math.round(canvas.clientWidth * dpr));
+          canvas.height = Math.max(1, Math.round(canvas.clientHeight * dpr));
+          drawnIndex = -1;
           requestDraw();
         }
 
-        // Find the nearest decoded frame if the exact one is not ready yet.
+        // Nearest decoded frame to the wanted index, or -1 if none is ready yet.
         function bestAvailable(i) {
           if (ready[i]) return i;
-          for (var d = 1; d < TOTAL; d++) {
-            if (ready[i - d]) return i - d;
-            if (ready[i + d]) return i + d;
+          for (var d = 1; d <= WINDOW + 1; d++) {
+            if (i - d >= 0 && ready[i - d]) return i - d;
+            if (i + d < TOTAL && ready[i + d]) return i + d;
           }
           return -1;
         }
 
         function draw() {
           var idx = bestAvailable(Math.round(current));
-          if (idx === -1) return;
+          if (idx === -1) return;                 // keep the last picture on screen
           if (idx === drawnIndex && !reduceMotion) return;
           drawnIndex = idx;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -131,16 +137,17 @@
 
           target = Math.round(readProgress() * (TOTAL - 1));
           if (reduceMotion) {
-            current = target;               // no easing for reduced motion
+            current = target;
           } else {
-            current += (target - current) * 0.18; // smooth catch-up
+            current += (target - current) * 0.18;
             if (Math.abs(target - current) < 0.05) current = target;
           }
 
+          var c = Math.round(current);
+          updateWindow(c);
           draw();
-          updateStage(Math.round(current));
+          updateStage(c);
 
-          // Keep animating only while the value is still moving and the section is visible.
           if (inView && Math.abs(target - current) >= 0.05) requestDraw();
         }
 
@@ -148,7 +155,6 @@
           if (!rafId && !destroyed) rafId = $window.requestAnimationFrame(tick);
         }
 
-        // Only run the loop while the section is on screen.
         var observer = null;
         if ($window.IntersectionObserver) {
           observer = new IntersectionObserver(function (entries) {
@@ -159,14 +165,13 @@
         }
 
         function onScroll() { requestDraw(); }
-        function onResize() { resize(); requestDraw(); }
+        function onResize() { resize(); }
 
         $window.addEventListener('scroll', onScroll, { passive: true });
         $window.addEventListener('resize', onResize, { passive: true });
+        $window.addEventListener('orientationchange', onResize, { passive: true });
 
-        preload();
         resize();
-        // Start at the Hero stage.
         scope.$evalAsync(function () { scope.activeStep = -1; });
         requestDraw();
 
@@ -174,9 +179,11 @@
           destroyed = true;
           $window.removeEventListener('scroll', onScroll);
           $window.removeEventListener('resize', onResize);
+          $window.removeEventListener('orientationchange', onResize);
           if (observer) observer.disconnect();
           if (rafId) $window.cancelAnimationFrame(rafId);
-          frames = []; // release image references
+          frames = [];
+          ready = [];
         });
       }
     };
