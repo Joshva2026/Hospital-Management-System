@@ -1,0 +1,30 @@
+<div class="assistant-widget" ng-controller="AssistantController">
+  <button class="assistant-fab" ng-click="toggle()" aria-label="Open HMS assistant">
+    <i class="fa-solid" ng-class="open ? 'fa-xmark' : 'fa-robot'"></i>
+  </button>
+
+  <section class="assistant-panel" ng-show="open" role="dialog" aria-label="HMS assistant">
+    <header class="assistant-header">
+      <strong><i class="fa-solid fa-robot me-2"></i>HMS Assistant</strong>
+      <button type="button" class="btn-close btn-close-white" ng-click="toggle()" aria-label="Close"></button>
+    </header>
+
+    <div class="assistant-body" id="assistantBody">
+      <div class="assistant-msg" ng-repeat="m in messages" ng-class="m.role">
+        <div class="bubble" ng-class="{error: m.error}" ng-bind="m.text"></div>
+      </div>
+      <div class="assistant-msg assistant" ng-if="sending">
+        <div class="bubble typing"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <form class="assistant-input" ng-submit="send()">
+      <input type="text" ng-model="input" maxlength="1000" autocomplete="off"
+             placeholder="Ask about patients, beds, doctors..." ng-disabled="sending">
+      <button type="submit" class="btn btn-primary" ng-disabled="sending || !input" aria-label="Send">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </section>
+</div>
+

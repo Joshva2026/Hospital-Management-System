@@ -41,36 +41,48 @@
       <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5]"></div>
     </div>
     
-    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && visits.length">
-      <table class="table mb-0 align-middle">
-        <thead class="bg-light">
+    <div class="table-responsive table-responsive-wrap animate-slide-up" ng-if="!loading && visits.length">
+      <table class="table table-hover table-striped mb-0 align-middle">
+        <thead>
           <tr>
-            <th>VISIT ID</th>
-            <th>PATIENT</th>
-            <th>DOCTOR</th>
-            <th>SPECIALITY</th>
-            <th>DATE</th>
-            <th>TYPE & COMPLAINT</th>
-            <th>STATUS</th>
+            <th ng-click="sortBy('visit_id')" style="cursor:pointer">
+              VISIT ID <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='visit_id' && !sortReverse, 'fa-arrow-down': sortColumn==='visit_id' && sortReverse, 'fa-sort opacity-50': sortColumn!=='visit_id'}"></i>
+            </th>
+            <th ng-click="sortBy('patient_name')" style="cursor:pointer">
+              PATIENT <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='patient_name' && !sortReverse, 'fa-arrow-down': sortColumn==='patient_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='patient_name'}"></i>
+            </th>
+            <th ng-click="sortBy('doctor_name')" style="cursor:pointer">
+              DOCTOR <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='doctor_name' && !sortReverse, 'fa-arrow-down': sortColumn==='doctor_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='doctor_name'}"></i>
+            </th>
+            <th ng-click="sortBy('speciality_name')" style="cursor:pointer">
+              SPECIALITY <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='speciality_name' && !sortReverse, 'fa-arrow-down': sortColumn==='speciality_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='speciality_name'}"></i>
+            </th>
+            <th ng-click="sortBy('visit_date')" style="cursor:pointer">
+              DATE <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='visit_date' && !sortReverse, 'fa-arrow-down': sortColumn==='visit_date' && sortReverse, 'fa-sort opacity-50': sortColumn!=='visit_date'}"></i>
+            </th>
+            <th>TYPE &amp; COMPLAINT</th>
+            <th ng-click="sortBy('status')" style="cursor:pointer">
+              STATUS <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='status' && !sortReverse, 'fa-arrow-down': sortColumn==='status' && sortReverse, 'fa-sort opacity-50': sortColumn!=='status'}"></i>
+            </th>
             <th class="text-end">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="v in visits" class="border-bottom">
+          <tr ng-repeat="v in visits | orderBy:sortColumn:sortReverse" class="border-bottom">
             <td class="py-3"><span class="font-monospace text-muted">{{v.visit_id}}</span></td>
-            <td class="py-3 fw-bold text-dark">{{v.patient_name}}</td>
+            <td class="py-3 fw-bold text-body">{{v.patient_name}}</td>
             <td class="py-3 text-muted"><i class="fa-solid fa-user-doctor me-1 opacity-50"></i> {{v.doctor_name}}</td>
-            <td class="py-3"><span class="badge bg-light text-dark border">{{v.speciality_name}}</span></td>
+            <td class="py-3"><span class="badge bg-body-tertiary text-body border">{{v.speciality_name}}</span></td>
             <td class="py-3 text-muted">{{v.visit_date | date:'dd-MMM-yyyy'}}</td>
             <td class="py-3">
-              <div class="fw-medium text-dark">{{v.visit_type}}</div>
+              <div class="fw-medium text-body">{{v.visit_type}}</div>
               <div class="small text-muted text-truncate" style="max-width: 200px;">{{v.complaint}}</div>
             </td>
-            <td class="py-3"><span class="badge-status shadow-sm px-3 py-1 rounded-pill" ng-class="'badge-' + (v.status | lowercase)">{{v.status}}</span></td>
+            <td class="py-3"><status-badge status="v.status"></status-badge></td>
             <td class="py-3 text-end text-nowrap">
-              <button class="btn btn-sm btn-light border me-1 text-primary" ng-if="v.status==='SCHEDULED'" ng-click="markStatus(v,'IN_PROGRESS')" title="Start Visit"><i class="fa-solid fa-play"></i></button>
-              <button class="btn btn-sm btn-light border me-1 text-success" ng-if="v.status==='IN_PROGRESS'" ng-click="markStatus(v,'COMPLETED')" title="Complete Visit"><i class="fa-solid fa-check"></i></button>
-              <button class="btn btn-sm btn-light border text-danger" ng-if="v.status==='SCHEDULED'" ng-click="markStatus(v,'CANCELLED')" title="Cancel Visit"><i class="fa-solid fa-xmark"></i></button>
+              <button class="btn btn-sm btn-outline-primary me-1" ng-if="v.status==='SCHEDULED'" ng-click="markStatus(v,'IN_PROGRESS')" title="Start Visit"><i class="fa-solid fa-play"></i></button>
+              <button class="btn btn-sm btn-outline-success me-1" ng-if="v.status==='IN_PROGRESS'" ng-click="markStatus(v,'COMPLETED')" title="Complete Visit"><i class="fa-solid fa-check"></i></button>
+              <button class="btn btn-sm btn-outline-danger" ng-if="v.status==='SCHEDULED'" ng-click="markStatus(v,'CANCELLED')" title="Cancel Visit"><i class="fa-solid fa-xmark"></i></button>
             </td>
           </tr>
         </tbody>
@@ -78,11 +90,10 @@
     </div>
 
     <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !visits.length">
-      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+      <div class="d-inline-flex align-items-center justify-content-center bg-body-tertiary rounded-circle mb-3" style="width: 70px; height: 70px;">
         <i class="fa-solid fa-stethoscope fs-2 text-muted"></i>
       </div>
-      <h4 class="fw-bold text-dark mb-2">No visits found</h4>
-      <p class="text-muted mb-0">Try adjusting your search or filters to find what you're looking for.</p>
+      <h5 class="fw-bold text-body mb-0">No visits found. Try a different search.</h5>
     </div>
 
     <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" ng-if="!loading && visits.length">
@@ -111,7 +122,7 @@
               <label class="fw-medium text-dark mb-1">Search patient *</label>
               <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
-                <input type="text" class="form-control border-start-0" placeholder="Search patient by name, ID or phone number..." ng-model="search.query" ng-change="searchPatients()">
+                <input type="text" class="form-control border-start-0" placeholder="Search patient by name, ID or phone number..." ng-model="search.query" ng-change="searchPatients()" ng-model-options="{ debounce: 300 }">
               </div>
               
               <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden position-absolute w-100 z-3" ng-if="!patientSearching && patients.length > 0" style="max-height: 250px; overflow-y: auto; top: 100%;">

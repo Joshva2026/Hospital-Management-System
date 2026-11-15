@@ -20,6 +20,17 @@
       $scope.hasSearched    = false;
       $scope.patientSearching = false;
       $scope.form           = {};
+
+      $scope.sortColumn = 'appointment_date';
+      $scope.sortReverse = false;
+      $scope.sortBy = function (col) {
+        if ($scope.sortColumn === col) {
+          $scope.sortReverse = !$scope.sortReverse;
+        } else {
+          $scope.sortColumn = col;
+          $scope.sortReverse = false;
+        }
+      };
       
       var searchTimeout = null;
       var searchReqToken = 0;

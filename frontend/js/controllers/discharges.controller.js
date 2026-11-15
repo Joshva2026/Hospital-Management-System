@@ -33,6 +33,17 @@
       $scope.prevPage = function () { if ($scope.filters.page > 1) { $scope.filters.page--; load(); } };
       $scope.nextPage = function () { if ($scope.filters.page < $scope.pagination.totalPages) { $scope.filters.page++; load(); } };
 
+      $scope.sortColumn = 'discharge_date';
+      $scope.sortReverse = true;
+      $scope.sortBy = function (col) {
+        if ($scope.sortColumn === col) {
+          $scope.sortReverse = !$scope.sortReverse;
+        } else {
+          $scope.sortColumn = col;
+          $scope.sortReverse = false;
+        }
+      };
+
       function loadActiveAdmissions() {
         ApiService.get('/admissions', { status: 'ADMITTED', limit: 1000 }).then(function (res) {
           $scope.activeAdmissions = res.data;

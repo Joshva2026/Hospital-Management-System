@@ -7,11 +7,25 @@
       $scope.summary = null;
       $scope.loading = true;
       $scope.selectedRange = 14;
+      $scope.trends = {};
 
       var charts = {};
 
       function destroyCharts() {
         Object.keys(charts).forEach(function (k) { if (charts[k]) charts[k].destroy(); });
+      }
+
+      function calculateTrend(todayVal, yesterdayVal) {
+        if (todayVal === undefined || yesterdayVal === undefined || yesterdayVal === null) return null;
+        var diff = todayVal - yesterdayVal;
+        var pct = yesterdayVal > 0 ? Math.round((Math.abs(diff) / yesterdayVal) * 100) : null;
+        var label = (diff > 0 ? '+' : '') + diff;
+        if (pct !== null) label += ' (' + (diff > 0 ? '+' : '') + (diff >= 0 ? pct : -pct) + '%)';
+        return {
+          diff: diff,
+          direction: diff > 0 ? 'up' : (diff < 0 ? 'down' : 'neutral'),
+          label: label,
+        };
       }
 
       function renderLineChart(id, labels, datasets) {
@@ -20,7 +34,11 @@
         return new Chart(ctx, {
           type: 'line',
           data: { labels: labels, datasets: datasets },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: datasets.length > 1 } } },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: datasets.length > 1 } },
+          },
         });
       }
 
@@ -32,7 +50,8 @@
           data: { labels: labels, datasets: datasets },
           options: {
             indexAxis: horizontal ? 'y' : 'x',
-            responsive: true, maintainAspectRatio: false,
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: datasets.length > 1 } },
             scales: { x: { stacked: !!horizontal }, y: { stacked: !!horizontal } },
           },
@@ -44,22 +63,30 @@
         if (!ctx) return null;
         return new Chart(ctx, {
           type: 'doughnut',
-          data: { labels: labels, datasets: [{ data: data, backgroundColor: ['#0d7c78', '#6fd6cf', '#b9770e', '#c0392b', '#2980b9', '#8e44ad', '#16a085', '#d35400'] }] },
-          options: { responsive: true, maintainAspectRatio: false },
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: ['#007AFF', '#10b981', '#f59e0b', '#ef4444', '#0ea5e9', '#8b5cf6', '#14b8a6', '#f97316'],
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+          },
         });
       }
 
-      $scope.setRange = function(range) {
+      $scope.setRange = function (range) {
         $scope.selectedRange = range;
         
         if (range === 'Today') {
-          // Gracefully hide charts by relying on ng-if in the template
-          // Only fetch the summary data
           $scope.loading = true;
-          ApiService.get('/dashboard/summary').then(function(res) {
+          $scope.trends = {};
+          ApiService.get('/dashboard/summary').then(function (res) {
             $scope.summary = res.data;
             $scope.loading = false;
-          }).catch(function(err) {
+          }).catch(function (err) {
             ToastService.error(err.message || 'Failed to load summary.');
             $scope.loading = false;
           });
@@ -80,11 +107,32 @@
           ApiService.get('/dashboard/charts/bed-occupancy')
         ]).then(function (results) {
           $scope.summary = results[0].data;
-          var trend = results[1].data;
-          var admDis = results[2].data;
-          var typeDist = results[3].data;
-          var specDist = results[4].data;
-          var bedOcc = results[5].data;
+          var trend = results[1].data || [];
+          var admDis = results[2].data || [];
+          var typeDist = results[3].data || [];
+          var specDist = results[4].data || [];
+          var bedOcc = results[5].data || [];
+
+          // Compute trend indicators vs yesterday
+          if (trend.length >= 2) {
+            var todayT = trend[trend.length - 1];
+            var yestT = trend[trend.length - 2];
+            $scope.trends.opd = calculateTrend(todayT.opd_visits, yestT.opd_visits);
+            $scope.trends.patients = calculateTrend(todayT.registrations, yestT.registrations);
+          } else {
+            $scope.trends.opd = null;
+            $scope.trends.patients = null;
+          }
+
+          if (admDis.length >= 2) {
+            var todayAD = admDis[admDis.length - 1];
+            var yestAD = admDis[admDis.length - 2];
+            $scope.trends.admissions = calculateTrend(todayAD.admissions, yestAD.admissions);
+            $scope.trends.discharges = calculateTrend(todayAD.discharges, yestAD.discharges);
+          } else {
+            $scope.trends.admissions = null;
+            $scope.trends.discharges = null;
+          }
 
           $scope.loading = false;
 
@@ -94,15 +142,15 @@
             charts.trend = renderLineChart('chartDailyTrend',
               trend.map(function (d) { return d.date.slice(5); }),
               [
-                { label: 'Registrations', data: trend.map(function (d) { return d.registrations; }), borderColor: '#0d7c78', backgroundColor: 'rgba(13,124,120,0.1)', tension: 0.3, fill: true },
-                { label: 'OPD Visits', data: trend.map(function (d) { return d.opd_visits; }), borderColor: '#b9770e', backgroundColor: 'rgba(185,119,14,0.1)', tension: 0.3, fill: true },
+                { label: 'Registrations', data: trend.map(function (d) { return d.registrations; }), borderColor: '#007AFF', backgroundColor: 'rgba(0,122,255,0.1)', tension: 0.3, fill: true },
+                { label: 'OPD Visits', data: trend.map(function (d) { return d.opd_visits; }), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true },
               ]);
 
             charts.admDis = renderBarChart('chartAdmDis',
               admDis.map(function (d) { return d.date.slice(5); }),
               [
                 { label: 'Admissions', data: admDis.map(function (d) { return d.admissions; }), backgroundColor: '#007AFF' },
-                { label: 'Discharges', data: admDis.map(function (d) { return d.discharges; }), backgroundColor: '#ef4444' },
+                { label: 'Discharges', data: admDis.map(function (d) { return d.discharges; }), backgroundColor: '#10b981' },
               ]);
 
             charts.typeDist = renderPieChart('chartTypeDist',
@@ -122,7 +170,10 @@
                 { label: 'Maintenance', data: bedOcc.map(function (d) { return d.maintenance; }), backgroundColor: '#f59e0b' },
               ], true);
           }, 50);
-        }).catch(function (err) { ToastService.error(err.message || 'Failed to load dashboard.'); $scope.loading = false; });
+        }).catch(function (err) {
+          ToastService.error(err.message || 'Failed to load dashboard.');
+          $scope.loading = false;
+        });
       }
 
       // Initial load

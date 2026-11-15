@@ -50,19 +50,27 @@
       <div class="skeleton skeleton-text" style="height: 60px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5,6]"></div>
     </div>
     
-    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && logs.length">
-      <table class="table mb-0 align-middle">
-        <thead class="bg-light">
+    <div class="table-responsive table-responsive-wrap animate-slide-up" ng-if="!loading && logs.length">
+      <table class="table table-hover table-striped mb-0 align-middle">
+        <thead>
           <tr>
-            <th class="py-3 px-4">ACTION</th>
-            <th class="py-3">ENTITY</th>
-            <th class="py-3">ADMIN</th>
-            <th class="py-3">DATE / TIME</th>
+            <th class="py-3 px-4" ng-click="sortBy('action')" style="cursor:pointer">
+              ACTION <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='action' && !sortReverse, 'fa-arrow-down': sortColumn==='action' && sortReverse, 'fa-sort opacity-50': sortColumn!=='action'}"></i>
+            </th>
+            <th class="py-3" ng-click="sortBy('entity_type')" style="cursor:pointer">
+              ENTITY <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='entity_type' && !sortReverse, 'fa-arrow-down': sortColumn==='entity_type' && sortReverse, 'fa-sort opacity-50': sortColumn!=='entity_type'}"></i>
+            </th>
+            <th class="py-3" ng-click="sortBy('admin_name')" style="cursor:pointer">
+              ADMIN <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='admin_name' && !sortReverse, 'fa-arrow-down': sortColumn==='admin_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='admin_name'}"></i>
+            </th>
+            <th class="py-3" ng-click="sortBy('created_at')" style="cursor:pointer">
+              DATE / TIME <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='created_at' && !sortReverse, 'fa-arrow-down': sortColumn==='created_at' && sortReverse, 'fa-sort opacity-50': sortColumn!=='created_at'}"></i>
+            </th>
             <th class="py-3 px-4">DESCRIPTION</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="l in logs" class="border-bottom transition hover-bg-light">
+          <tr ng-repeat="l in logs | orderBy:sortColumn:sortReverse" class="border-bottom transition hover-bg-light">
             <td class="py-3 px-4">
               <span class="badge shadow-sm rounded-pill px-3 py-2" ng-class="{
                 'bg-success': l.action === 'CREATE' || l.action === 'LOGIN',
@@ -75,21 +83,21 @@
             </td>
             <td class="py-3">
               <div ng-if="l.entity_type">
-                <div class="fw-bold text-dark" style="font-size: 0.85rem;"><i class="fa-solid fa-cube text-primary opacity-75 me-1"></i>{{l.entity_type}}</div>
+                <div class="fw-bold text-body" style="font-size: 0.85rem;"><i class="fa-solid fa-cube text-primary opacity-75 me-1"></i>{{l.entity_type}}</div>
                 <div class="text-muted font-monospace small mt-1">{{l.entity_id || '-'}}</div>
               </div>
               <div ng-if="!l.entity_type" class="text-muted small">-</div>
             </td>
             <td class="py-3">
               <div class="d-flex align-items-center gap-2">
-                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 32px; height: 32px;">
+                <div class="bg-body-tertiary rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 32px; height: 32px;">
                   <i class="fa-solid fa-user-shield" style="font-size: 0.85rem;"></i>
                 </div>
-                <span class="fw-medium text-dark">{{l.admin_name || '-'}}</span>
+                <span class="fw-medium text-body">{{l.admin_name || '-'}}</span>
               </div>
             </td>
             <td class="py-3">
-              <div class="fw-medium text-dark">{{l.created_at | date:'dd MMM yyyy'}}</div>
+              <div class="fw-medium text-body">{{l.created_at | date:'dd MMM yyyy'}}</div>
               <div class="text-muted small">{{l.created_at | date:'hh:mm a'}}</div>
             </td>
             <td class="py-3 px-4">
@@ -103,11 +111,10 @@
     </div>
     
     <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !logs.length">
-      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+      <div class="d-inline-flex align-items-center justify-content-center bg-body-tertiary rounded-circle mb-3" style="width: 70px; height: 70px;">
         <i class="fa-solid fa-clipboard-check fs-2 text-muted"></i>
       </div>
-      <h4 class="fw-bold text-dark mb-2">No audit activity found</h4>
-      <p class="text-muted mb-0">There are currently no audit records matching the selected criteria.</p>
+      <h5 class="fw-bold text-body mb-0">No audit logs found. Try a different search.</h5>
     </div>
     
     <div class="card-footer bg-white border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3" ng-if="!loading && logs.length">

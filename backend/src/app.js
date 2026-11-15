@@ -36,6 +36,7 @@ app.use('/api/beds', require('./routes/beds'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/audit-logs', require('./routes/auditLogs'));
+app.use('/api/ai', require('./routes/ai'));
 
 app.use((req, res) => res.status(404).json({ success: false, message: `Route ${req.method} ${req.originalUrl} not found.` }));
 app.use(errorHandler);

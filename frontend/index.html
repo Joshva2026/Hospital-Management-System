@@ -51,6 +51,9 @@
 
         <!-- Right: Admin Area -->
         <div class="topnav-right">
+          <button class="btn btn-sm btn-link p-2 topnav-theme-toggle" ng-click="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+            <i class="fa-solid" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon text-secondary'"></i>
+          </button>
           <a href="#!/profile" class="topnav-user" ng-class="{active: isActive('/profile')}">
             <div class="avatar-circle bg-primary-light text-primary" style="margin-right: 8px;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
             <div class="user-info">
@@ -77,6 +80,13 @@
           <button class="mobile-nav-close" ng-click="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="mobile-nav-links">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <span class="small fw-semibold text-muted">Theme</span>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" ng-click="toggleTheme()">
+              <i class="fa-solid me-1" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon'"></i>
+              <span>{{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}}</span>
+            </button>
+          </div>
           <a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}" ng-click="toggleSidebar()">Dashboard</a>
           <a href="#!/patients" ng-class="{active: isActive('/patients')}" ng-click="toggleSidebar()">Patients</a>
           <a href="#!/visits" ng-class="{active: isActive('/visits')}" ng-click="toggleSidebar()">OPD</a>
@@ -127,6 +137,7 @@
   
   <script src="js/directives/scrollReveal.directive.js"></script>
   <script src="js/directives/landingSequence.js"></script>
+  <script src="js/directives/statusBadge.directive.js"></script>
 
   <script src="js/controllers/root.controller.js"></script>
   <script src="js/controllers/landing.controller.js"></script>
@@ -144,5 +155,8 @@
   <script src="js/controllers/analytics.controller.js"></script>
   <script src="js/controllers/auditLogs.controller.js"></script>
   <script src="js/controllers/profile.controller.js"></script>
+  <script src="js/controllers/assistant.controller.js"></script>
+
+  <div ng-if="auth.isAuthenticated()" ng-include="'partials/assistant-widget.html'"></div>
 </body>
 </html>

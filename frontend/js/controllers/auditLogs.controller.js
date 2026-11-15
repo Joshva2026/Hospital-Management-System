@@ -21,6 +21,17 @@
       $scope.applyFilters = function () { $scope.pagination.page = 1; load(); };
       $scope.goToPage = function (p) { if (p < 1 || p > $scope.pagination.totalPages) return; $scope.pagination.page = p; load(); };
 
+      $scope.sortColumn = 'created_at';
+      $scope.sortReverse = true;
+      $scope.sortBy = function (col) {
+        if ($scope.sortColumn === col) {
+          $scope.sortReverse = !$scope.sortReverse;
+        } else {
+          $scope.sortColumn = col;
+          $scope.sortReverse = false;
+        }
+      };
+
       load();
     },
   ]);

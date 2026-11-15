@@ -15,30 +15,38 @@
       <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3]"></div>
     </div>
     
-    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && discharges.length">
-      <table class="table mb-0 align-middle">
-        <thead class="bg-light">
+    <div class="table-responsive table-responsive-wrap animate-slide-up" ng-if="!loading && discharges.length">
+      <table class="table table-hover table-striped mb-0 align-middle">
+        <thead>
           <tr>
-            <th>DISCHARGE ID</th>
-            <th>PATIENT</th>
-            <th>DISCHARGE DATE</th>
-            <th>TYPE</th>
+            <th ng-click="sortBy('discharge_id')" style="cursor:pointer">
+              DISCHARGE ID <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='discharge_id' && !sortReverse, 'fa-arrow-down': sortColumn==='discharge_id' && sortReverse, 'fa-sort opacity-50': sortColumn!=='discharge_id'}"></i>
+            </th>
+            <th ng-click="sortBy('patient_name')" style="cursor:pointer">
+              PATIENT <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='patient_name' && !sortReverse, 'fa-arrow-down': sortColumn==='patient_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='patient_name'}"></i>
+            </th>
+            <th ng-click="sortBy('discharge_date')" style="cursor:pointer">
+              DISCHARGE DATE <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='discharge_date' && !sortReverse, 'fa-arrow-down': sortColumn==='discharge_date' && sortReverse, 'fa-sort opacity-50': sortColumn!=='discharge_date'}"></i>
+            </th>
+            <th ng-click="sortBy('discharge_type')" style="cursor:pointer">
+              TYPE <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='discharge_type' && !sortReverse, 'fa-arrow-down': sortColumn==='discharge_type' && sortReverse, 'fa-sort opacity-50': sortColumn!=='discharge_type'}"></i>
+            </th>
             <th>FINAL DIAGNOSIS</th>
             <th>FOLLOW-UP</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="d in discharges" class="border-bottom">
+          <tr ng-repeat="d in discharges | orderBy:sortColumn:sortReverse" class="border-bottom">
             <td class="py-3">
               <span class="font-monospace text-muted me-3">{{d.discharge_id}}</span>
-              <button class="btn btn-sm btn-light border text-secondary" ng-click="openEditDischarge(d)" title="Edit Discharge"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-sm btn-outline-secondary" ng-click="openEditDischarge(d)" title="Edit Discharge"><i class="fa-solid fa-pen"></i></button>
             </td>
-            <td class="py-3 fw-bold text-dark">{{d.patient_name}}</td>
+            <td class="py-3 fw-bold text-body">{{d.patient_name}}</td>
             <td class="py-3 text-muted">{{d.discharge_date | date:'dd-MMM-yyyy'}}</td>
-            <td class="py-3"><span class="badge bg-light text-dark border">{{d.discharge_type}}</span></td>
+            <td class="py-3"><span class="badge bg-body-tertiary text-body border">{{d.discharge_type}}</span></td>
             <td class="py-3 text-muted text-truncate" style="max-width: 250px;">{{d.final_diagnosis}}</td>
             <td class="py-3">
-              <span class="text-dark fw-medium" ng-if="d.follow_up_date"><i class="fa-regular fa-calendar-check text-primary me-1"></i> {{d.follow_up_date | date:'dd-MMM-yyyy'}}</span>
+              <span class="text-body fw-medium" ng-if="d.follow_up_date"><i class="fa-regular fa-calendar-check text-primary me-1"></i> {{d.follow_up_date | date:'dd-MMM-yyyy'}}</span>
               <span class="text-muted" ng-if="!d.follow_up_date">-</span>
             </td>
           </tr>
@@ -47,20 +55,19 @@
     </div>
 
     <!-- Pagination -->
-    <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center" ng-if="!loading && discharges.length && pagination.totalPages > 1">
+    <div class="card-footer bg-surface border-top p-3 d-flex justify-content-between align-items-center" ng-if="!loading && discharges.length && pagination.totalPages > 1">
       <span class="text-muted small">Showing Page {{filters.page}} of {{pagination.totalPages}} ({{pagination.total}} total)</span>
       <div class="btn-group shadow-sm rounded-pill">
-        <button class="btn btn-sm btn-light border px-3" ng-click="prevPage()" ng-disabled="filters.page === 1">Previous</button>
-        <button class="btn btn-sm btn-light border px-3" ng-click="nextPage()" ng-disabled="filters.page === pagination.totalPages">Next</button>
+        <button class="btn btn-sm btn-outline-secondary px-3" ng-click="prevPage()" ng-disabled="filters.page === 1">Previous</button>
+        <button class="btn btn-sm btn-outline-secondary px-3" ng-click="nextPage()" ng-disabled="filters.page === pagination.totalPages">Next</button>
       </div>
     </div>
     
     <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !discharges.length">
-      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+      <div class="d-inline-flex align-items-center justify-content-center bg-body-tertiary rounded-circle mb-3" style="width: 70px; height: 70px;">
         <i class="fa-solid fa-right-from-bracket fs-2 text-muted"></i>
       </div>
-      <h4 class="fw-bold text-dark mb-2">No discharges recorded</h4>
-      <p class="text-muted mb-0">Past discharge records will appear here.</p>
+      <h5 class="fw-bold text-body mb-0">No discharges found. Try a different search.</h5>
     </div>
   </div>
 

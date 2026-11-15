@@ -135,7 +135,6 @@
       }
 
       $scope.submitPatient = function (form) {
-        console.log("Submit called. Form valid:", form ? form.$valid : 'no form', "Form error:", form ? form.$error : 'no form');
         if (!form || !form.$valid) {
           ToastService.error('Please ensure all required fields are correctly filled.');
           return;

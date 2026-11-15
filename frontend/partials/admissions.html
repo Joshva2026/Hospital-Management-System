@@ -26,42 +26,41 @@
       <div class="skeleton skeleton-text" style="height: 30px; margin-bottom: 20px;"></div>
       <div class="skeleton skeleton-text" style="height: 50px; margin-bottom: 12px;" ng-repeat="i in [1,2,3,4,5]"></div>
     </div>
-    <div class="table-responsive-wrap animate-slide-up" ng-if="!loading && admissions.length">
-      <table class="table mb-0 align-middle">
-        <thead class="bg-light">
+    <div class="table-responsive table-responsive-wrap animate-slide-up" ng-if="!loading && admissions.length">
+      <table class="table table-hover table-striped mb-0 align-middle">
+        <thead>
           <tr>
-            <th>ADMISSION ID</th>
-            <th>PATIENT</th>
-            <th>CLINICAL</th>
-            <th>LOCATION</th>
-            <th>DATE</th>
+            <th ng-click="sortBy('admission_id')" style="cursor:pointer">ADMISSION ID <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='admission_id' && !sortReverse, 'fa-arrow-down': sortColumn==='admission_id' && sortReverse, 'fa-sort opacity-50': sortColumn!=='admission_id'}"></i></th>
+            <th ng-click="sortBy('patient_name')" style="cursor:pointer">PATIENT <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='patient_name' && !sortReverse, 'fa-arrow-down': sortColumn==='patient_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='patient_name'}"></i></th>
+            <th ng-click="sortBy('doctor_name')" style="cursor:pointer">CLINICAL <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='doctor_name' && !sortReverse, 'fa-arrow-down': sortColumn==='doctor_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='doctor_name'}"></i></th>
+            <th ng-click="sortBy('ward_name')" style="cursor:pointer">LOCATION <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='ward_name' && !sortReverse, 'fa-arrow-down': sortColumn==='ward_name' && sortReverse, 'fa-sort opacity-50': sortColumn!=='ward_name'}"></i></th>
+            <th ng-click="sortBy('admission_date')" style="cursor:pointer">DATE <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='admission_date' && !sortReverse, 'fa-arrow-down': sortColumn==='admission_date' && sortReverse, 'fa-sort opacity-50': sortColumn!=='admission_date'}"></i></th>
             <th>REASON</th>
-            <th>STATUS</th>
+            <th ng-click="sortBy('status')" style="cursor:pointer">STATUS <i class="fa-solid ms-1" ng-class="{'fa-arrow-up': sortColumn==='status' && !sortReverse, 'fa-arrow-down': sortColumn==='status' && sortReverse, 'fa-sort opacity-50': sortColumn!=='status'}"></i></th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="a in admissions" class="border-bottom">
+          <tr ng-repeat="a in admissions | orderBy:sortColumn:sortReverse" class="border-bottom">
             <td class="py-3"><span class="font-monospace text-muted">{{a.admission_id}}</span></td>
-            <td class="py-3 fw-bold text-dark">{{a.patient_name}}</td>
+            <td class="py-3 fw-bold text-body">{{a.patient_name}}</td>
             <td class="py-3 text-muted"><i class="fa-solid fa-user-doctor me-1 opacity-50"></i> {{a.doctor_name}}</td>
             <td class="py-3">
-              <div class="fw-medium text-dark">{{a.ward_name}}</div>
+              <div class="fw-medium text-body">{{a.ward_name}}</div>
               <div class="small text-muted">Bed {{a.bed_number}}</div>
             </td>
             <td class="py-3 text-muted">{{a.admission_date | date:'dd-MMM-yyyy'}}</td>
             <td class="py-3 text-muted text-truncate" style="max-width: 200px;">{{a.admission_reason}}</td>
-            <td class="py-3"><span class="badge-status shadow-sm px-3 py-1 rounded-pill" ng-class="'badge-' + (a.status | lowercase)">{{a.status}}</span></td>
+            <td class="py-3"><status-badge status="a.status"></status-badge></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="empty-state animate-fade-in p-5 text-center" ng-if="!loading && !admissions.length">
-      <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-4" style="width: 80px; height: 80px;">
+      <div class="d-inline-flex align-items-center justify-content-center bg-body-tertiary rounded-circle mb-3" style="width: 70px; height: 70px;">
         <i class="fa-solid fa-bed-pulse fs-2 text-muted"></i>
       </div>
-      <h4 class="fw-bold text-dark mb-2">No admissions found</h4>
-      <p class="text-muted mb-0">Try adjusting your filters to find what you're looking for.</p>
+      <h5 class="fw-bold text-body mb-0">No admissions found. Try a different search.</h5>
     </div>
 
     <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" ng-if="!loading && admissions.length">
@@ -113,7 +112,7 @@
             <label for="patientSearch" class="fw-medium text-dark mb-2">Search Patient <span class="text-danger">*</span></label>
             <div class="input-group shadow-sm" ng-if="!selectedPatient">
               <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
-              <input type="text" id="patientSearch" class="form-control border-start-0 ps-0" placeholder="Search by name, mobile or ID..." ng-model="searchObj.patientQuery" ng-change="searchPatients()">
+              <input type="text" id="patientSearch" class="form-control border-start-0 ps-0" placeholder="Search by name, mobile or ID..." ng-model="searchObj.patientQuery" ng-change="searchPatients()" ng-model-options="{ debounce: 300 }">
             </div>
             
             <div class="list-group mt-2 shadow-sm rounded-3 overflow-hidden" ng-if="patients.length && !selectedPatient" style="max-height: 250px; overflow-y: auto;">
