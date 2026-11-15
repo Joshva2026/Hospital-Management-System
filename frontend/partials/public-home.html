@@ -85,7 +85,7 @@
     /* Cinematic Structure */
     .hms-cinematic-section {
       position: relative;
-      height: 800vh; /* Provides the massive scroll track */
+      height: 800vh;
     }
     .hms-cinematic__sticky {
       position: sticky;
@@ -106,8 +106,6 @@
       object-fit: cover;
       object-position: center;
       z-index: 0;
-      opacity: 1;
-      visibility: visible;
     }
     .hms-cinematic__overlay {
       position: absolute;
@@ -238,25 +236,6 @@
       margin: 0;
     }
 
-    @media (max-width: 767px) {
-      .hms-cinematic-section { height: 500vh; }
-
-      .hms-cinematic__overlay {
-        background: linear-gradient(0deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.7) 45%, rgba(15,23,42,0.25) 100%);
-      }
-
-      .hms-story-stage {
-        padding: 0 6%;
-        justify-content: flex-end;
-        padding-bottom: 12vh;
-      }
-
-      .hms-story-stage h1 { font-size: 2rem; line-height: 1.15; }
-      .hms-story-stage h2 { font-size: 1.6rem; }
-      .hms-story-stage p.hero-desc,
-      .hms-story-stage p.stage-desc { font-size: 0.95rem; line-height: 1.5; }
-    }
-
     /* Final CTA */
     .hms-final {
       min-height: 100vh;
@@ -357,8 +336,8 @@
       <!-- Sticky container for Visual + Story -->
       <div class="hms-cinematic__sticky">
         
-        <!-- Fullscreen Background Canvas -->
-        <canvas landing-sequence class="hms-cinematic__image" aria-hidden="true"></canvas>
+        <!-- Fullscreen Background Image -->
+        <img landing-sequence class="hms-cinematic__image" alt="" aria-hidden="true" src="assets/landing/hospital-sequence/frame-001.jpg">
         
         <!-- Subtle Overlay -->
         <div class="hms-cinematic__overlay"></div>

@@ -63,14 +63,26 @@
 
       $scope.showDuplicates = false;
       $scope.duplicateGroups = [];
+      $scope.duplicatesLoading = false;
+      $scope.duplicatesChecked = false;
+
       $scope.findDuplicates = function () {
         $scope.showDuplicates = true;
-        ApiService.get('/patients/duplicates/list').then(function(res) {
-          $scope.duplicateGroups = res.duplicates || [];
-        }).catch(function(err) { ToastService.error(err.message); });
+        $scope.duplicatesLoading = true;
+        $scope.duplicatesChecked = false;
+        $scope.duplicateGroups = [];
+        ApiService.get('/patients/duplicates/list').then(function (res) {
+          $scope.duplicateGroups = (res && res.duplicates) ? res.duplicates : [];
+          $scope.duplicatesChecked = true;
+        }).catch(function (err) {
+          ToastService.error(err.message || 'Could not check duplicates.');
+          $scope.duplicatesChecked = true;
+        }).finally(function () {
+          $scope.duplicatesLoading = false;
+        });
       };
-      
-      $scope.closeDuplicates = function() {
+
+      $scope.closeDuplicates = function () {
         $scope.showDuplicates = false;
       };
 
