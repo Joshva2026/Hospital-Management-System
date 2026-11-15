@@ -5,10 +5,11 @@
     '$scope', '$location', 'ApiService', 'AuthService', 'ToastService',
     function ($scope, $location, ApiService, AuthService, ToastService) {
       $scope.auth = AuthService;
+      var admin = AuthService.currentAdmin || JSON.parse(localStorage.getItem('hms_admin') || '{}');
       
       $scope.profileData = {
-        fullName: AuthService.currentAdmin.fullName || '',
-        email: AuthService.currentAdmin.email || ''
+        fullName: admin.fullName || '',
+        email: admin.email || ''
       };
       
       $scope.passwordData = {
