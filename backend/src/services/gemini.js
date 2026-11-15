@@ -17,9 +17,9 @@ async function generate({ systemInstruction, contents, tools }) {
       systemInstruction: { parts: [{ text: systemInstruction }] },
       contents,
       tools: tools ? [{ functionDeclarations: tools }] : undefined,
-      generationConfig: { temperature: 0.2, maxOutputTokens: 1024 },
+      generationConfig: { temperature: 0.2, maxOutputTokens: 2048 },
     }),
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(60000),
   });
 
   const data = await res.json().catch(() => ({}));
