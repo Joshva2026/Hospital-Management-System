@@ -36,3 +36,4 @@ router.put('/hospital-info/:key', asyncHandler(async (req, res) => {
 }));
 
 module.exports = router;
+

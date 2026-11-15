@@ -12,3 +12,4 @@ INSERT INTO hospital_info (key, value) VALUES
   ('phone',            'TO BE UPDATED'),
   ('departments',      'TO BE UPDATED')
 ON CONFLICT (key) DO NOTHING;
+
