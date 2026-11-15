@@ -22,89 +22,339 @@
   <div ng-class="{'app-shell flex-column': auth.isAuthenticated()}">
     
     <!-- ============ APP SHELL HEADER (shown when authenticated) ============ -->
-    <!-- Premium Top Navigation -->
-    <header class="premium-topnav" ng-if="auth.isAuthenticated()">
-      <div class="topnav-container">
-        <!-- Left: Brand -->
-        <div class="topnav-brand">
-          <i class="fa-solid fa-hospital"></i>
-          <span>VINCY HOSPITAL</span>
-        </div>
+    <header class="app-topbar" ng-if="auth.isAuthenticated()">
+      <div class="topbar-inner">
+        <!-- 1. Left: Brand -->
+        <a href="#!/dashboard" class="topbar-brand" title="Vincy Hospital Home">
+          <div class="topbar-brand-icon">
+            <i class="fa-solid fa-hospital"></i>
+          </div>
+          <span class="topbar-brand-title">VINCY HOSPITAL</span>
+        </a>
 
-        <!-- Center: Desktop Navigation -->
-        <nav class="topnav-menu desktop-nav">
-          <div class="topnav-links-scroll">
-            <a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}">Dashboard</a>
-            <a href="#!/patients" ng-class="{active: isActive('/patients')}">Patients</a>
-            <a href="#!/visits" ng-class="{active: isActive('/visits')}">OPD</a>
-            <a href="#!/admissions" ng-class="{active: isActive('/admissions')}">Admissions</a>
-            <a href="#!/reports" ng-class="{active: isActive('/reports')}">Reports</a>
-            <a href="#!/appointments" ng-class="{active: isActive('/appointments')}">Appointments</a>
-            <a href="#!/doctors" ng-class="{active: isActive('/doctors')}">Doctors</a>
-            <a href="#!/specialities" ng-class="{active: isActive('/specialities')}">Specialities</a>
-            <a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}">Wards &amp; Beds</a>
-            <a href="#!/discharges" ng-class="{active: isActive('/discharges')}">Discharges</a>
-            <a href="#!/analytics" ng-class="{active: isActive('/analytics')}">Analytics</a>
-            <a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}">Audit Logs</a>
+        <!-- 2. Desktop Navigation Menu -->
+        <nav class="topbar-nav d-none d-lg-flex" aria-label="Main Navigation">
+          <!-- Dashboard link -->
+          <a href="#!/dashboard" class="topbar-nav-link" ng-class="{active: isActive('/dashboard')}">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <!-- Patients link -->
+          <a href="#!/patients" class="topbar-nav-link" ng-class="{active: isActive('/patients')}">
+            <i class="fa-solid fa-users"></i>
+            <span>Patients</span>
+          </a>
+
+          <!-- OPD Dropdown -->
+          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'opd'}">
+            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+              ng-class="{active: isActive('/visits') || isActive('/appointments')}"
+              ng-click="toggleDropdown('opd', $event)"
+              ng-keydown="onDropdownKey($event, 'opd')"
+              aria-haspopup="true" aria-expanded="{{activeDropdown === 'opd'}}">
+              <i class="fa-solid fa-stethoscope"></i>
+              <span>OPD</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <div class="topbar-dropdown-menu" role="menu">
+              <div class="dropdown-header-title">Outpatient Department</div>
+              <a href="#!/visits" class="dropdown-item-card" ng-class="{active: isActive('/visits')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-hospital-user"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">OPD / Visits</strong>
+                  <span class="item-desc">Patient consultations and clinical triage</span>
+                </div>
+              </a>
+              <a href="#!/appointments" class="dropdown-item-card" ng-class="{active: isActive('/appointments')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Appointments</strong>
+                  <span class="item-desc">Scheduled doctor visits &amp; slot booking</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Operations Dropdown -->
+          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'ops'}">
+            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+              ng-class="{active: isActive('/wards-beds') || isActive('/doctors') || isActive('/specialities') || isActive('/discharges') || isActive('/admissions')}"
+              ng-click="toggleDropdown('ops', $event)"
+              ng-keydown="onDropdownKey($event, 'ops')"
+              aria-haspopup="true" aria-expanded="{{activeDropdown === 'ops'}}">
+              <i class="fa-solid fa-bed-pulse"></i>
+              <span>Operations</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <div class="topbar-dropdown-menu" role="menu">
+              <div class="dropdown-header-title">Hospital Operations</div>
+              <a href="#!/wards-beds" class="dropdown-item-card" ng-class="{active: isActive('/wards-beds')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-bed"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Wards &amp; Beds</strong>
+                  <span class="item-desc">Live occupancy, floor status &amp; bed allocation</span>
+                </div>
+              </a>
+              <a href="#!/admissions" class="dropdown-item-card" ng-class="{active: isActive('/admissions')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-truck-medical"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Admissions</strong>
+                  <span class="item-desc">Inpatient registrations &amp; active stays</span>
+                </div>
+              </a>
+              <a href="#!/discharges" class="dropdown-item-card" ng-class="{active: isActive('/discharges')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Discharges</strong>
+                  <span class="item-desc">Finalized releases, summaries &amp; follow-ups</span>
+                </div>
+              </a>
+              <a href="#!/doctors" class="dropdown-item-card" ng-class="{active: isActive('/doctors')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-user-doctor"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Doctors</strong>
+                  <span class="item-desc">Physician directory, availability &amp; fees</span>
+                </div>
+              </a>
+              <a href="#!/specialities" class="dropdown-item-card" ng-class="{active: isActive('/specialities')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-dna"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Specialities</strong>
+                  <span class="item-desc">Medical departments &amp; clinical divisions</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Reports Dropdown -->
+          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'reports'}">
+            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+              ng-class="{active: isActive('/reports') || isActive('/analytics')}"
+              ng-click="toggleDropdown('reports', $event)"
+              ng-keydown="onDropdownKey($event, 'reports')"
+              aria-haspopup="true" aria-expanded="{{activeDropdown === 'reports'}}">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>Reports</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <div class="topbar-dropdown-menu" role="menu">
+              <div class="dropdown-header-title">Reports &amp; Analytics</div>
+              <a href="#!/reports" class="dropdown-item-card" ng-class="{active: isActive('/reports')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-file-waveform"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Daily Reports</strong>
+                  <span class="item-desc">Patient vitals, daily logs &amp; progress notes</span>
+                </div>
+              </a>
+              <a href="#!/analytics" class="dropdown-item-card" ng-class="{active: isActive('/analytics')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Analytics</strong>
+                  <span class="item-desc">Hospital performance, patient flow &amp; KPI trends</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Insights Dropdown -->
+          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'insights'}">
+            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+              ng-class="{active: isActive('/audit-logs')}"
+              ng-click="toggleDropdown('insights', $event)"
+              ng-keydown="onDropdownKey($event, 'insights')"
+              aria-haspopup="true" aria-expanded="{{activeDropdown === 'insights'}}">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Insights</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <div class="topbar-dropdown-menu" role="menu">
+              <div class="dropdown-header-title">System Insights</div>
+              <a href="#!/audit-logs" class="dropdown-item-card" ng-class="{active: isActive('/audit-logs')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Audit Logs</strong>
+                  <span class="item-desc">User access events, change tracking &amp; security</span>
+                </div>
+              </a>
+            </div>
           </div>
         </nav>
 
-        <!-- Right: Admin Area -->
-        <div class="topnav-right">
-          <button class="btn btn-sm btn-link p-2 topnav-theme-toggle" ng-click="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
-            <i class="fa-solid" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon text-secondary'"></i>
-          </button>
-          <a href="#!/profile" class="topnav-user" ng-class="{active: isActive('/profile')}">
-            <div class="avatar-circle bg-primary-light text-primary" style="margin-right: 8px;">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
-            <div class="user-info">
-              <span class="user-name">{{auth.currentAdmin.fullName}}</span>
-            </div>
-          </a>
-          <button class="topnav-logout" ng-click="logout()" aria-label="Logout">
-            <i class="fa-solid fa-power-off"></i>
-          </button>
-          
-          <button class="mobile-nav-toggle" ng-click="toggleSidebar()" aria-label="Toggle menu">
-            <i class="fa-solid fa-bars"></i>
-          </button>
+        <!-- 3. Global Search Box (Visual only) -->
+        <div class="topbar-search-box d-none d-xl-flex">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" class="topbar-search-input" placeholder="Quick search..." aria-label="Global search preview">
+          <kbd class="search-shortcut">⌘K</kbd>
         </div>
-      </div>
-      
-      <!-- Mobile Navigation Drawer -->
-      <div class="mobile-nav-drawer" ng-class="{'open': sidebarOpen}">
-        <div class="mobile-nav-header">
-          <div class="topnav-brand">
-            <i class="fa-solid fa-hospital"></i>
-            <span>VINCY HOSPITAL</span>
-          </div>
-          <button class="mobile-nav-close" ng-click="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="mobile-nav-links">
-          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-            <span class="small fw-semibold text-muted">Theme</span>
-            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" ng-click="toggleTheme()">
-              <i class="fa-solid me-1" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon'"></i>
-              <span>{{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}}</span>
+
+        <!-- 4. Right Controls -->
+        <div class="topbar-controls">
+          <!-- Theme Toggle -->
+          <button type="button" class="topbar-icon-btn" ng-click="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+            <i class="fa-solid" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon'"></i>
+          </button>
+
+          <!-- Notifications Button (visual) -->
+          <button type="button" class="topbar-icon-btn position-relative" aria-label="Notifications" title="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-indicator"></span>
+          </button>
+
+          <!-- Admin User Profile Dropdown -->
+          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'user'}">
+            <button type="button" class="topbar-user-btn"
+              ng-click="toggleDropdown('user', $event)"
+              ng-keydown="onDropdownKey($event, 'user')"
+              aria-haspopup="true" aria-expanded="{{activeDropdown === 'user'}}">
+              <div class="topbar-avatar">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+              <div class="topbar-user-info d-none d-md-flex">
+                <span class="topbar-user-name">{{auth.currentAdmin.fullName || 'Admin User'}}</span>
+                <span class="topbar-user-role">{{auth.currentAdmin.role || 'ADMIN'}}</span>
+              </div>
+              <i class="fa-solid fa-chevron-down dropdown-arrow d-none d-md-inline"></i>
             </button>
+            <div class="topbar-dropdown-menu dropdown-menu-end" role="menu">
+              <div class="dropdown-user-header d-flex align-items-center gap-3 p-3 border-bottom">
+                <div class="topbar-avatar fs-5">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+                <div class="overflow-hidden">
+                  <div class="fw-bold text-truncate">{{auth.currentAdmin.fullName}}</div>
+                  <div class="small text-muted text-truncate">{{auth.currentAdmin.email}}</div>
+                  <span class="badge bg-primary-subtle text-primary mt-1" style="font-size: 10px;">{{auth.currentAdmin.role}}</span>
+                </div>
+              </div>
+              <a href="#!/profile" class="dropdown-item-card" ng-class="{active: isActive('/profile')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-user"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">My Profile</strong>
+                  <span class="item-desc">Account overview &amp; privileges</span>
+                </div>
+              </a>
+              <a href="#!/profile/edit" class="dropdown-item-card" ng-class="{active: isActive('/profile/edit')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-user-pen"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Edit Profile</strong>
+                  <span class="item-desc">Update contact details &amp; name</span>
+                </div>
+              </a>
+              <a href="#!/profile/change-password" class="dropdown-item-card" ng-class="{active: isActive('/profile/change-password')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-key"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Change Password</strong>
+                  <span class="item-desc">Secure account credentials</span>
+                </div>
+              </a>
+              <div class="dropdown-divider my-1"></div>
+              <button type="button" class="dropdown-item-card text-danger w-100 text-start border-0 bg-transparent" ng-click="logout()">
+                <div class="item-icon-box text-danger bg-danger-subtle"><i class="fa-solid fa-power-off"></i></div>
+                <div class="item-text">
+                  <strong class="item-title text-danger">Sign Out</strong>
+                  <span class="item-desc text-danger-emphasis">End current session safely</span>
+                </div>
+              </button>
+            </div>
           </div>
-          <a href="#!/dashboard" ng-class="{active: isActive('/dashboard')}" ng-click="toggleSidebar()">Dashboard</a>
-          <a href="#!/patients" ng-class="{active: isActive('/patients')}" ng-click="toggleSidebar()">Patients</a>
-          <a href="#!/visits" ng-class="{active: isActive('/visits')}" ng-click="toggleSidebar()">OPD</a>
-          <a href="#!/admissions" ng-class="{active: isActive('/admissions')}" ng-click="toggleSidebar()">Admissions</a>
-          <a href="#!/reports" ng-class="{active: isActive('/reports')}" ng-click="toggleSidebar()">Reports</a>
-          <a href="#!/appointments" ng-class="{active: isActive('/appointments')}" ng-click="toggleSidebar()">Appointments</a>
-          <a href="#!/doctors" ng-class="{active: isActive('/doctors')}" ng-click="toggleSidebar()">Doctors</a>
-          <a href="#!/specialities" ng-class="{active: isActive('/specialities')}" ng-click="toggleSidebar()">Specialities</a>
-          <a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}" ng-click="toggleSidebar()">Wards &amp; Beds</a>
-          <a href="#!/discharges" ng-class="{active: isActive('/discharges')}" ng-click="toggleSidebar()">Discharges</a>
-          <a href="#!/analytics" ng-class="{active: isActive('/analytics')}" ng-click="toggleSidebar()">Analytics</a>
-          <a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}" ng-click="toggleSidebar()">Audit Logs</a>
-          <a href="#!/profile" ng-class="{active: isActive('/profile')}" ng-click="toggleSidebar()">Profile</a>
-          <a href="#" ng-click="logout()" class="text-danger">Logout</a>
+
+          <!-- Mobile Hamburger Toggle -->
+          <button type="button" class="topbar-hamburger-btn d-lg-none" ng-click="toggleSidebar()" aria-label="Toggle mobile menu" aria-expanded="{{sidebarOpen}}">
+            <i class="fa-solid" ng-class="sidebarOpen ? 'fa-xmark' : 'fa-bars'"></i>
+          </button>
         </div>
       </div>
-      <!-- Mobile nav backdrop -->
-      <div class="mobile-nav-backdrop" ng-class="{'show': sidebarOpen}" ng-click="toggleSidebar()"></div>
+
+      <!-- Full-Width Mobile Navigation Panel (Below Topbar) -->
+      <div class="topbar-mobile-panel" ng-show="sidebarOpen">
+        <div class="mobile-nav-scroll">
+          <a href="#!/dashboard" class="mobile-nav-link" ng-class="{active: isActive('/dashboard')}" ng-click="closeSidebar()">
+            <i class="fa-solid fa-gauge-high"></i> Dashboard
+          </a>
+          <a href="#!/patients" class="mobile-nav-link" ng-class="{active: isActive('/patients')}" ng-click="closeSidebar()">
+            <i class="fa-solid fa-users"></i> Patients
+          </a>
+
+          <!-- Mobile Group: OPD -->
+          <div class="mobile-group">
+            <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('opd')">
+              <span><i class="fa-solid fa-stethoscope me-2"></i> OPD</span>
+              <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('opd')}"></i>
+            </button>
+            <div class="mobile-group-items" ng-show="isMobileGroupOpen('opd')">
+              <a href="#!/visits" ng-class="{active: isActive('/visits')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-hospital-user"></i> OPD / Visits
+              </a>
+              <a href="#!/appointments" ng-class="{active: isActive('/appointments')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-calendar-check"></i> Appointments
+              </a>
+            </div>
+          </div>
+
+          <!-- Mobile Group: Operations -->
+          <div class="mobile-group">
+            <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('ops')">
+              <span><i class="fa-solid fa-bed-pulse me-2"></i> Operations</span>
+              <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('ops')}"></i>
+            </button>
+            <div class="mobile-group-items" ng-show="isMobileGroupOpen('ops')">
+              <a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-bed"></i> Wards &amp; Beds
+              </a>
+              <a href="#!/admissions" ng-class="{active: isActive('/admissions')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-truck-medical"></i> Admissions
+              </a>
+              <a href="#!/discharges" ng-class="{active: isActive('/discharges')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-person-walking-arrow-right"></i> Discharges
+              </a>
+              <a href="#!/doctors" ng-class="{active: isActive('/doctors')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-user-doctor"></i> Doctors
+              </a>
+              <a href="#!/specialities" ng-class="{active: isActive('/specialities')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-dna"></i> Specialities
+              </a>
+            </div>
+          </div>
+
+          <!-- Mobile Group: Reports -->
+          <div class="mobile-group">
+            <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('reports')">
+              <span><i class="fa-solid fa-chart-pie me-2"></i> Reports</span>
+              <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('reports')}"></i>
+            </button>
+            <div class="mobile-group-items" ng-show="isMobileGroupOpen('reports')">
+              <a href="#!/reports" ng-class="{active: isActive('/reports')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-file-waveform"></i> Daily Reports
+              </a>
+              <a href="#!/analytics" ng-class="{active: isActive('/analytics')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-chart-line"></i> Analytics
+              </a>
+            </div>
+          </div>
+
+          <!-- Mobile Group: Insights -->
+          <div class="mobile-group">
+            <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('insights')">
+              <span><i class="fa-solid fa-shield-halved me-2"></i> Insights</span>
+              <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('insights')}"></i>
+            </button>
+            <div class="mobile-group-items" ng-show="isMobileGroupOpen('insights')">
+              <a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-clock-rotate-left"></i> Audit Logs
+              </a>
+            </div>
+          </div>
+
+          <div class="mobile-divider"></div>
+
+          <!-- Mobile Account Links -->
+          <a href="#!/profile" class="mobile-nav-link" ng-class="{active: isActive('/profile')}" ng-click="closeSidebar()">
+            <i class="fa-solid fa-user"></i> My Profile
+          </a>
+          <button type="button" class="mobile-nav-link text-danger w-100 text-start border-0 bg-transparent" ng-click="logout()">
+            <i class="fa-solid fa-power-off"></i> Logout
+          </button>
+        </div>
+      </div>
+      <!-- Dropdown Backdrop for outside click -->
+      <div class="topbar-dropdown-backdrop" ng-if="activeDropdown" ng-click="closeDropdowns()"></div>
     </header>
 
     <!-- Main content (Handles both Public Landing and Authenticated App) -->
