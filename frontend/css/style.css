@@ -2516,6 +2516,84 @@ canvas {
   pointer-events: none;
 }
 
+/* Search Results Dropdown */
+.topbar-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  z-index: 1050;
+  overflow: hidden;
+}
+
+.topbar-search-status {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.topbar-search-results {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.topbar-search-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-main);
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.topbar-search-item:hover,
+.topbar-search-item:focus {
+  background-color: rgba(13, 124, 120, 0.08);
+  color: var(--text-main);
+}
+
+.topbar-search-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.topbar-search-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-search-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.topbar-search-item-arrow {
+  font-size: 11px;
+  opacity: 0.5;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
 /* Quick Desk Button in Topbar */
 .topbar-quickdesk-btn {
   display: inline-flex;
@@ -2550,6 +2628,12 @@ canvas {
 [data-bs-theme="dark"] .topbar-quickdesk-btn:hover {
   background: #0d7c78;
   color: #ffffff;
+}
+
+@media (max-width: 576px) {
+  .topbar-quickdesk-btn {
+    display: none !important;
+  }
 }
 
 /* Right Controls */
@@ -2641,10 +2725,13 @@ canvas {
   white-space: nowrap;
 }
 
-.topbar-user-menu {
+.topbar-user-menu,
+.topbar-dropdown-menu.dropdown-menu-end {
   right: 0;
   left: auto;
-  min-width: 210px;
+  min-width: 240px;
+  max-width: calc(100vw - 24px);
+  box-sizing: border-box;
 }
 
 .topbar-user-menu .dropdown-item-card {

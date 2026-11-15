@@ -127,4 +127,151 @@
       };
     },
   ]);
+
+  // ==========================================================================
+  // TopBarController (Global Search & Topbar functionality)
+  // ==========================================================================
+  angular.module('hmsApp').controller('TopBarController', [
+    '$rootScope', '$scope', '$location', '$timeout', '$element', '$document', 'ApiService',
+    function ($rootScope, $scope, $location, $timeout, $element, $document, ApiService) {
+      $scope.query = '';
+      $scope.results = [];
+      $scope.loading = false;
+      $scope.isOpen = false;
+      $scope.hasSearched = false;
+
+      var searchTimer = null;
+      var activeQuery = '';
+
+      function performSearch(q) {
+        activeQuery = q;
+        $scope.loading = true;
+        $scope.isOpen = true;
+
+        ApiService.get('/patients', { search: q, limit: 8 })
+          .then(function (res) {
+            if (activeQuery === q) {
+              $scope.results = (res && res.data) ? res.data.slice(0, 8) : [];
+              $scope.hasSearched = true;
+            }
+          })
+          .catch(function () {
+            if (activeQuery === q) {
+              $scope.results = [];
+              $scope.hasSearched = true;
+            }
+          })
+          .finally(function () {
+            if (activeQuery === q) {
+              $scope.loading = false;
+            }
+          });
+      }
+
+      $scope.onQueryChange = function () {
+        if (searchTimer) {
+          $timeout.cancel(searchTimer);
+          searchTimer = null;
+        }
+
+        var q = ($scope.query || '').trim();
+        if (q.length < 2) {
+          $scope.isOpen = false;
+          $scope.results = [];
+          $scope.loading = false;
+          $scope.hasSearched = false;
+          activeQuery = '';
+          return;
+        }
+
+        $scope.loading = true;
+        $scope.isOpen = true;
+
+        searchTimer = $timeout(function () {
+          performSearch(q);
+        }, 300);
+      };
+
+      $scope.onFocus = function () {
+        var q = ($scope.query || '').trim();
+        if (q.length >= 2 && ($scope.hasSearched || $scope.loading || ($scope.results && $scope.results.length > 0))) {
+          $scope.isOpen = true;
+        }
+      };
+
+      $scope.close = function () {
+        $scope.isOpen = false;
+      };
+
+      $scope.selectPatient = function (p) {
+        $scope.close();
+      };
+
+      $scope.onKeydown = function ($event) {
+        if ($event.key === 'Escape') {
+          $scope.close();
+        } else if ($event.key === 'Enter') {
+          $event.preventDefault();
+          if (searchTimer) {
+            $timeout.cancel(searchTimer);
+            searchTimer = null;
+          }
+          var q = ($scope.query || '').trim();
+          if ($scope.results && $scope.results.length > 0) {
+            var first = $scope.results[0];
+            $scope.close();
+            $location.path('/patients/' + first.patient_id);
+          } else if (q.length > 0) {
+            $scope.loading = true;
+            $scope.isOpen = true;
+            ApiService.get('/patients', { search: q, limit: 8 })
+              .then(function (res) {
+                var data = (res && res.data) ? res.data : [];
+                $scope.close();
+                if (data.length > 0) {
+                  $location.path('/patients/' + data[0].patient_id);
+                } else {
+                  $location.path('/patients').search('search', q);
+                }
+              })
+              .catch(function () {
+                $scope.close();
+                $location.path('/patients').search('search', q);
+              });
+          }
+        }
+      };
+
+      // Click outside to close
+      function onDocClick(e) {
+        if ($scope.isOpen && $element && $element[0] && !$element[0].contains(e.target)) {
+          $scope.$applyAsync(function () {
+            $scope.close();
+          });
+        }
+      }
+
+      function onDocKeydown(e) {
+        if (e.key === 'Escape' && $scope.isOpen) {
+          $scope.$applyAsync(function () {
+            $scope.close();
+          });
+        }
+      }
+
+      $document[0].addEventListener('click', onDocClick);
+      $document[0].addEventListener('keydown', onDocKeydown);
+
+      var unbindRoute = $rootScope.$on('$routeChangeSuccess', function () {
+        $scope.close();
+      });
+
+      $scope.$on('$destroy', function () {
+        if (searchTimer) $timeout.cancel(searchTimer);
+        $document[0].removeEventListener('click', onDocClick);
+        $document[0].removeEventListener('keydown', onDocKeydown);
+        unbindRoute();
+      });
+    },
+  ]);
 })();

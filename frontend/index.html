@@ -181,10 +181,39 @@
           </div>
         </nav>
 
-        <!-- 3. Global Search Box (Visual only) -->
-        <div class="topbar-search-box d-none d-lg-flex">
+        <!-- 3. Global Search Box -->
+        <div class="topbar-search-box d-none d-lg-flex" ng-controller="TopBarController">
           <i class="fa-solid fa-magnifying-glass search-icon topbar-search-icon"></i>
-          <input type="text" class="topbar-search-input" placeholder="Search patients, doctors..." aria-label="Global search">
+          <input type="text" class="topbar-search-input"
+            placeholder="Search patients, doctors..."
+            aria-label="Global search"
+            ng-model="query"
+            ng-change="onQueryChange()"
+            ng-keydown="onKeydown($event)"
+            ng-focus="onFocus()">
+
+          <!-- Dropdown search results panel -->
+          <div class="topbar-search-dropdown" ng-if="isOpen">
+            <div class="topbar-search-status" ng-if="loading">
+              <i class="fa-solid fa-spinner fa-spin me-2"></i>Searching...
+            </div>
+            <div class="topbar-search-status" ng-if="!loading && hasSearched && (!results || results.length === 0)">
+              No patients found.
+            </div>
+            <div class="topbar-search-results" ng-if="!loading && results && results.length > 0">
+              <a ng-repeat="p in results" ng-href="#!/patients/{{p.patient_id}}" class="topbar-search-item" ng-click="selectPatient(p)">
+                <div class="topbar-search-item-info">
+                  <div class="topbar-search-item-name">{{p.full_name}}</div>
+                  <div class="topbar-search-item-meta">
+                    <span class="font-monospace">{{p.patient_id}}</span>
+                    <span ng-if="p.mobile">&middot;</span>
+                    <span ng-if="p.mobile"><i class="fa-solid fa-phone me-1"></i>{{p.mobile}}</span>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right topbar-search-item-arrow"></i>
+              </a>
+            </div>
+          </div>
         </div>
 
         <!-- 4. Right Controls -->
@@ -218,7 +247,7 @@
               </div>
               <i class="fa-solid fa-chevron-down dropdown-arrow d-none d-md-inline"></i>
             </button>
-            <div class="topbar-dropdown-menu dropdown-menu-end" role="menu">
+            <div class="topbar-dropdown-menu dropdown-menu-end topbar-user-menu" role="menu">
               <div class="dropdown-user-header d-flex align-items-center gap-3 p-3 border-bottom">
                 <div class="topbar-avatar fs-5">JO</div>
                 <div class="overflow-hidden">
