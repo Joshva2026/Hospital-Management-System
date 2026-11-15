@@ -43,8 +43,8 @@
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
         <div>
           <div class="text-info fw-bold d-flex align-items-center"
-            style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; opacity: 0.9;">
-            <i class="fa-solid fa-satellite-dish me-2"></i> Operations Center
+            style="font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; opacity: 0.9;">
+            <i class="fa-solid fa-satellite-dish me-2"></i> MARY Hospital
           </div>
           <h2 class="fw-bold mb-1 text-white" style="font-size: 1.85rem; letter-spacing: -0.5px;">Live Hospital Status</h2>
           <p class="fs-6 text-white-50 mb-0">System metrics synchronized live with PostgreSQL cluster.</p>
@@ -77,15 +77,18 @@
           </div>
           <div class="col-6 col-md-3 border-end border-white border-opacity-25">
             <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Today's OPD</div>
-            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_opd || 0}} <span class="fs-6 text-white-50 fw-normal">visits</span></div>
+            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_opd || 0}} <span
+                class="fs-6 text-white-50 fw-normal">{{summary.todays_opd === 1 ? 'visit' : 'visits'}}</span></div>
           </div>
           <div class="col-6 col-md-3 border-end border-white border-opacity-25">
             <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Today's Admissions</div>
-            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_admissions || 0}} <span class="fs-6 text-white-50 fw-normal">patients</span></div>
+            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_admissions || 0}} <span
+                class="fs-6 text-white-50 fw-normal">{{summary.todays_admissions === 1 ? 'patient' : 'patients'}}</span></div>
           </div>
           <div class="col-6 col-md-3">
             <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Today's Discharges</div>
-            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_discharges || 0}} <span class="fs-6 text-white-50 fw-normal">patients</span></div>
+            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_discharges || 0}} <span
+                class="fs-6 text-white-50 fw-normal">{{summary.todays_discharges === 1 ? 'patient' : 'patients'}}</span></div>
           </div>
         </div>
       </div>
@@ -95,7 +98,7 @@
   <!-- SKELETON PLACEHOLDERS WHILE LOADING -->
   <div ng-if="loading" class="animate-fade-in">
     <div class="row g-3 mb-4">
-      <div class="col-12 col-sm-6 col-xl-3" ng-repeat="i in [1,2,3,4,5,6,7,8]">
+      <div class="col-6 col-md-3" ng-repeat="i in [1,2,3,4,5,6,7,8]">
         <div class="card p-4 border-0 shadow-sm rounded-4 skeleton-card-box" style="height: 130px;">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="skeleton" style="width: 60%; height: 14px;"></div>
@@ -106,20 +109,12 @@
         </div>
       </div>
     </div>
-    <div class="row g-4 mb-4">
-      <div class="col-lg-6">
-        <div class="card p-4 border-0 shadow-sm rounded-4 skeleton" style="height: 340px;"></div>
-      </div>
-      <div class="col-lg-6">
-        <div class="card p-4 border-0 shadow-sm rounded-4 skeleton" style="height: 340px;"></div>
-      </div>
-    </div>
   </div>
 
   <!-- DASHBOARD CONTENT (LOADED) -->
   <div ng-if="!loading && summary" class="animate-slide-up">
 
-    <!-- 8 KPI CARDS: 4 COLUMNS DESKTOP, 2 TABLET, 1 MOBILE -->
+    <!-- 8 KPI CARDS WITH TREND INDICATORS -->
     <div class="dashboard-grid mb-4">
 
       <!-- 1. Total Patients -->
@@ -137,25 +132,14 @@
               ng-class="trends.patients.direction === 'up' ? 'fa-arrow-trend-up' : (trends.patients.direction === 'down' ? 'fa-arrow-trend-down' : 'fa-minus')"></i>
             {{trends.patients.label}} vs yesterday
           </span>
-          <span ng-if="!trends.patients" class="text-muted">Total registered</span>
+          <span ng-if="!trends.patients" class="text-muted">Registered patients</span>
         </div>
       </div>
 
-      <!-- 2. Currently Admitted -->
+      <!-- 2. Today's OPD Visits -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Currently Admitted</div>
-          <div class="kpi-icon bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center"
-            style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-bed-pulse"></i></div>
-        </div>
-        <div class="kpi-value fw-bold text-body" style="font-size: 2.2rem; line-height: 1;">{{summary.currently_admitted}}</div>
-        <div class="text-muted mt-2" style="font-size: 13px;">Active inpatients</div>
-      </div>
-
-      <!-- 3. Today's OPD -->
-      <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's OPD</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's OPD Visits</div>
           <div class="kpi-icon bg-info bg-opacity-10 text-info rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-stethoscope"></i></div>
         </div>
@@ -169,6 +153,17 @@
           </span>
           <span ng-if="!trends.opd" class="text-muted">Outpatient visits today</span>
         </div>
+      </div>
+
+      <!-- 3. Currently Admitted -->
+      <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Currently Admitted</div>
+          <div class="kpi-icon bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center"
+            style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-bed-pulse"></i></div>
+        </div>
+        <div class="kpi-value fw-bold text-body" style="font-size: 2.2rem; line-height: 1;">{{summary.currently_admitted}}</div>
+        <div class="text-muted mt-2" style="font-size: 13px;">Active inpatients in wards</div>
       </div>
 
       <!-- 4. Emergency Cases -->
@@ -244,194 +239,216 @@
 
     </div>
 
-    <!-- CHARTS SECTION: 2 COLUMNS DESKTOP, 1 COLUMN MOBILE -->
+    <!-- HOSPITAL INTELLIGENCE & CHARTS -->
     <div ng-if="selectedRange !== 'Today'">
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <h3 class="fw-bold text-body mb-0" style="font-size: 1.4rem; letter-spacing: -0.4px;">
-          <i class="fa-solid fa-chart-line me-2 text-primary"></i> Operational Trends &amp; Patient Flow
-        </h3>
-        <span class="badge bg-body-tertiary text-body border px-3 py-2 rounded-pill font-monospace">{{selectedRange}} Days Window</span>
-      </div>
-
+      <h3 class="fw-bold mb-4 text-body section-title">Operational Intelligence</h3>
+      
+      <!-- 1. Daily Patient Trend (Full width, 320px chart) -->
       <div class="row g-4 mb-4">
-        <!-- Chart 1: Daily Activity Trend -->
-        <div class="col-12 col-lg-6">
+        <div class="col-12">
           <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
-            <div class="card-header-custom">
+            <div class="p-4 border-bottom d-flex align-items-center justify-content-between">
               <div>
-                <h4 class="mb-0 fw-bold text-body" style="font-size: 15.5px;">
-                  <i class="fa-solid fa-chart-area me-2 text-primary"></i> Daily Patient Activity
-                </h4>
-                <div class="text-muted small">Registrations vs OPD consultations</div>
+                <h4 class="mb-1 fw-bold text-body card-title"><i
+                    class="fa-solid fa-chart-area me-2 text-primary"></i> Daily Patient Trend</h4>
+                <div class="text-muted" style="font-size: 13px;">Registrations and OPD visits over the selected range</div>
               </div>
+              <div class="badge bg-body-tertiary text-body border">{{selectedRange}} Days</div>
             </div>
-            <div class="card-body-custom">
-              <div class="chart-container" style="height: 280px; position: relative;">
+            <div class="p-4">
+              <div class="chart-container" style="height: 320px; position: relative;" ng-if="!emptyCharts.dailyTrend">
                 <canvas id="chartDailyTrend"></canvas>
               </div>
+              <div class="empty-chart-container d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 320px;" ng-if="emptyCharts.dailyTrend">
+                <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+                  <i class="fa-solid fa-chart-area text-muted opacity-50 fs-4"></i>
+                </div>
+                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No patient visits or registrations in this range</p>
+                <span class="text-muted small opacity-75" style="font-size: 12px;">Data will appear here as soon as visits are logged.</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Chart 2: Admissions vs Discharges Flow -->
-        <div class="col-12 col-lg-6">
+      <!-- 2. Ward Bed Occupancy Breakdown -->
+      <h3 class="fw-bold mb-4 text-body mt-5 section-title">Bed Intelligence</h3>
+      <div class="row g-4 mb-4">
+        <div class="col-12">
           <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
-            <div class="card-header-custom">
+            <div class="p-4 border-bottom d-flex align-items-center justify-content-between">
               <div>
-                <h4 class="mb-0 fw-bold text-body" style="font-size: 15.5px;">
-                  <i class="fa-solid fa-arrow-right-arrow-left me-2 text-primary"></i> Patient Flow Dynamics
-                </h4>
-                <div class="text-muted small">Admissions (teal) vs Discharges (indigo)</div>
+                <h4 class="mb-1 fw-bold text-body card-title"><i
+                    class="fa-solid fa-bed me-2 text-primary"></i> Ward Bed Occupancy Breakdown</h4>
+                <div class="text-muted" style="font-size: 13px;">Current operational capacity across wards</div>
               </div>
             </div>
-            <div class="card-body-custom">
-              <div class="chart-container" style="height: 280px; position: relative;">
+            <div class="p-4">
+              <!-- Summary Overview Banner -->
+              <div class="row g-4 align-items-center mb-4 pb-4 border-bottom">
+                <div class="col-md-3 text-center border-end">
+                  <div class="fs-1 fw-bold text-body" style="letter-spacing: -1px;">
+                    {{ ((summary.occupied_beds / ((summary.occupied_beds + summary.available_beds) || 1)) * 100) | number:0 }}<span class="fs-4">%</span>
+                  </div>
+                  <div class="text-muted fw-medium text-uppercase mt-1" style="font-size: 11px; letter-spacing: 1px;">Overall Occupancy</div>
+                </div>
+                <div class="col-md-9">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted fw-medium small">Total Bed Utilization</span>
+                    <span class="text-body fw-bold small">{{summary.occupied_beds}} / {{summary.occupied_beds + summary.available_beds}} Beds Occupied</span>
+                  </div>
+                  <div class="progress mb-3" style="height: 12px; border-radius: 6px;">
+                    <div class="progress-bar bg-primary" role="progressbar"
+                      ng-style="{ 'width': ((summary.occupied_beds / ((summary.occupied_beds + summary.available_beds) || 1)) * 100) + '%' }">
+                    </div>
+                  </div>
+                  <div class="d-flex gap-4">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="rounded-circle bg-danger" style="width: 10px; height: 10px;"></span>
+                      <span class="text-muted small">Occupied: <strong class="text-body">{{summary.occupied_beds}}</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="rounded-circle bg-success" style="width: 10px; height: 10px;"></span>
+                      <span class="text-muted small">Available: <strong class="text-body">{{summary.available_beds}}</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Per-Ward Occupancy Progress Bars -->
+              <div class="mb-4">
+                <div class="fw-semibold text-muted text-uppercase mb-3" style="font-size: 11px; letter-spacing: 0.8px;">Ward-by-Ward Capacity</div>
+                <div class="row g-3">
+                  <div class="col-md-6 col-xl-4" ng-repeat="w in wardStats">
+                    <div class="p-3 rounded-3 border bg-body-tertiary">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-semibold text-body" style="font-size: 13.5px;">{{w.ward_name}}</span>
+                        <span class="fw-bold" ng-class="w.rate >= 100 ? 'text-danger' : (w.rate >= 80 ? 'text-warning' : 'text-success')" style="font-size: 13px;">{{w.rate}}%</span>
+                      </div>
+                      <div class="progress mb-2" style="height: 8px; border-radius: 4px; background: rgba(0,0,0,0.06);">
+                        <div class="progress-bar" ng-class="w.colorClass" role="progressbar" ng-style="{'width': w.rate + '%'}"></div>
+                      </div>
+                      <div class="text-muted small" style="font-size: 12px;">{{w.statusText}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bed Occupancy Chart (320px container) -->
+              <div class="chart-container" style="height: 320px; position: relative;" ng-if="!emptyCharts.bedOcc">
+                <canvas id="chartBedOcc"></canvas>
+              </div>
+              <div class="empty-chart-container d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 320px;" ng-if="emptyCharts.bedOcc">
+                <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+                  <i class="fa-solid fa-bed text-muted opacity-50 fs-4"></i>
+                </div>
+                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No ward bed occupancy data available</p>
+                <span class="text-muted small opacity-75" style="font-size: 12px;">Ward configuration and allocations will be shown here.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Analytics & Insights Row (Three equal 320px chart cards) -->
+      <h3 class="fw-bold mb-4 text-body mt-5 section-title">Analytics &amp; Insights</h3>
+      <div class="row g-4 mb-4">
+        
+        <!-- Flow Analytics -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
+            <div class="p-4 border-bottom">
+              <h4 class="mb-1 fw-bold text-body card-title"><i
+                  class="fa-solid fa-chart-line me-2 text-primary"></i> Flow Analytics</h4>
+              <div class="text-muted" style="font-size: 13px;">Admissions vs Discharges</div>
+            </div>
+            <div class="p-4">
+              <div class="chart-container" style="height: 320px; position: relative;" ng-if="!emptyCharts.admDis">
                 <canvas id="chartAdmDis"></canvas>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Chart 3: Patient Type Distribution -->
-        <div class="col-12 col-lg-6">
-          <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
-            <div class="card-header-custom">
-              <div>
-                <h4 class="mb-0 fw-bold text-body" style="font-size: 15.5px;">
-                  <i class="fa-solid fa-chart-pie me-2 text-primary"></i> Patient Type Distribution
-                </h4>
-                <div class="text-muted small">Distribution across clinical categories</div>
-              </div>
-            </div>
-            <div class="card-body-custom">
-              <div class="chart-container" style="height: 280px; position: relative;">
-                <canvas id="chartTypeDist"></canvas>
+              <div class="empty-chart-container d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 320px;" ng-if="emptyCharts.admDis">
+                <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+                  <i class="fa-solid fa-chart-line text-muted opacity-50 fs-4"></i>
+                </div>
+                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No admissions or discharges in this range</p>
+                <span class="text-muted small opacity-75" style="font-size: 12px;">Admissions and discharges will appear here once recorded.</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Chart 4: Speciality Volume -->
-        <div class="col-12 col-lg-6">
+        <!-- Patient Demographics Donut -->
+        <div class="col-lg-4">
           <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
-            <div class="card-header-custom">
-              <div>
-                <h4 class="mb-0 fw-bold text-body" style="font-size: 15.5px;">
-                  <i class="fa-solid fa-stethoscope me-2 text-primary"></i> Top Specialities by Volume
-                </h4>
-                <div class="text-muted small">Consultations across medical departments</div>
+            <div class="p-4 border-bottom">
+              <h4 class="mb-1 fw-bold text-body card-title"><i
+                  class="fa-solid fa-chart-pie me-2 text-primary"></i> Patient Demographics</h4>
+              <div class="text-muted" style="font-size: 13px;">Distribution by patient type</div>
+            </div>
+            <div class="p-4">
+              <div class="chart-container" style="height: 320px; position: relative;" ng-if="!emptyCharts.typeDist">
+                <div class="d-flex align-items-center justify-content-between h-100 gap-3">
+                  <!-- Doughnut with centered total -->
+                  <div class="position-relative d-flex align-items-center justify-content-center" style="width: 170px; height: 170px; flex-shrink: 0;">
+                    <canvas id="chartTypeDist"></canvas>
+                    <div class="position-absolute text-center" style="pointer-events: none;">
+                      <div class="fs-4 fw-bold text-body" style="line-height: 1;">{{totalPatientsCount}}</div>
+                      <div class="text-muted text-uppercase mt-1" style="font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">{{totalPatientsCount === 1 ? 'Patient' : 'Patients'}}</div>
+                    </div>
+                  </div>
+                  <!-- Structured custom legend on the right -->
+                  <div class="flex-grow-1 overflow-hidden">
+                    <div class="d-flex flex-column gap-2">
+                      <div class="d-flex align-items-center justify-content-between" ng-repeat="item in demographicsLegend">
+                        <div class="d-flex align-items-center gap-2 text-truncate me-2">
+                          <span class="rounded-circle flex-shrink-0" ng-style="{'background-color': item.color, 'width': '10px', 'height': '10px'}"></span>
+                          <span class="text-body fw-medium text-truncate" style="font-size: 13px;">{{item.label}}</span>
+                        </div>
+                        <div class="text-end flex-shrink-0" style="font-size: 12px;">
+                          <span class="fw-semibold text-body">{{item.count}}</span>
+                          <span class="text-muted ms-1">({{item.pct}}%)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="empty-chart-container d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 320px;" ng-if="emptyCharts.typeDist">
+                <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+                  <i class="fa-solid fa-chart-pie text-muted opacity-50 fs-4"></i>
+                </div>
+                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No patient demographic data available</p>
+                <span class="text-muted small opacity-75" style="font-size: 12px;">Patient categories will appear once registered.</span>
               </div>
             </div>
-            <div class="card-body-custom">
-              <div class="chart-container" style="height: 280px; position: relative;">
+          </div>
+        </div>
+
+        <!-- Speciality Insights -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
+            <div class="p-4 border-bottom">
+              <h4 class="mb-1 fw-bold text-body card-title"><i
+                  class="fa-solid fa-chart-bar me-2 text-primary"></i> Speciality Insights</h4>
+              <div class="text-muted" style="font-size: 13px;">Top specialities by volume</div>
+            </div>
+            <div class="p-4">
+              <div class="chart-container" style="height: 320px; position: relative;" ng-if="!emptyCharts.specDist">
                 <canvas id="chartSpecDist"></canvas>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- BED INTELLIGENCE & WARD OCCUPANCY -->
-    <div class="d-flex align-items-center justify-content-between mb-3 mt-4">
-      <h3 class="fw-bold text-body mb-0" style="font-size: 1.4rem; letter-spacing: -0.4px;">
-        <i class="fa-solid fa-bed me-2 text-primary"></i> Bed Intelligence &amp; Ward Capacity
-      </h3>
-      <a href="#!/wards-beds" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-        Manage Beds <i class="fa-solid fa-arrow-right ms-1"></i>
-      </a>
-    </div>
-
-    <div class="row g-4 mb-4">
-      <!-- Left: Overall Occupancy Breakdown Chart -->
-      <div class="col-12 col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
-          <div class="card-header-custom">
-            <div>
-              <h4 class="mb-0 fw-bold text-body" style="font-size: 15.5px;">
-                <i class="fa-solid fa-chart-column me-2 text-primary"></i> Ward Occupancy Breakdown
-              </h4>
-              <div class="text-muted small">Capacity utilization per ward</div>
-            </div>
-          </div>
-          <div class="card-body-custom">
-            <!-- Overall Capacity Banner -->
-            <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded-3 bg-body-tertiary">
-              <div>
-                <div class="text-muted small text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Overall Occupancy</div>
-                <div class="fs-3 fw-bold text-body">
-                  {{ ((summary.occupied_beds / ((summary.occupied_beds + summary.available_beds) || 1)) * 100) | number:0 }}%
+              <div class="empty-chart-container d-flex flex-column align-items-center justify-content-center text-center p-4" style="height: 320px;" ng-if="emptyCharts.specDist">
+                <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
+                  <i class="fa-solid fa-chart-bar text-muted opacity-50 fs-4"></i>
                 </div>
-              </div>
-              <div class="d-flex gap-3 text-end">
-                <div>
-                  <span class="badge bg-danger rounded-pill px-2 py-1"><i class="fa-solid fa-bed me-1"></i> {{summary.occupied_beds}}</span>
-                  <div class="small text-muted mt-1">Occupied</div>
-                </div>
-                <div>
-                  <span class="badge bg-success rounded-pill px-2 py-1"><i class="fa-solid fa-check me-1"></i> {{summary.available_beds}}</span>
-                  <div class="small text-muted mt-1">Available</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="chart-container" style="height: 260px; position: relative;">
-              <canvas id="chartBedOcc"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: Clean Per-Ward Occupancy Progress Bars -->
-      <div class="col-12 col-lg-6">
-        <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
-          <div class="card-header-custom">
-            <div>
-              <h4 class="mb-0 fw-bold text-body" style="font-size: 15.5px;">
-                <i class="fa-solid fa-hospital-user me-2 text-primary"></i> Ward Occupancy Rates
-              </h4>
-              <div class="text-muted small">Live status indicators per clinical ward</div>
-            </div>
-          </div>
-          <div class="card-body-custom">
-            <div class="d-flex flex-column gap-3">
-              <div class="p-3 rounded-3 border bg-surface" ng-repeat="w in wardBedStats">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <div class="d-flex align-items-center gap-2">
-                    <span class="fw-bold text-body">{{w.ward_name}}</span>
-                    <span class="badge rounded-pill px-2 py-1"
-                      ng-class="{'bg-danger': w.pct >= 100, 'bg-warning text-dark': w.pct >= 80 && w.pct < 100, 'bg-success': w.pct < 80}">
-                      {{ w.pct >= 100 ? 'Full' : (w.available + ' free') }}
-                    </span>
-                  </div>
-                  <div class="fw-bold" ng-class="w.textClass">
-                    {{w.pct}}% <span class="text-muted small fw-normal">({{w.occupied}}/{{w.total}})</span>
-                  </div>
-                </div>
-
-                <!-- Clean progress bar colored red when 100%, amber when >80%, green otherwise -->
-                <div class="progress" style="height: 8px; border-radius: 4px; background: rgba(0,0,0,0.06);">
-                  <div class="progress-bar" ng-class="w.colorClass" role="progressbar"
-                    ng-style="{ 'width': w.pct + '%' }"></div>
-                </div>
-
-                <div class="d-flex justify-content-between small text-muted mt-1" style="font-size: 11px;">
-                  <span><i class="fa-solid fa-bed text-success me-1"></i> {{w.available}} Available</span>
-                  <span><i class="fa-solid fa-bed text-danger me-1"></i> {{w.occupied}} Occupied</span>
-                  <span ng-if="w.maintenance > 0"><i class="fa-solid fa-wrench text-warning me-1"></i> {{w.maintenance}} Maint</span>
-                </div>
-              </div>
-
-              <!-- Fallback if no wards loaded -->
-              <div class="text-center text-muted py-4" ng-if="!wardBedStats.length">
-                <i class="fa-solid fa-bed fs-3 opacity-50 mb-2 d-block"></i>
-                <span>No ward occupancy data available.</span>
+                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No speciality visits in this range</p>
+                <span class="text-muted small opacity-75" style="font-size: 12px;">Doctor consultations will appear categorized by speciality.</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
+      </div>
+
+    </div>
   </div>
 </div>

@@ -18,7 +18,7 @@ router.use(rateLimit({
   message: { success: false, message: 'Too many AI requests. Please wait a minute.' },
 }));
 
-const SYSTEM = `You are the assistant inside City Hospital's management system. Your users are hospital staff.
+const SYSTEM = `You are the assistant inside MARY Hospital's management system. Your users are hospital staff.
 
 ANSWER FORMAT (follow strictly):
 - Never use markdown headings (no #, ##, ###). Never use tables.

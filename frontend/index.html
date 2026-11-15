@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vincy Hospital &mdash; Management System</title>
+  <title>MARY Hospital &mdash; Management System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,11 +25,11 @@
     <header class="app-topbar" ng-if="auth.isAuthenticated()">
       <div class="topbar-inner">
         <!-- 1. Left: Brand -->
-        <a href="#!/dashboard" class="topbar-brand" title="Vincy Hospital Home">
+        <a href="#!/dashboard" class="topbar-brand" title="MARY Hospital Home">
           <div class="topbar-brand-icon">
             <i class="fa-solid fa-hospital"></i>
           </div>
-          <span class="topbar-brand-title">VINCY HOSPITAL</span>
+          <span class="topbar-brand-title">MARY Hospital</span>
         </a>
 
         <!-- 2. Desktop Navigation Menu -->
@@ -182,14 +182,19 @@
         </nav>
 
         <!-- 3. Global Search Box (Visual only) -->
-        <div class="topbar-search-box d-none d-xl-flex">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" class="topbar-search-input" placeholder="Quick search..." aria-label="Global search preview">
-          <kbd class="search-shortcut">⌘K</kbd>
+        <div class="topbar-search-box d-none d-lg-flex">
+          <i class="fa-solid fa-magnifying-glass search-icon topbar-search-icon"></i>
+          <input type="text" class="topbar-search-input" placeholder="Search patients, doctors..." aria-label="Global search">
         </div>
 
         <!-- 4. Right Controls -->
         <div class="topbar-controls">
+          <!-- Quick Desk Button -->
+          <button type="button" class="topbar-quickdesk-btn" onclick="document.querySelector('.assistant-fab')?.click()" title="Quick Desk" aria-label="Quick Desk">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Quick Desk</span>
+          </button>
+
           <!-- Theme Toggle -->
           <button type="button" class="topbar-icon-btn" ng-click="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
             <i class="fa-solid" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon'"></i>
@@ -207,20 +212,19 @@
               ng-click="toggleDropdown('user', $event)"
               ng-keydown="onDropdownKey($event, 'user')"
               aria-haspopup="true" aria-expanded="{{activeDropdown === 'user'}}">
-              <div class="topbar-avatar">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+              <div class="topbar-avatar">JO</div>
               <div class="topbar-user-info d-none d-md-flex">
-                <span class="topbar-user-name">{{auth.currentAdmin.fullName || 'Admin User'}}</span>
-                <span class="topbar-user-role">{{auth.currentAdmin.role || 'ADMIN'}}</span>
+                <span class="topbar-user-name">JO admin</span>
               </div>
               <i class="fa-solid fa-chevron-down dropdown-arrow d-none d-md-inline"></i>
             </button>
             <div class="topbar-dropdown-menu dropdown-menu-end" role="menu">
               <div class="dropdown-user-header d-flex align-items-center gap-3 p-3 border-bottom">
-                <div class="topbar-avatar fs-5">{{auth.currentAdmin.fullName.charAt(0) || 'A'}}</div>
+                <div class="topbar-avatar fs-5">JO</div>
                 <div class="overflow-hidden">
-                  <div class="fw-bold text-truncate">{{auth.currentAdmin.fullName}}</div>
-                  <div class="small text-muted text-truncate">{{auth.currentAdmin.email}}</div>
-                  <span class="badge bg-primary-subtle text-primary mt-1" style="font-size: 10px;">{{auth.currentAdmin.role}}</span>
+                  <div class="fw-bold text-truncate">JO admin</div>
+                  <div class="small text-muted text-truncate">{{auth.currentAdmin.email || 'admin@maryhospital.com'}}</div>
+                  <span class="small text-muted d-block mt-1" style="font-size: 11px;">SUPER_ADMIN</span>
                 </div>
               </div>
               <a href="#!/profile" class="dropdown-item-card" ng-class="{active: isActive('/profile')}" ng-click="closeDropdowns()">

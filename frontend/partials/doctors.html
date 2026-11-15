@@ -58,7 +58,7 @@
           <tr ng-repeat="d in doctors" class="border-bottom">
             <td class="py-3">
               <div class="patient-name-cell">
-                <div class="avatar-circle shadow-sm" style="width: 40px; height: 40px; font-size: 16px; background-color: var(--vincy-navy); color: white;">{{d.doctor_name.replace('Dr. ', '').charAt(0).toUpperCase()}}</div>
+                <div class="avatar-circle shadow-sm" style="width: 40px; height: 40px; font-size: 16px; background-color: #0d7c78; color: white;">{{d.doctor_name.replace('Dr. ', '').charAt(0).toUpperCase()}}</div>
                 <div>
                   <div class="fw-bold text-dark">{{d.doctor_name}}</div>
                   <div class="small text-muted font-monospace">{{d.doctor_id}} &middot; {{d.qualification || 'N/A'}} &middot; {{d.experience_years}} yrs exp</div>
@@ -156,7 +156,7 @@
               <label class="fw-medium text-dark mb-1">Email</label>
               <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white text-muted border-end-0"><i class="fa-solid fa-envelope"></i></span>
-                <input type="email" class="form-control border-start-0" ng-model="form.email" placeholder="doctor@vincyhospital.com">
+                <input type="email" class="form-control border-start-0" ng-model="form.email" placeholder="doctor@maryhospital.com">
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-# City Hospital — Hospital Management System
+# MARY Hospital — Hospital Management System
 
 A full-stack Hospital Management System built with **AngularJS 1.8 (frontend) + Node.js/Express (backend) + PostgreSQL (database)**.
 

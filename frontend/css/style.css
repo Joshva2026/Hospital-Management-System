@@ -2258,21 +2258,28 @@ canvas {
   height: 64px;
   max-width: 100%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   box-sizing: border-box;
   flex-shrink: 0;
   flex-wrap: nowrap;
+}
+
+@media (min-width: 1440px) {
+  .topbar-inner {
+    padding: 0 24px;
+    gap: 16px;
+  }
 }
 
 /* Brand */
 .topbar-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-decoration: none;
   color: var(--text-main);
   flex-shrink: 0;
@@ -2280,41 +2287,42 @@ canvas {
 }
 
 .topbar-brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   background: linear-gradient(135deg, #0d7c78 0%, #14b8a6 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  box-shadow: 0 2px 8px rgba(13, 124, 120, 0.25);
+  font-size: 15px;
+  box-shadow: 0 2px 6px rgba(13, 124, 120, 0.25);
 }
 
 .topbar-brand-title {
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   color: var(--text-main);
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 /* Navigation Links */
 .topbar-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex-shrink: 0;
 }
 
 .topbar-nav-link {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
+  gap: 5px;
+  padding: 6px 8px;
   border-radius: 8px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--text-muted);
   text-decoration: none;
@@ -2324,6 +2332,16 @@ canvas {
   transition: all 0.15s ease;
   line-height: 1.4;
   white-space: nowrap;
+}
+
+@media (max-width: 1320px) {
+  .topbar-nav-link i:not(.dropdown-arrow) {
+    display: none;
+  }
+  .topbar-search-box {
+    width: 240px !important;
+    flex: 0 0 240px !important;
+  }
 }
 
 .topbar-nav-link i {
@@ -2462,20 +2480,27 @@ canvas {
   position: relative;
   display: flex;
   align-items: center;
-  width: 200px;
+  width: 260px;
+  flex: 0 0 260px;
+  height: 38px;
 }
 
 .topbar-search-input {
   width: 100%;
-  height: 36px;
-  padding: 0 34px 0 32px;
-  font-size: 12.5px;
+  height: 38px;
+  padding: 0 14px 0 34px;
+  font-size: 13px;
   border-radius: 20px;
   border: 1px solid var(--border);
   background: var(--bg-color);
   color: var(--text-main);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.topbar-search-input::placeholder {
+  color: #94a3b8;
+  font-size: 12.5px;
 }
 
 .topbar-search-input:focus {
@@ -2485,36 +2510,61 @@ canvas {
 
 .topbar-search-icon {
   position: absolute;
-  left: 11px;
-  font-size: 12px;
-  color: var(--text-muted);
+  left: 12px;
+  font-size: 13px;
+  color: #94a3b8;
   pointer-events: none;
 }
 
-.topbar-search-kbd {
-  position: absolute;
-  right: 8px;
-  padding: 2px 5px;
-  font-size: 10px;
+/* Quick Desk Button in Topbar */
+.topbar-quickdesk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
   font-weight: 600;
-  border-radius: 4px;
-  background: var(--border);
-  color: var(--text-muted);
-  pointer-events: none;
+  color: #0d7c78;
+  background: rgba(13, 124, 120, 0.08);
+  border: 1px solid rgba(13, 124, 120, 0.25);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.topbar-quickdesk-btn:hover {
+  background: #0d7c78;
+  color: #ffffff;
+  border-color: #0d7c78;
+}
+
+[data-bs-theme="dark"] .topbar-quickdesk-btn {
+  background: rgba(13, 124, 120, 0.18);
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, 0.3);
+}
+
+[data-bs-theme="dark"] .topbar-quickdesk-btn:hover {
+  background: #0d7c78;
+  color: #ffffff;
 }
 
 /* Right Controls */
 .topbar-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
+.topbar-icon-btn,
 .topbar-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text-muted);
@@ -2524,14 +2574,17 @@ canvas {
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
+  flex-shrink: 0;
 }
 
+.topbar-icon-btn:hover,
 .topbar-btn:hover {
   background: rgba(13, 124, 120, 0.08);
   color: #0d7c78;
   border-color: rgba(13, 124, 120, 0.3);
 }
 
+.notification-indicator,
 .notification-dot {
   position: absolute;
   top: 7px;
@@ -2543,7 +2596,7 @@ canvas {
   border: 1.5px solid var(--surface);
 }
 
-/* User dropdown */
+/* User Profile in Topbar */
 .topbar-user-dropdown {
   position: relative;
 }
@@ -2551,13 +2604,14 @@ canvas {
 .topbar-user-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 3px 10px 3px 3px;
+  gap: 6px;
+  padding: 3px 8px 3px 3px;
   border-radius: 20px;
   border: 1px solid var(--border);
   background: transparent;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .topbar-user-btn:hover {
@@ -2565,42 +2619,26 @@ canvas {
   background: rgba(13, 124, 120, 0.04);
 }
 
-.topbar-user-btn .avatar-circle {
+.topbar-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, #0d7c78 0%, #14b8a6 100%);
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 11.5px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 
-.topbar-user-btn .user-meta {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  line-height: 1.15;
-}
-
-.topbar-user-btn .user-name {
-  font-size: 12px;
+.topbar-user-name {
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-main);
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.topbar-user-btn .user-role {
-  font-size: 10px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-weight: 500;
 }
 
 .topbar-user-menu {
@@ -2871,8 +2909,54 @@ canvas {
 .card {
   border-radius: 16px !important;
   border: 1px solid var(--border) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
-  background-color: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  background-color: var(--surface) !important;
+}
+
+/* Typography scale (Post-login app shell) */
+.page-header-title,
+.page-title {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.4px;
+}
+
+.section-title,
+h3.fw-bold {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.2px;
+}
+
+.card-title,
+h4.fw-bold {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+}
+
+.app-shell p,
+.app-shell td,
+.app-shell th,
+.app-shell input,
+.app-shell select,
+.app-shell textarea,
+.app-shell label,
+.app-shell .body-text {
+  font-size: 14px;
+}
+
+/* Empty chart message container */
+.empty-chart-container {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.015);
+}
+
+[data-bs-theme="dark"] .empty-chart-container {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 /* Toast Polish */
