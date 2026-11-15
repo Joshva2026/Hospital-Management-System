@@ -20,7 +20,7 @@
 
     <div class="assistant-body" id="assistantBody">
       <div class="assistant-msg" ng-repeat="m in messages" ng-class="m.role">
-        <div class="bubble" ng-class="{error: m.error}" ng-bind="m.text"></div>
+        <div class="bubble" ng-class="{error: m.error}" ng-bind-html="m.html"></div>
       </div>
       <div class="assistant-msg assistant" ng-if="sending">
         <div class="bubble typing"><span></span><span></span><span></span></div>
