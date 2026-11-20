@@ -3164,3 +3164,24 @@ h4.fw-bold {
     border-radius: 16px;
   }
 }
+
+/* ===== Top bar fit for longer labels (e.g. Tamil) at desktop widths below 1500px ===== */
+@media (min-width: 992px) and (max-width: 1499.98px) {
+  .topbar-inner { gap: 8px; padding: 0 14px; }
+  .topbar-nav { gap: 2px; }
+  .topbar-nav-link { padding: 6px 7px; font-size: 12px; }
+  .topbar-search-box { width: 150px; min-width: 110px; flex-shrink: 1; }
+  .topbar-search-input { font-size: 12px; }
+  .topbar-brand-title { font-size: 13px; }
+  .topbar-quickdesk-btn span { display: none; }
+  .topbar-user-btn .user-meta { display: none; }
+  .topbar-controls { gap: 6px; flex-shrink: 0; }
+  .lang-switch .btn { padding: 2px 8px; font-size: 11.5px; }
+}
+
+/* Below 1300px the top-bar menu shows icons only, so the bar fits on small laptops and tablets */
+@media (min-width: 992px) and (max-width: 1299.98px) {
+  .topbar-nav-link > span { display: none; }
+  .topbar-nav-link { padding: 8px 10px; }
+  .topbar-nav-link .dropdown-arrow { display: inline-block; }
+}

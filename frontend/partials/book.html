@@ -1,0 +1,69 @@
+<div class="book-page">
+  <div class="container py-4" style="max-width: 640px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <a href="#!/" class="fw-bold text-decoration-none"><i class="fa-solid fa-hospital me-2"></i> MARY Hospital</a>
+      <a href="#!/" class="small text-muted">Back to home</a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4" ng-if="!result">
+      <h1 class="h4 fw-bold mb-1">Book an appointment</h1>
+      <p class="text-muted small mb-4">OPD timings: 10:00 AM to 3:00 PM. Choose a doctor, date and time.</p>
+
+      <form name="bookForm" ng-submit="submit(bookForm)" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="bkName">Full name</label>
+          <input id="bkName" type="text" class="form-control" name="fullName" ng-model="form.fullName" required ng-minlength="2" maxlength="150">
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label" for="bkMobile">Mobile number</label>
+            <input id="bkMobile" type="tel" class="form-control" name="mobile" ng-model="form.mobile" required ng-pattern="/^[6-9][0-9]{9}$/" inputmode="numeric" maxlength="10">
+            <div class="form-text">10 digits, no spaces.</div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="bkGender">Gender</label>
+            <select id="bkGender" class="form-select" name="gender" ng-model="form.gender" required>
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="bkDoctor">Doctor</label>
+          <select id="bkDoctor" class="form-select" name="doctorId" ng-model="form.doctorId" required ng-disabled="loadingDoctors">
+            <option value="">{{loadingDoctors ? 'Loading doctors...' : 'Select a doctor'}}</option>
+            <option ng-repeat="d in doctors" value="{{d.doctor_id}}">{{d.doctor_name}} ({{d.speciality_name}})</option>
+          </select>
+        </div>
+        <div class="row g-3 mb-4">
+          <div class="col-sm-6">
+            <label class="form-label" for="bkDate">Date</label>
+            <input id="bkDate" type="date" class="form-control" name="appointmentDate" ng-model="form.appointmentDate" min="{{minDate}}" required>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="bkTime">Time</label>
+            <select id="bkTime" class="form-select" name="appointmentTime" ng-model="form.appointmentTime" required>
+              <option value="">Select a time</option>
+              <option ng-repeat="t in slots" value="{{t}}">{{t}}</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" ng-disabled="submitting">
+          {{submitting ? 'Booking...' : 'Request appointment'}}
+        </button>
+        <p class="small text-muted mt-3 mb-0">Your request is saved for the hospital to confirm. Please bring your ID to the hospital.</p>
+      </form>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 text-center" ng-if="result">
+      <i class="fa-solid fa-circle-check text-success fa-3x mb-3"></i>
+      <h2 class="h4 fw-bold">Request received</h2>
+      <p class="mb-1">Reference: <strong>{{result.reference}}</strong></p>
+      <p class="text-muted mb-4">{{result.appointmentDate}} at {{result.appointmentTime}}</p>
+      <button type="button" class="btn btn-outline-primary" ng-click="bookAnother()">Book another appointment</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<div class="animate-fade-in">
+  <div class="postlogin-page-header mb-3">
+    <div>
+      <div class="page-breadcrumbs"><span>Hospital</span><span class="breadcrumb-sep">&gt;</span><span class="breadcrumb-active">Billing (Demo)</span></div>
+      <h1 class="page-header-title">Billing (Demo)</h1>
+      <p class="page-header-subtitle">Sample invoices for demonstration only.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-warning border-0 rounded-3 mb-4" role="alert">
+    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+    <strong>DEMO ONLY.</strong> These invoices are sample data. They are not real bills, and no payments are taken.
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <h5 class="fw-bold mb-3">Create demo invoice</h5>
+    <form class="row g-2 align-items-end" ng-submit="createDemo()">
+      <div class="col-md-6">
+        <label class="form-label small text-muted" for="demoVisitId">Visit ID</label>
+        <input id="demoVisitId" type="text" class="form-control" ng-model="form.visitId" placeholder="e.g. VIS-00001" autocomplete="off">
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100" ng-disabled="saving">
+          <i class="fa-solid fa-file-invoice me-1"></i> {{saving ? 'Creating...' : 'Create demo invoice'}}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 p-3">
+    <div class="table-responsive-wrap">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Invoice</th><th>Patient</th><th>Visit</th><th class="text-end">Total (demo)</th><th>Created</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="loading"><td colspan="6" class="text-center text-muted py-4">Loading...</td></tr>
+          <tr ng-if="!loading && invoices.length === 0"><td colspan="6" class="text-center text-muted py-4">No demo invoices yet.</td></tr>
+          <tr ng-repeat="inv in invoices">
+            <td><code>{{inv.invoice_id}}</code></td>
+            <td>{{inv.patient_name}}</td>
+            <td>{{inv.visit_id}}</td>
+            <td class="text-end">&#8377; {{inv.total}}</td>
+            <td>{{inv.created_at | date:'dd MMM yyyy, h:mm a'}}</td>
+            <td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" ng-click="view(inv)">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4 mt-4" ng-if="selected">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div>
+        <h5 class="fw-bold mb-1">{{selected.invoice_id}} &mdash; {{selected.patient_name}}</h5>
+        <small class="text-muted">DEMO &mdash; not a real bill</small>
+      </div>
+      <button type="button" class="btn-close" aria-label="Close" ng-click="close()"></button>
+    </div>
+    <div class="table-responsive-wrap">
+      <table class="table mb-2">
+        <thead><tr><th>Item</th><th class="text-end">Qty</th><th class="text-end">Rate</th><th class="text-end">Amount</th></tr></thead>
+        <tbody>
+          <tr ng-repeat="it in selected.items">
+            <td>{{it.description}}</td><td class="text-end">{{it.qty}}</td>
+            <td class="text-end">&#8377; {{it.rate}}</td><td class="text-end">&#8377; {{it.amount}}</td>
+          </tr>
+        </tbody>
+        <tfoot><tr><th colspan="3" class="text-end">Total (demo)</th><th class="text-end">&#8377; {{selected.total}}</th></tr></tfoot>
+      </table>
+    </div>
+    <p class="small text-muted mb-0">{{selected.note}}</p>
+  </div>
+</div>

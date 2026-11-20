@@ -24,6 +24,10 @@
       .when('/specialities', { templateUrl: 'partials/specialities.html', controller: 'SpecialitiesController', title: 'Specialities' })
       .when('/wards-beds', { templateUrl: 'partials/wards-beds.html', controller: 'WardsBedsController', title: 'Wards & Beds' })
       .when('/discharges', { templateUrl: 'partials/discharges.html', controller: 'DischargesController', title: 'Discharges' })
+      .when('/book', { templateUrl: 'partials/book.html', controller: 'BookController', title: 'Book Appointment' })
+      .when('/queue', { templateUrl: 'partials/queue.html', controller: 'QueueController', title: 'OPD Token Queue' })
+      .when('/queue-display', { templateUrl: 'partials/queue-display.html', controller: 'QueueDisplayController', title: 'Now Serving' })
+      .when('/billing', { templateUrl: 'partials/billing.html', controller: 'BillingController', title: 'Billing (Demo)' })
       .when('/analytics', { templateUrl: 'partials/analytics.html', controller: 'AnalyticsController', title: 'Analytics' })
       .when('/audit-logs', { templateUrl: 'partials/audit-logs.html', controller: 'AuditLogsController', title: 'Audit Logs' })
       .when('/profile', { templateUrl: 'partials/profile.html', controller: 'ProfileController', title: 'Admin Profile' })
@@ -41,7 +45,8 @@
         $location.path('/dashboard');
       }
 
-      if (!isAuth && path !== '/' && path !== '/login') {
+      var publicPaths = ['/', '/login', '/book', '/queue-display'];
+      if (!isAuth && publicPaths.indexOf(path) === -1) {
         $location.path('/');
       }
     });
