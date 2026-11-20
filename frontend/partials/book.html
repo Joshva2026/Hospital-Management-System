@@ -1,24 +1,32 @@
-<div class="book-page">
-  <div class="container py-4" style="max-width: 640px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <a href="#!/" class="fw-bold text-decoration-none"><i class="fa-solid fa-hospital me-2"></i> MARY Hospital</a>
-      <a href="#!/" class="small text-muted">Back to home</a>
+<div class="vx-book">
+  <header class="vx-hero">
+    <div class="vx-hero-inner">
+      <a href="#!/" class="vx-brand">
+        <span class="vx-brand-icon"><i class="fa-solid fa-hospital"></i></span>
+        MARY Hospital
+      </a>
+      <h1>Book an OPD appointment</h1>
+      <p>Choose your doctor and a time that suits you. We will confirm your visit at the hospital.</p>
+      <span class="vx-hours"><i class="fa-regular fa-clock"></i> OPD hours 10:00 AM – 3:00 PM</span>
     </div>
+  </header>
 
-    <div class="card border-0 shadow-sm rounded-4 p-4" ng-if="!result">
-      <h1 class="h4 fw-bold mb-1">Book an appointment</h1>
-      <p class="text-muted small mb-4">OPD timings: 10:00 AM to 3:00 PM. Choose a doctor, date and time.</p>
-
+  <div class="vx-book-wrap">
+    <!-- Booking form -->
+    <div class="vx-card vx-form-card" ng-if="!result">
       <form name="bookForm" ng-submit="submit(bookForm)" novalidate>
-        <div class="mb-3">
-          <label class="form-label" for="bkName">Full name</label>
-          <input id="bkName" type="text" class="form-control" name="fullName" ng-model="form.fullName" required ng-minlength="2" maxlength="150">
+        <div class="vx-step">
+          <span class="vx-step-num">1</span>
+          <h2>Your details</h2>
         </div>
-        <div class="row g-3 mb-3">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label" for="bkName">Full name</label>
+            <input id="bkName" type="text" class="form-control" name="fullName" ng-model="form.fullName" required ng-minlength="2" maxlength="150" placeholder="As on your ID">
+          </div>
           <div class="col-sm-6">
             <label class="form-label" for="bkMobile">Mobile number</label>
-            <input id="bkMobile" type="tel" class="form-control" name="mobile" ng-model="form.mobile" required ng-pattern="/^[6-9][0-9]{9}$/" inputmode="numeric" maxlength="10">
-            <div class="form-text">10 digits, no spaces.</div>
+            <input id="bkMobile" type="tel" class="form-control" name="mobile" ng-model="form.mobile" required ng-pattern="/^[6-9][0-9]{9}$/" inputmode="numeric" maxlength="10" placeholder="10-digit number">
           </div>
           <div class="col-sm-6">
             <label class="form-label" for="bkGender">Gender</label>
@@ -30,14 +38,19 @@
             </select>
           </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="bkDoctor">Doctor</label>
-          <select id="bkDoctor" class="form-select" name="doctorId" ng-model="form.doctorId" required ng-disabled="loadingDoctors">
-            <option value="">{{loadingDoctors ? 'Loading doctors...' : 'Select a doctor'}}</option>
-            <option ng-repeat="d in doctors" value="{{d.doctor_id}}">{{d.doctor_name}} ({{d.speciality_name}})</option>
-          </select>
+
+        <div class="vx-step">
+          <span class="vx-step-num">2</span>
+          <h2>Doctor, date and time</h2>
         </div>
-        <div class="row g-3 mb-4">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label" for="bkDoctor">Doctor</label>
+            <select id="bkDoctor" class="form-select" name="doctorId" ng-model="form.doctorId" required ng-disabled="loadingDoctors">
+              <option value="">{{loadingDoctors ? 'Loading doctors...' : 'Select a doctor'}}</option>
+              <option ng-repeat="d in doctors" value="{{d.doctor_id}}">{{d.doctor_name}} ({{d.speciality_name}})</option>
+            </select>
+          </div>
           <div class="col-sm-6">
             <label class="form-label" for="bkDate">Date</label>
             <input id="bkDate" type="date" class="form-control" name="appointmentDate" ng-model="form.appointmentDate" min="{{minDate}}" required>
@@ -51,19 +64,47 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" ng-disabled="submitting">
-          {{submitting ? 'Booking...' : 'Request appointment'}}
+        <button type="submit" class="vx-submit" ng-disabled="submitting">
+          <i class="fa-solid fa-calendar-check me-2"></i>{{submitting ? 'Booking...' : 'Request appointment'}}
         </button>
-        <p class="small text-muted mt-3 mb-0">Your request is saved for the hospital to confirm. Please bring your ID to the hospital.</p>
+        <p class="vx-fine">Your request is saved for the hospital to confirm.</p>
       </form>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 p-4 text-center" ng-if="result">
-      <i class="fa-solid fa-circle-check text-success fa-3x mb-3"></i>
-      <h2 class="h4 fw-bold">Request received</h2>
-      <p class="mb-1">Reference: <strong>{{result.reference}}</strong></p>
-      <p class="text-muted mb-4">{{result.appointmentDate}} at {{result.appointmentTime}}</p>
-      <button type="button" class="btn btn-outline-primary" ng-click="bookAnother()">Book another appointment</button>
+    <!-- Live visit summary -->
+    <aside class="vx-card vx-summary-card" ng-if="!result">
+      <h2>Your visit</h2>
+      <div class="vx-sum-row"><span>Patient</span><strong>{{form.fullName || '—'}}</strong></div>
+      <div class="vx-sum-row"><span>Doctor</span><strong>{{doctorName() || '—'}}</strong></div>
+      <div class="vx-sum-row"><span>Speciality</span><strong>{{doctorSpeciality() || '—'}}</strong></div>
+      <div class="vx-sum-row"><span>Date</span><strong>{{form.appointmentDate ? (form.appointmentDate | date:'mediumDate') : '—'}}</strong></div>
+      <div class="vx-sum-row"><span>Time</span><strong>{{form.appointmentTime || '—'}}</strong></div>
+      <div class="vx-tips">
+        <strong><i class="fa-solid fa-circle-info me-1"></i> Before you come</strong>
+        <ul>
+          <li>Arrive 15 minutes early.</li>
+          <li>Bring a photo ID.</li>
+          <li>Keep your reference number handy.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Confirmation ticket -->
+    <div class="vx-card vx-ticket" ng-if="result">
+      <div class="vx-ticket-top">
+        <i class="fa-solid fa-circle-check"></i>
+        <h2>Request received</h2>
+      </div>
+      <div class="vx-ticket-body">
+        <p class="small text-muted mb-2">Your reference number</p>
+        <span class="vx-ref">{{result.reference}}</span>
+        <p class="vx-ticket-when">{{result.appointmentDate}} at {{result.appointmentTime}}</p>
+        <div class="vx-ticket-actions">
+          <button type="button" class="vx-btn-ghost" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print</button>
+          <button type="button" class="vx-btn-ghost" ng-click="bookAnother()"><i class="fa-solid fa-plus me-1"></i> Book another appointment</button>
+        </div>
+        <p class="vx-fine">Please bring a photo ID and arrive 15 minutes early.</p>
+      </div>
     </div>
   </div>
 </div>
