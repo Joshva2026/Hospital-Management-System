@@ -245,14 +245,21 @@
             <i class="fa-solid" ng-class="theme === 'dark' ? 'fa-sun text-warning' : 'fa-moon'"></i>
           </button>
 
-          <!-- Notifications Button (visual) -->
-          <button type="button" class="topbar-icon-btn position-relative" aria-label="Notifications" title="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-indicator"></span>
-          </button>
+          <!-- Notifications -->
+          <div class="topbar-dropdown topbar-user-dropdown" ng-class="{open: activeDropdown === 'notify'}">
+            <button type="button" class="topbar-icon-btn position-relative" aria-label="Notifications" title="Notifications"
+              ng-click="toggleDropdown('notify', $event)" ng-keydown="onDropdownKey($event, 'notify')"
+              aria-haspopup="true" aria-expanded="{{activeDropdown === 'notify'}}">
+              <i class="fa-solid fa-bell"></i>
+            </button>
+            <div class="topbar-dropdown-menu dropdown-menu-end topbar-user-menu" role="menu">
+              <div class="dropdown-header-title">Notifications</div>
+              <div class="p-3 small text-muted">You're all caught up. Appointment and queue alerts will appear here once they are connected.</div>
+            </div>
+          </div>
 
           <!-- Admin User Profile Dropdown -->
-          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'user'}">
+          <div class="topbar-dropdown topbar-user-dropdown" ng-class="{open: activeDropdown === 'user'}">
             <button type="button" class="topbar-user-btn"
               ng-click="toggleDropdown('user', $event)"
               ng-keydown="onDropdownKey($event, 'user')"
@@ -315,30 +322,30 @@
       <div class="topbar-mobile-panel d-lg-none" ng-show="sidebarOpen">
         <div class="topbar-mobile-content mobile-nav-scroll">
           <a href="#!/dashboard" class="mobile-nav-link" ng-class="{active: isActive('/dashboard')}" ng-click="closeSidebar()">
-            <i class="fa-solid fa-gauge-high"></i> Dashboard
+            <i class="fa-solid fa-gauge-high"></i> {{ 'mob.dashboard' | tr }}
           </a>
           <a href="#!/patients" class="mobile-nav-link" ng-class="{active: isActive('/patients')}" ng-click="closeSidebar()">
-            <i class="fa-solid fa-users"></i> Patients
+            <i class="fa-solid fa-users"></i> {{ 'mob.patients' | tr }}
           </a>
 
           <!-- Mobile Group: OPD -->
           <div class="mobile-group">
             <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('opd')">
-              <span><i class="fa-solid fa-stethoscope me-2"></i> OPD</span>
+              <span><i class="fa-solid fa-stethoscope me-2"></i> {{ 'mob.opd' | tr }}</span>
               <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('opd')}"></i>
             </button>
             <div class="mobile-group-items" ng-show="isMobileGroupOpen('opd')">
               <a href="#!/visits" ng-class="{active: isActive('/visits')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-hospital-user"></i> Visits
+                <i class="fa-solid fa-hospital-user"></i> {{ 'mob.visits' | tr }}
               </a>
               <a href="#!/appointments" ng-class="{active: isActive('/appointments')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-calendar-check"></i> Appointments
+                <i class="fa-solid fa-calendar-check"></i> {{ 'mob.appointments' | tr }}
               </a>
               <a href="#!/billing" ng-class="{active: isActive('/billing')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-file-invoice"></i> Billing (Demo)
+                <i class="fa-solid fa-file-invoice"></i> {{ 'mob.billing' | tr }}
               </a>
               <a href="#!/queue" ng-class="{active: isActive('/queue')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-ticket"></i> Token Queue
+                <i class="fa-solid fa-ticket"></i> {{ 'mob.queue' | tr }}
               </a>
             </div>
           </div>
@@ -346,24 +353,24 @@
           <!-- Mobile Group: Operations -->
           <div class="mobile-group">
             <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('ops')">
-              <span><i class="fa-solid fa-bed-pulse me-2"></i> Operations</span>
+              <span><i class="fa-solid fa-bed-pulse me-2"></i> {{ 'mob.operations' | tr }}</span>
               <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('ops')}"></i>
             </button>
             <div class="mobile-group-items" ng-show="isMobileGroupOpen('ops')">
               <a href="#!/wards-beds" ng-class="{active: isActive('/wards-beds')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-bed"></i> Wards &amp; Beds
+                <i class="fa-solid fa-bed"></i> {{ 'mob.wards' | tr }}
               </a>
               <a href="#!/admissions" ng-class="{active: isActive('/admissions')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-truck-medical"></i> Admissions
+                <i class="fa-solid fa-truck-medical"></i> {{ 'mob.admissions' | tr }}
               </a>
               <a href="#!/discharges" ng-class="{active: isActive('/discharges')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-person-walking-arrow-right"></i> Discharges
+                <i class="fa-solid fa-person-walking-arrow-right"></i> {{ 'mob.discharges' | tr }}
               </a>
               <a href="#!/doctors" ng-class="{active: isActive('/doctors')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-user-doctor"></i> Doctors
+                <i class="fa-solid fa-user-doctor"></i> {{ 'mob.doctors' | tr }}
               </a>
               <a href="#!/specialities" ng-class="{active: isActive('/specialities')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-dna"></i> Specialities
+                <i class="fa-solid fa-dna"></i> {{ 'mob.specialities' | tr }}
               </a>
             </div>
           </div>
@@ -371,15 +378,15 @@
           <!-- Mobile Group: Reports -->
           <div class="mobile-group">
             <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('reports')">
-              <span><i class="fa-solid fa-chart-pie me-2"></i> Reports</span>
+              <span><i class="fa-solid fa-chart-pie me-2"></i> {{ 'mob.reports' | tr }}</span>
               <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('reports')}"></i>
             </button>
             <div class="mobile-group-items" ng-show="isMobileGroupOpen('reports')">
               <a href="#!/reports" ng-class="{active: isActive('/reports')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-file-waveform"></i> Daily Reports
+                <i class="fa-solid fa-file-waveform"></i> {{ 'mob.daily' | tr }}
               </a>
               <a href="#!/analytics" ng-class="{active: isActive('/analytics')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-chart-line"></i> Analytics
+                <i class="fa-solid fa-chart-line"></i> {{ 'mob.analytics' | tr }}
               </a>
             </div>
           </div>
@@ -387,12 +394,12 @@
           <!-- Mobile Group: Insights -->
           <div class="mobile-group">
             <button type="button" class="mobile-group-toggle" ng-click="toggleMobileGroup('insights')">
-              <span><i class="fa-solid fa-shield-halved me-2"></i> Insights</span>
+              <span><i class="fa-solid fa-shield-halved me-2"></i> {{ 'mob.insights' | tr }}</span>
               <i class="fa-solid fa-chevron-down group-arrow" ng-class="{'rotate-180': isMobileGroupOpen('insights')}"></i>
             </button>
             <div class="mobile-group-items" ng-show="isMobileGroupOpen('insights')">
               <a href="#!/audit-logs" ng-class="{active: isActive('/audit-logs')}" ng-click="closeSidebar()">
-                <i class="fa-solid fa-clock-rotate-left"></i> Audit Logs
+                <i class="fa-solid fa-clock-rotate-left"></i> {{ 'mob.audit' | tr }}
               </a>
             </div>
           </div>
@@ -401,10 +408,10 @@
 
           <!-- Mobile Account Links -->
           <a href="#!/profile" class="mobile-nav-link" ng-class="{active: isActive('/profile')}" ng-click="closeSidebar()">
-            <i class="fa-solid fa-user"></i> My Profile
+            <i class="fa-solid fa-user"></i> {{ 'mob.profile' | tr }}
           </a>
           <button type="button" class="mobile-nav-link text-danger w-100 text-start border-0 bg-transparent" ng-click="logout(); closeSidebar()">
-            <i class="fa-solid fa-power-off"></i> Sign Out
+            <i class="fa-solid fa-power-off"></i> {{ 'mob.signout' | tr }}
           </button>
         </div>
       </div>
