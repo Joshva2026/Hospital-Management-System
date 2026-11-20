@@ -340,6 +340,29 @@
       font-size: 1.15rem;
       line-height: 1.6;
     }
+    .hms-final-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+    .hms-final-link {
+      color: var(--hms-white);
+      text-decoration: none;
+      padding: 12px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .hms-final-link:hover { border-color: #5eead4; color: #5eead4; }
+    .hms-final .hms-final-note {
+      margin: 22px auto 0;
+      max-width: 520px;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
 
     /* Footer */
     .hms-footer {
@@ -445,6 +468,11 @@
       <button type="button" class="hms-btn hms-btn--primary" ng-click="openLoginModal()" style="padding: 18px 42px; font-size: 1.1rem;">
         Admin Login
       </button>
+      <div class="hms-final-links">
+        <a href="#!/book" class="hms-final-link"><i class="fa-solid fa-calendar-check"></i> Book an appointment</a>
+        <a href="#!/queue-display" target="_blank" rel="noopener" class="hms-final-link"><i class="fa-solid fa-tv"></i> Waiting-room screen</a>
+      </div>
+      <p class="hms-final-note">Staff: sign in with your admin account. Patients: book online or follow the waiting-room screen.</p>
     </section>
 
     <footer class="hms-footer">
