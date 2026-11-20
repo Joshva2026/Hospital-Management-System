@@ -3185,3 +3185,14 @@ h4.fw-bold {
   .topbar-nav-link { padding: 8px 10px; }
   .topbar-nav-link .dropdown-arrow { display: inline-block; }
 }
+
+/* ===== Phone topbar fit (fixes hamburger and admin menu pushed off-screen) ===== */
+@media (max-width: 991.98px) {
+  .topbar-quickdesk-btn { display: none !important; }
+}
+@media (max-width: 575.98px) {
+  .topbar-brand-title { display: none !important; }
+  .topbar-inner { padding: 0 10px; gap: 6px; }
+  .topbar-controls { gap: 4px; }
+  .topbar-user-btn { padding: 2px; }
+}

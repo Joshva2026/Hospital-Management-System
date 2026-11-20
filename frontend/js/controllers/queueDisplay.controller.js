@@ -15,7 +15,7 @@
           $scope.updatedAt = new Date();
           $scope.error = null;
         }).catch(function () {
-          $scope.error = 'Connection problem. Retrying...';
+          $scope.error = 'queue.retry';
         });
       }
 
