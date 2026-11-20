@@ -41,6 +41,22 @@
         return $scope.tokensFor(doctorId).filter(function (t) { return t.status === 'WAITING'; }).length;
       };
 
+      // Helpers for the lane layout
+      $scope.servingToken = function (doctorId) {
+        return $scope.tokensFor(doctorId).filter(function (t) { return t.status === 'CALLED'; })[0] || null;
+      };
+      $scope.waitingTokens = function (doctorId) {
+        return $scope.tokensFor(doctorId)
+          .filter(function (t) { return t.status === 'WAITING'; })
+          .sort(function (a, b) { return a.token_no - b.token_no; });
+      };
+      $scope.doneCount = function (doctorId) {
+        return $scope.tokensFor(doctorId).filter(function (t) { return t.status === 'DONE'; }).length;
+      };
+      $scope.recentTokens = function (doctorId) {
+        return $scope.tokensFor(doctorId).slice().sort(function (a, b) { return b.token_no - a.token_no; }).slice(0, 8);
+      };
+
       $scope.issue = function () {
         if (!$scope.newDoctorId) { ToastService.error('Select a doctor first.'); return; }
         $scope.busy = true;

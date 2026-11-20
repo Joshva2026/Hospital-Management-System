@@ -59,6 +59,22 @@
         });
       };
 
+      // Summary card helpers
+      $scope.doctorName = function () {
+        var id = $scope.form.doctorId;
+        for (var i = 0; i < $scope.doctors.length; i++) {
+          if ($scope.doctors[i].doctor_id === id) return $scope.doctors[i].doctor_name;
+        }
+        return '';
+      };
+      $scope.doctorSpeciality = function () {
+        var id = $scope.form.doctorId;
+        for (var i = 0; i < $scope.doctors.length; i++) {
+          if ($scope.doctors[i].doctor_id === id) return $scope.doctors[i].speciality_name || '';
+        }
+        return '';
+      };
+
       $scope.bookAnother = function () {
         $scope.result = null;
       };

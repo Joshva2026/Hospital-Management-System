@@ -1,23 +1,33 @@
-<div class="queue-display">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2 fw-bold mb-0"><i class="fa-solid fa-hospital me-2"></i> MARY Hospital &mdash; {{ 'queue.title' | tr }}</h1>
-    <span class="small text-muted" ng-if="updatedAt">{{ 'queue.updated' | tr }} {{updatedAt | date:'h:mm:ss a'}}</span>
+<div class="vx-display">
+  <div class="vx-d-head">
+    <div class="vx-d-brand">
+      <span class="vx-d-brand-icon"><i class="fa-solid fa-hospital"></i></span>
+      <div>
+        <h1 class="vx-d-title">MARY Hospital</h1>
+        <p class="vx-d-sub">{{ 'queue.title' | tr }}</p>
+      </div>
+    </div>
+    <div class="vx-d-meta">
+      <div class="vx-live">Live</div>
+      <div ng-if="updatedAt">{{ 'queue.updated' | tr }} {{updatedAt | date:'h:mm:ss a'}}</div>
+    </div>
   </div>
-  <div class="alert alert-warning" ng-if="error">{{ error | tr }}</div>
-  <div class="text-center text-muted py-5" ng-if="rows.length === 0 && !error">{{ 'queue.empty' | tr }}</div>
 
-  <div class="row g-4">
-    <div class="col-12 col-md-6 col-xl-4" ng-repeat="r in rows">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 text-center">
-        <div class="fw-semibold fs-5 mb-2">{{r.doctor_name}}</div>
-        <div class="small text-uppercase text-muted">{{ 'queue.nowServing' | tr }}</div>
-        <div class="display-1 fw-bold my-2" style="color:#0d7c78;">{{r.now_serving || '—'}}</div>
-        <div class="small text-uppercase text-muted mt-3">{{ 'queue.next' | tr }}</div>
-        <div class="fs-4">
-          <span ng-repeat="n in r.waiting" class="badge bg-light text-dark border mx-1 fs-5">{{n}}</span>
-          <span ng-if="r.waiting.length === 0" class="text-muted">&mdash;</span>
-        </div>
+  <div class="vx-d-alert" ng-if="error">{{ error | tr }}</div>
+
+  <div class="vx-d-grid" ng-if="rows.length > 0">
+    <div class="vx-d-card" ng-repeat="r in rows">
+      <p class="vx-d-doc">{{r.doctor_name}}</p>
+      <div class="vx-d-label">{{ 'queue.nowServing' | tr }}</div>
+      <div class="vx-d-now" ng-class="{'is-empty': !r.now_serving}">{{r.now_serving || '—'}}</div>
+      <div class="vx-d-label">{{ 'queue.next' | tr }}</div>
+      <div class="vx-d-next">
+        <span ng-repeat="n in r.waiting">{{n}}</span>
+        <span class="vx-d-none" ng-if="r.waiting.length === 0">—</span>
       </div>
     </div>
   </div>
+
+  <div class="vx-d-foot" ng-if="rows.length === 0 && !error">{{ 'queue.empty' | tr }}</div>
+  <div class="vx-d-foot">Please keep your token number ready. You will be called in order.</div>
 </div>
