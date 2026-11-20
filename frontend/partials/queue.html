@@ -1,0 +1,62 @@
+<div class="animate-fade-in">
+  <div class="postlogin-page-header mb-3">
+    <div>
+      <div class="page-breadcrumbs"><span>OPD</span><span class="breadcrumb-sep">&gt;</span><span class="breadcrumb-active">Token Queue</span></div>
+      <h1 class="page-header-title">OPD Token Queue</h1>
+      <p class="page-header-subtitle">Issue tokens and call patients. The waiting-room screen shows token numbers only.</p>
+    </div>
+    <div class="page-header-actions">
+      <a class="btn btn-outline-primary btn-sm" href="#!/queue-display" target="_blank" rel="noopener"><i class="fa-solid fa-tv me-1"></i> Open waiting-room screen</a>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <div class="row g-2 align-items-end">
+      <div class="col-sm-4">
+        <label class="form-label small text-muted" for="qDate">Date</label>
+        <input id="qDate" type="date" class="form-control" ng-model="dateObj" ng-change="reload()">
+      </div>
+      <div class="col-sm-5">
+        <label class="form-label small text-muted" for="qDoctor">Doctor</label>
+        <select id="qDoctor" class="form-select" ng-model="newDoctorId" ng-options="d.doctor_id as d.doctor_name for d in doctors"></select>
+      </div>
+      <div class="col-sm-3">
+        <button type="button" class="btn btn-primary w-100" ng-click="issue()" ng-disabled="busy || !newDoctorId">
+          <i class="fa-solid fa-ticket me-1"></i> Issue token
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-muted" ng-if="loading">Loading queue...</div>
+  <div class="text-muted" ng-if="!loading && doctors.length === 0">No active doctors found.</div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-6" ng-repeat="d in doctors">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 fw-bold mb-0">{{d.doctor_name}}</h2>
+          <span class="badge bg-secondary-subtle text-body">{{waitingCount(d.doctor_id)}} waiting</span>
+        </div>
+        <button type="button" class="btn btn-success w-100 mb-3" ng-click="callNext(d.doctor_id)" ng-disabled="busy">
+          <i class="fa-solid fa-bullhorn me-1"></i> Call next patient
+        </button>
+        <div class="table-responsive-wrap">
+          <table class="table table-sm align-middle mb-0">
+            <thead><tr><th>Token</th><th>Status</th><th class="text-end"></th></tr></thead>
+            <tbody>
+              <tr ng-if="tokensFor(d.doctor_id).length === 0"><td colspan="3" class="text-muted text-center py-3">No tokens yet today.</td></tr>
+              <tr ng-repeat="t in tokensFor(d.doctor_id)">
+                <td><strong>{{t.token_no}}</strong></td>
+                <td><span class="badge" ng-class="{'bg-warning text-dark': t.status==='WAITING', 'bg-success': t.status==='CALLED', 'bg-secondary': t.status==='DONE'}">{{t.status}}</span></td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" ng-if="t.status !== 'DONE'" ng-click="markDone(t)">Done</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

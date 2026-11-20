@@ -38,13 +38,13 @@
           <!-- Dashboard link -->
           <a href="#!/dashboard" class="topbar-nav-link" ng-class="{active: isActive('/dashboard')}">
             <i class="fa-solid fa-gauge-high"></i>
-            <span>Dashboard</span>
+            <span>{{ 'nav.dashboard' | tr }}</span>
           </a>
 
           <!-- Patients link -->
           <a href="#!/patients" class="topbar-nav-link" ng-class="{active: isActive('/patients')}">
             <i class="fa-solid fa-users"></i>
-            <span>Patients</span>
+            <span>{{ 'nav.patients' | tr }}</span>
           </a>
 
           <!-- OPD Dropdown -->
@@ -55,7 +55,7 @@
               ng-keydown="onDropdownKey($event, 'opd')"
               aria-haspopup="true" aria-expanded="{{activeDropdown === 'opd'}}">
               <i class="fa-solid fa-stethoscope"></i>
-              <span>OPD</span>
+              <span>{{ 'nav.opd' | tr }}</span>
               <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
             </button>
             <div class="topbar-dropdown-menu" role="menu">
@@ -74,6 +74,20 @@
                   <span class="item-desc">Scheduled doctor visits &amp; slot booking</span>
                 </div>
               </a>
+              <a href="#!/billing" class="dropdown-item-card" ng-class="{active: isActive('/billing')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-file-invoice"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Billing (Demo)</strong>
+                  <span class="item-desc">Sample invoices only, not real bills</span>
+                </div>
+              </a>
+              <a href="#!/queue" class="dropdown-item-card" ng-class="{active: isActive('/queue')}" ng-click="closeDropdowns()">
+                <div class="item-icon-box"><i class="fa-solid fa-ticket"></i></div>
+                <div class="item-text">
+                  <strong class="item-title">Token Queue</strong>
+                  <span class="item-desc">Issue tokens and call patients</span>
+                </div>
+              </a>
             </div>
           </div>
 
@@ -85,7 +99,7 @@
               ng-keydown="onDropdownKey($event, 'ops')"
               aria-haspopup="true" aria-expanded="{{activeDropdown === 'ops'}}">
               <i class="fa-solid fa-bed-pulse"></i>
-              <span>Operations</span>
+              <span>{{ 'nav.operations' | tr }}</span>
               <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
             </button>
             <div class="topbar-dropdown-menu" role="menu">
@@ -136,7 +150,7 @@
               ng-keydown="onDropdownKey($event, 'reports')"
               aria-haspopup="true" aria-expanded="{{activeDropdown === 'reports'}}">
               <i class="fa-solid fa-chart-pie"></i>
-              <span>Reports</span>
+              <span>{{ 'nav.reports' | tr }}</span>
               <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
             </button>
             <div class="topbar-dropdown-menu" role="menu">
@@ -166,7 +180,7 @@
               ng-keydown="onDropdownKey($event, 'insights')"
               aria-haspopup="true" aria-expanded="{{activeDropdown === 'insights'}}">
               <i class="fa-solid fa-shield-halved"></i>
-              <span>Insights</span>
+              <span>{{ 'nav.insights' | tr }}</span>
               <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
             </button>
             <div class="topbar-dropdown-menu" role="menu">
@@ -186,7 +200,7 @@
         <div class="topbar-search-box d-none d-lg-flex" ng-controller="TopBarController">
           <i class="fa-solid fa-magnifying-glass search-icon topbar-search-icon"></i>
           <input type="text" class="topbar-search-input"
-            placeholder="Search patients, doctors..."
+            placeholder="{{ 'nav.search' | tr }}"
             aria-label="Global search"
             ng-model="query"
             ng-change="onQueryChange()"
@@ -219,6 +233,7 @@
 
         <!-- 4. Right Controls -->
         <div class="topbar-controls">
+          <lang-switch></lang-switch>
           <!-- Quick Desk Button -->
           <button type="button" class="topbar-quickdesk-btn" onclick="document.querySelector('.assistant-fab')?.click()" title="Quick Desk" aria-label="Quick Desk">
             <i class="fa-solid fa-bolt"></i>
@@ -318,6 +333,12 @@
               </a>
               <a href="#!/appointments" ng-class="{active: isActive('/appointments')}" ng-click="closeSidebar()">
                 <i class="fa-solid fa-calendar-check"></i> Appointments
+              </a>
+              <a href="#!/billing" ng-class="{active: isActive('/billing')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-file-invoice"></i> Billing (Demo)
+              </a>
+              <a href="#!/queue" ng-class="{active: isActive('/queue')}" ng-click="closeSidebar()">
+                <i class="fa-solid fa-ticket"></i> Token Queue
               </a>
             </div>
           </div>
@@ -423,6 +444,7 @@
   <script src="js/directives/landingSequence.js"></script>
   <script src="js/directives/statusBadge.directive.js"></script>
 
+  <script src="js/i18n.js"></script>
   <script src="js/controllers/root.controller.js"></script>
   <script src="js/controllers/landing.controller.js"></script>
   <script src="js/controllers/login.controller.js"></script>
@@ -440,6 +462,10 @@
   <script src="js/controllers/auditLogs.controller.js"></script>
   <script src="js/controllers/profile.controller.js"></script>
   <script src="js/controllers/assistant.controller.js"></script>
+  <script src="js/controllers/billing.controller.js"></script>
+  <script src="js/controllers/book.controller.js"></script>
+  <script src="js/controllers/queue.controller.js"></script>
+  <script src="js/controllers/queueDisplay.controller.js"></script>
 
   <div ng-if="auth.isAuthenticated()" ng-include="'partials/assistant-widget.html'"></div>
 </body>
