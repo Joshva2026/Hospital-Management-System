@@ -15,6 +15,8 @@
       'nav.search': 'Search patients, doctors...',
       'nav.quickdesk': 'Quick Desk',
       'nav.language': 'Language',
+      'nav.expand': 'Expand menu',
+      'nav.collapse': 'Collapse menu',
       'mob.dashboard': 'Dashboard',
       'mob.patients': 'Patients',
       'mob.opd': 'OPD',
@@ -42,7 +44,24 @@
       'queue.empty': 'No patients in the queue right now.',
       'queue.retry': 'Connection problem. Retrying...',
       // Dashboard
+      'dash.morning': 'Good morning',
+      'dash.afternoon': 'Good afternoon',
+      'dash.evening': 'Good evening',
       'dash.welcome': 'Welcome back',
+      'dash.promoTitle': 'Waiting-room screen',
+      'dash.promoText': 'Show live token numbers to patients in the waiting area.',
+      'dash.promoCta': 'Open screen',
+      'dash.legend.patients': 'Patients',
+      'dash.legend.appointments': 'OPD visits',
+      'dash.occupied': 'Occupied',
+      'dash.available': 'Available',
+      'dash.totalBeds': 'Total beds',
+      'dash.recentActivity': 'Recent activity',
+      'dash.viewAll': 'View all',
+      'dash.empty.activity': 'No recent activity yet.',
+      'dash.quickAccess': 'Quick access',
+      'dash.wardCapacity': 'Ward capacity',
+      'dash.occupancyPct': 'occupied',
       'dash.doctor': 'Doctor',
       'dash.registerPatient': 'Register Patient',
       'dash.newOpd': 'New OPD Visit',
@@ -86,6 +105,8 @@
       'nav.search': 'நோயாளிகள், மருத்துவர்களைத் தேடுங்கள்...',
       'nav.quickdesk': 'விரைவு மேசை',
       'nav.language': 'மொழி',
+      'nav.expand': 'மெனுவை விரிவாக்கு',
+      'nav.collapse': 'மெனுவைச் சுருக்கு',
       'mob.dashboard': 'டாஷ்போர்டு',
       'mob.patients': 'நோயாளிகள்',
       'mob.opd': 'புறநோயாளர் பிரிவு',
@@ -113,7 +134,24 @@
       'queue.empty': 'இப்போது வரிசையில் நோயாளிகள் யாரும் இல்லை.',
       'queue.retry': 'இணைப்பில் சிக்கல். மீண்டும் முயற்சிக்கிறது...',
       // Dashboard
+      'dash.morning': 'காலை வணக்கம்',
+      'dash.afternoon': 'மதிய வணக்கம்',
+      'dash.evening': 'மாலை வணக்கம்',
       'dash.welcome': 'மீண்டும் வருக',
+      'dash.promoTitle': 'காத்திருப்பு அறை திரை',
+      'dash.promoText': 'காத்திருப்பு பகுதியில் உள்ள நோயாளிகளுக்கு நேரடி டோக்கன் எண்களைக் காட்டுங்கள்.',
+      'dash.promoCta': 'திரையைத் திற',
+      'dash.legend.patients': 'நோயாளிகள்',
+      'dash.legend.appointments': 'OPD வருகைகள்',
+      'dash.occupied': 'நிரம்பியவை',
+      'dash.available': 'காலியானவை',
+      'dash.totalBeds': 'மொத்தப் படுக்கைகள்',
+      'dash.recentActivity': 'சமீபத்திய செயல்பாடு',
+      'dash.viewAll': 'அனைத்தையும் காண்க',
+      'dash.empty.activity': 'இன்னும் சமீபத்திய செயல்பாடு இல்லை.',
+      'dash.quickAccess': 'விரைவு அணுகல்',
+      'dash.wardCapacity': 'வார்டு கொள்ளளவு',
+      'dash.occupancyPct': 'நிரம்பியது',
       'dash.doctor': 'மருத்துவர்',
       'dash.registerPatient': 'நோயாளியைப் பதிவு செய்',
       'dash.newOpd': 'புதிய OPD வருகை',
@@ -177,6 +215,15 @@
     fn.$stateful = true; // re-evaluate when the language changes
     return fn;
   }]);
+
+  // Usage: {{ 'PATIENT_ADMITTED' | humanize }} -> "Patient admitted"
+  angular.module('hmsApp').filter('humanize', function () {
+    return function (value) {
+      if (!value) return '';
+      var text = String(value).replace(/[_-]+/g, ' ').toLowerCase();
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+  });
 
   // Usage: <lang-switch></lang-switch>
   angular.module('hmsApp').directive('langSwitch', ['LangService', function (LangService) {

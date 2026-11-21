@@ -7,6 +7,16 @@
       $scope.auth = AuthService;
       $scope.sidebarOpen = false;
 
+      // Desktop side rail: collapsed icon rail, expands on tap. Choice is remembered per browser.
+      var RAIL_KEY = 'hms_rail';
+      $scope.railOpen = false;
+      try { $scope.railOpen = localStorage.getItem(RAIL_KEY) === 'open'; } catch (e) { /* storage blocked */ }
+      $scope.toggleRail = function () {
+        $scope.railOpen = !$scope.railOpen;
+        try { localStorage.setItem(RAIL_KEY, $scope.railOpen ? 'open' : 'closed'); } catch (e) { /* ignore */ }
+        if (!$scope.railOpen) $scope.activeDropdown = null;
+      };
+
       // Theme management (C1)
       function getInitialTheme() {
         try {
@@ -85,10 +95,11 @@
 
       // Close dropdowns & mobile menu on Escape
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && ($scope.activeDropdown || $scope.sidebarOpen)) {
+        if (e.key === 'Escape' && ($scope.activeDropdown || $scope.sidebarOpen || $scope.railOpen)) {
           $scope.$applyAsync(function () {
             $scope.activeDropdown = null;
             $scope.sidebarOpen = false;
+            if ($scope.railOpen) { $scope.railOpen = false; try { localStorage.setItem(RAIL_KEY, 'closed'); } catch (err) { /* ignore */ } }
           });
         }
       });

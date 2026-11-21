@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/visual.css">
+  <link rel="stylesheet" href="css/reference.css">
   <style>
     [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
       display: none !important;
@@ -35,167 +36,6 @@
         </a>
 
         <!-- 2. Desktop Navigation Menu -->
-        <nav class="topbar-nav d-none d-lg-flex" aria-label="Main Navigation">
-          <!-- Dashboard link -->
-          <a href="#!/dashboard" class="topbar-nav-link" ng-class="{active: isActive('/dashboard')}">
-            <i class="fa-solid fa-gauge-high"></i>
-            <span>{{ 'nav.dashboard' | tr }}</span>
-          </a>
-
-          <!-- Patients link -->
-          <a href="#!/patients" class="topbar-nav-link" ng-class="{active: isActive('/patients')}">
-            <i class="fa-solid fa-users"></i>
-            <span>{{ 'nav.patients' | tr }}</span>
-          </a>
-
-          <!-- OPD Dropdown -->
-          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'opd'}">
-            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
-              ng-class="{active: isActive('/visits') || isActive('/appointments')}"
-              ng-click="toggleDropdown('opd', $event)"
-              ng-keydown="onDropdownKey($event, 'opd')"
-              aria-haspopup="true" aria-expanded="{{activeDropdown === 'opd'}}">
-              <i class="fa-solid fa-stethoscope"></i>
-              <span>{{ 'nav.opd' | tr }}</span>
-              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-            </button>
-            <div class="topbar-dropdown-menu" role="menu">
-              <div class="dropdown-header-title">Outpatient Department</div>
-              <a href="#!/visits" class="dropdown-item-card" ng-class="{active: isActive('/visits')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-hospital-user"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">OPD / Visits</strong>
-                  <span class="item-desc">Patient consultations and clinical triage</span>
-                </div>
-              </a>
-              <a href="#!/appointments" class="dropdown-item-card" ng-class="{active: isActive('/appointments')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-calendar-check"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Appointments</strong>
-                  <span class="item-desc">Scheduled doctor visits &amp; slot booking</span>
-                </div>
-              </a>
-              <a href="#!/billing" class="dropdown-item-card" ng-class="{active: isActive('/billing')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-file-invoice"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Billing (Demo)</strong>
-                  <span class="item-desc">Sample invoices only, not real bills</span>
-                </div>
-              </a>
-              <a href="#!/queue" class="dropdown-item-card" ng-class="{active: isActive('/queue')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-ticket"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Token Queue</strong>
-                  <span class="item-desc">Issue tokens and call patients</span>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Operations Dropdown -->
-          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'ops'}">
-            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
-              ng-class="{active: isActive('/wards-beds') || isActive('/doctors') || isActive('/specialities') || isActive('/discharges') || isActive('/admissions')}"
-              ng-click="toggleDropdown('ops', $event)"
-              ng-keydown="onDropdownKey($event, 'ops')"
-              aria-haspopup="true" aria-expanded="{{activeDropdown === 'ops'}}">
-              <i class="fa-solid fa-bed-pulse"></i>
-              <span>{{ 'nav.operations' | tr }}</span>
-              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-            </button>
-            <div class="topbar-dropdown-menu" role="menu">
-              <div class="dropdown-header-title">Hospital Operations</div>
-              <a href="#!/wards-beds" class="dropdown-item-card" ng-class="{active: isActive('/wards-beds')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-bed"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Wards &amp; Beds</strong>
-                  <span class="item-desc">Live occupancy, floor status &amp; bed allocation</span>
-                </div>
-              </a>
-              <a href="#!/admissions" class="dropdown-item-card" ng-class="{active: isActive('/admissions')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-truck-medical"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Admissions</strong>
-                  <span class="item-desc">Inpatient registrations &amp; active stays</span>
-                </div>
-              </a>
-              <a href="#!/discharges" class="dropdown-item-card" ng-class="{active: isActive('/discharges')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Discharges</strong>
-                  <span class="item-desc">Finalized releases, summaries &amp; follow-ups</span>
-                </div>
-              </a>
-              <a href="#!/doctors" class="dropdown-item-card" ng-class="{active: isActive('/doctors')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-user-doctor"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Doctors</strong>
-                  <span class="item-desc">Physician directory, availability &amp; fees</span>
-                </div>
-              </a>
-              <a href="#!/specialities" class="dropdown-item-card" ng-class="{active: isActive('/specialities')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-dna"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Specialities</strong>
-                  <span class="item-desc">Medical departments &amp; clinical divisions</span>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Reports Dropdown -->
-          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'reports'}">
-            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
-              ng-class="{active: isActive('/reports') || isActive('/analytics')}"
-              ng-click="toggleDropdown('reports', $event)"
-              ng-keydown="onDropdownKey($event, 'reports')"
-              aria-haspopup="true" aria-expanded="{{activeDropdown === 'reports'}}">
-              <i class="fa-solid fa-chart-pie"></i>
-              <span>{{ 'nav.reports' | tr }}</span>
-              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-            </button>
-            <div class="topbar-dropdown-menu" role="menu">
-              <div class="dropdown-header-title">Reports &amp; Analytics</div>
-              <a href="#!/reports" class="dropdown-item-card" ng-class="{active: isActive('/reports')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-file-waveform"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Daily Reports</strong>
-                  <span class="item-desc">Patient vitals, daily logs &amp; progress notes</span>
-                </div>
-              </a>
-              <a href="#!/analytics" class="dropdown-item-card" ng-class="{active: isActive('/analytics')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-chart-line"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Analytics</strong>
-                  <span class="item-desc">Hospital performance, patient flow &amp; KPI trends</span>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <!-- Insights Dropdown -->
-          <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'insights'}">
-            <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
-              ng-class="{active: isActive('/audit-logs')}"
-              ng-click="toggleDropdown('insights', $event)"
-              ng-keydown="onDropdownKey($event, 'insights')"
-              aria-haspopup="true" aria-expanded="{{activeDropdown === 'insights'}}">
-              <i class="fa-solid fa-shield-halved"></i>
-              <span>{{ 'nav.insights' | tr }}</span>
-              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-            </button>
-            <div class="topbar-dropdown-menu" role="menu">
-              <div class="dropdown-header-title">System Insights</div>
-              <a href="#!/audit-logs" class="dropdown-item-card" ng-class="{active: isActive('/audit-logs')}" ng-click="closeDropdowns()">
-                <div class="item-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                <div class="item-text">
-                  <strong class="item-title">Audit Logs</strong>
-                  <span class="item-desc">User access events, change tracking &amp; security</span>
-                </div>
-              </a>
-            </div>
-          </div>
-        </nav>
 
         <!-- 3. Global Search Box -->
         <div class="topbar-search-box d-none d-lg-flex" ng-controller="TopBarController">
@@ -421,6 +261,174 @@
     </header>
 
     <!-- Main content (Handles both Public Landing and Authenticated App) -->
+    <!-- Desktop side rail: collapsed icons, expands on tap (hidden on phones) -->
+    <aside class="app-rail d-none d-lg-flex" ng-if="auth.isAuthenticated()" ng-class="{'expanded': railOpen}" aria-label="Main navigation">
+      <button type="button" class="app-rail-toggle" ng-click="toggleRail()" aria-expanded="{{railOpen}}" aria-controls="app-rail-nav"
+        aria-label="{{ (railOpen ? 'nav.collapse' : 'nav.expand') | tr }}" title="{{ (railOpen ? 'nav.collapse' : 'nav.expand') | tr }}">
+        <i class="fa-solid" ng-class="railOpen ? 'fa-xmark' : 'fa-bars'"></i>
+      </button>
+          <nav class="topbar-nav app-rail-nav" id="app-rail-nav" aria-label="Main Navigation">
+            <!-- Dashboard link -->
+            <a href="#!/dashboard" class="topbar-nav-link" ng-class="{active: isActive('/dashboard')}">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>{{ 'nav.dashboard' | tr }}</span>
+            </a>
+
+            <!-- Patients link -->
+            <a href="#!/patients" class="topbar-nav-link" ng-class="{active: isActive('/patients')}">
+              <i class="fa-solid fa-users"></i>
+              <span>{{ 'nav.patients' | tr }}</span>
+            </a>
+
+            <!-- OPD Dropdown -->
+            <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'opd'}">
+              <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+                ng-class="{active: isActive('/visits') || isActive('/appointments')}"
+                ng-click="toggleDropdown('opd', $event)"
+                ng-keydown="onDropdownKey($event, 'opd')"
+                aria-haspopup="true" aria-expanded="{{activeDropdown === 'opd'}}">
+                <i class="fa-solid fa-stethoscope"></i>
+                <span>{{ 'nav.opd' | tr }}</span>
+                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+              </button>
+              <div class="topbar-dropdown-menu" role="menu">
+                <div class="dropdown-header-title">Outpatient Department</div>
+                <a href="#!/visits" class="dropdown-item-card" ng-class="{active: isActive('/visits')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-hospital-user"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">OPD / Visits</strong>
+                    <span class="item-desc">Patient consultations and clinical triage</span>
+                  </div>
+                </a>
+                <a href="#!/appointments" class="dropdown-item-card" ng-class="{active: isActive('/appointments')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-calendar-check"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Appointments</strong>
+                    <span class="item-desc">Scheduled doctor visits &amp; slot booking</span>
+                  </div>
+                </a>
+                <a href="#!/billing" class="dropdown-item-card" ng-class="{active: isActive('/billing')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-file-invoice"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Billing (Demo)</strong>
+                    <span class="item-desc">Sample invoices only, not real bills</span>
+                  </div>
+                </a>
+                <a href="#!/queue" class="dropdown-item-card" ng-class="{active: isActive('/queue')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-ticket"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Token Queue</strong>
+                    <span class="item-desc">Issue tokens and call patients</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- Operations Dropdown -->
+            <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'ops'}">
+              <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+                ng-class="{active: isActive('/wards-beds') || isActive('/doctors') || isActive('/specialities') || isActive('/discharges') || isActive('/admissions')}"
+                ng-click="toggleDropdown('ops', $event)"
+                ng-keydown="onDropdownKey($event, 'ops')"
+                aria-haspopup="true" aria-expanded="{{activeDropdown === 'ops'}}">
+                <i class="fa-solid fa-bed-pulse"></i>
+                <span>{{ 'nav.operations' | tr }}</span>
+                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+              </button>
+              <div class="topbar-dropdown-menu" role="menu">
+                <div class="dropdown-header-title">Hospital Operations</div>
+                <a href="#!/wards-beds" class="dropdown-item-card" ng-class="{active: isActive('/wards-beds')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-bed"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Wards &amp; Beds</strong>
+                    <span class="item-desc">Live occupancy, floor status &amp; bed allocation</span>
+                  </div>
+                </a>
+                <a href="#!/admissions" class="dropdown-item-card" ng-class="{active: isActive('/admissions')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-truck-medical"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Admissions</strong>
+                    <span class="item-desc">Inpatient registrations &amp; active stays</span>
+                  </div>
+                </a>
+                <a href="#!/discharges" class="dropdown-item-card" ng-class="{active: isActive('/discharges')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Discharges</strong>
+                    <span class="item-desc">Finalized releases, summaries &amp; follow-ups</span>
+                  </div>
+                </a>
+                <a href="#!/doctors" class="dropdown-item-card" ng-class="{active: isActive('/doctors')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-user-doctor"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Doctors</strong>
+                    <span class="item-desc">Physician directory, availability &amp; fees</span>
+                  </div>
+                </a>
+                <a href="#!/specialities" class="dropdown-item-card" ng-class="{active: isActive('/specialities')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-dna"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Specialities</strong>
+                    <span class="item-desc">Medical departments &amp; clinical divisions</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- Reports Dropdown -->
+            <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'reports'}">
+              <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+                ng-class="{active: isActive('/reports') || isActive('/analytics')}"
+                ng-click="toggleDropdown('reports', $event)"
+                ng-keydown="onDropdownKey($event, 'reports')"
+                aria-haspopup="true" aria-expanded="{{activeDropdown === 'reports'}}">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>{{ 'nav.reports' | tr }}</span>
+                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+              </button>
+              <div class="topbar-dropdown-menu" role="menu">
+                <div class="dropdown-header-title">Reports &amp; Analytics</div>
+                <a href="#!/reports" class="dropdown-item-card" ng-class="{active: isActive('/reports')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-file-waveform"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Daily Reports</strong>
+                    <span class="item-desc">Patient vitals, daily logs &amp; progress notes</span>
+                  </div>
+                </a>
+                <a href="#!/analytics" class="dropdown-item-card" ng-class="{active: isActive('/analytics')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Analytics</strong>
+                    <span class="item-desc">Hospital performance, patient flow &amp; KPI trends</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- Insights Dropdown -->
+            <div class="topbar-dropdown" ng-class="{open: activeDropdown === 'insights'}">
+              <button type="button" class="topbar-nav-link topbar-dropdown-toggle"
+                ng-class="{active: isActive('/audit-logs')}"
+                ng-click="toggleDropdown('insights', $event)"
+                ng-keydown="onDropdownKey($event, 'insights')"
+                aria-haspopup="true" aria-expanded="{{activeDropdown === 'insights'}}">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>{{ 'nav.insights' | tr }}</span>
+                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+              </button>
+              <div class="topbar-dropdown-menu" role="menu">
+                <div class="dropdown-header-title">System Insights</div>
+                <a href="#!/audit-logs" class="dropdown-item-card" ng-class="{active: isActive('/audit-logs')}" ng-click="closeDropdowns()">
+                  <div class="item-icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                  <div class="item-text">
+                    <strong class="item-title">Audit Logs</strong>
+                    <span class="item-desc">User access events, change tracking &amp; security</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </nav>
+    </aside>
     <main ng-class="{'main-content': auth.isAuthenticated(), 'landing-wrapper': !auth.isAuthenticated()}">
       <div class="page-title-bar" ng-if="auth.isAuthenticated()">
         <h2>{{pageTitle}}</h2>
