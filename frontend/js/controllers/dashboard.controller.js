@@ -7,11 +7,14 @@
       $scope.summary = null;
       $scope.loading = true;
       $scope.today = new Date();
+      var hour = $scope.today.getHours();
+      $scope.greetingKey = hour < 12 ? 'dash.morning' : (hour < 17 ? 'dash.afternoon' : 'dash.evening');
       $scope.selectedRange = 14;
       $scope.trends = {};
       $scope.wardStats = [];
       $scope.demographicsLegend = [];
       $scope.totalPatientsCount = 0;
+      $scope.activity = [];
 
       // Empty chart states
       $scope.emptyCharts = {
@@ -176,6 +179,43 @@
               legend: { display: false },
             },
           },
+        });
+      }
+
+      // Small trend line without axes (KPI cards)
+      function renderSpark(id, values, color) {
+        var ctx = document.getElementById(id);
+        if (!ctx || !values || !values.length) return null;
+        return new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: values.map(function (_, i) { return i; }),
+            datasets: [{
+              data: values,
+              borderColor: color,
+              backgroundColor: color + '22',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0,
+              borderWidth: 2,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: { x: { display: false }, y: { display: false } },
+          },
+        });
+      }
+
+      // Recent activity from the audit log (shown on the dashboard, failures leave it empty)
+      function loadActivity() {
+        ApiService.get('/audit-logs', { limit: 5 }).then(function (res) {
+          $scope.activity = (res && res.data) || [];
+        }).catch(function () {
+          $scope.activity = [];
         });
       }
 
@@ -420,6 +460,16 @@
                 ],
                 true);
             }
+            // Headline sparklines (patients and OPD trends)
+            charts.sparkPatients = renderSpark('sparkPatients', trend.map(function (x) { return Number(x.registrations) || 0; }), '#005bb5');
+            charts.sparkOpd = renderSpark('sparkOpd', trend.map(function (x) { return Number(x.opd_visits) || 0; }), '#10b981');
+
+            // Bed occupancy donut
+            var occ = Number($scope.summary.occupied_beds) || 0;
+            var free = Number($scope.summary.available_beds) || 0;
+            if (occ + free > 0) {
+              charts.bedDonut = renderPieChart('chartBedDonut', ['Occupied', 'Available'], [occ, free], ['#005bb5', '#cfe2fb']);
+            }
           }, 50);
         }).catch(function (err) {
           ToastService.error(err.message || 'Failed to load dashboard.');
@@ -429,6 +479,7 @@
 
       // Initial load
       loadData($scope.selectedRange);
+      loadActivity();
 
       $scope.$on('$destroy', destroyCharts);
     },
