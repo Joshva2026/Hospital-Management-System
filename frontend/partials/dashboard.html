@@ -8,89 +8,42 @@
         <i class="fa-solid fa-chevron-right breadcrumb-sep"></i>
         <span class="breadcrumb-active">Dashboard</span>
       </nav>
-      <h1 class="page-header-title">Welcome back, {{admin.fullName || 'Doctor'}}</h1>
+      <h1 class="page-header-title">{{'dash.welcome' | tr}}, {{admin.fullName || ('dash.doctor' | tr)}}</h1>
       <p class="page-header-subtitle">
-        <i class="fa-regular fa-calendar me-1"></i> {{today | date:'fullDate'}} &nbsp;&bull;&nbsp; Real-time operations overview
+        <i class="fa-regular fa-calendar me-1"></i> {{today | date:'fullDate'}}
       </p>
     </div>
 
     <!-- Quick Action Buttons -->
     <div class="page-header-actions">
       <a href="#!/patients" class="btn btn-sm btn-outline-primary shadow-sm rounded-pill px-3">
-        <i class="fa-solid fa-user-plus me-1"></i> Register Patient
+        <i class="fa-solid fa-user-plus me-1"></i> {{'dash.registerPatient' | tr}}
       </a>
       <a href="#!/visits" class="btn btn-sm btn-outline-secondary shadow-sm rounded-pill px-3">
-        <i class="fa-solid fa-stethoscope me-1"></i> New OPD Visit
+        <i class="fa-solid fa-stethoscope me-1"></i> {{'dash.newOpd' | tr}}
       </a>
       <a href="#!/admissions" class="btn btn-sm btn-primary shadow-sm rounded-pill px-3">
-        <i class="fa-solid fa-bed-pulse me-1"></i> Admit Patient
+        <i class="fa-solid fa-bed-pulse me-1"></i> {{'dash.admit' | tr}}
       </a>
     </div>
   </div>
 
-  <!-- COMMAND CENTER HERO -->
-  <div class="dashboard-hero mb-4 rounded-4 shadow-sm position-relative overflow-hidden"
-    style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); color: white;">
-    <!-- Subtle grid overlay -->
-    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25"
-      style="background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none;">
-    </div>
-    <!-- Subtle medical cross graphic -->
-    <i class="fa-solid fa-hospital position-absolute"
-      style="font-size: 16rem; right: -2rem; bottom: -4rem; opacity: 0.03; color: white; pointer-events: none;"></i>
-
-    <div class="position-relative p-4 p-md-5" style="z-index: 10;">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
-        <div>
-          <div class="text-info fw-bold d-flex align-items-center"
-            style="font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; opacity: 0.9;">
-            <i class="fa-solid fa-satellite-dish me-2"></i> MARY Hospital
-          </div>
-          <h2 class="fw-bold mb-1 text-white" style="font-size: 1.85rem; letter-spacing: -0.5px;">Live Hospital Status</h2>
-          <p class="fs-6 text-white-50 mb-0">System metrics synchronized live with PostgreSQL cluster.</p>
-        </div>
-
-        <!-- Range Buttons -->
-        <div class="d-flex bg-white bg-opacity-10 rounded-pill p-1 border border-white border-opacity-25"
-          style="backdrop-filter: blur(4px);">
-          <button type="button" ng-click="setRange('Today')"
-            class="btn btn-sm rounded-pill px-3 px-md-4 fw-medium border-0"
-            ng-class="{'bg-white shadow-sm text-dark': selectedRange === 'Today', 'text-white-50': selectedRange !== 'Today'}">Today</button>
-          <button type="button" ng-click="setRange(7)" class="btn btn-sm rounded-pill px-3 px-md-4 fw-medium border-0"
-            ng-class="{'bg-white shadow-sm text-dark': selectedRange === 7, 'text-white-50': selectedRange !== 7}">7 Days</button>
-          <button type="button" ng-click="setRange(14)" class="btn btn-sm rounded-pill px-3 px-md-4 fw-medium border-0"
-            ng-class="{'bg-white shadow-sm text-dark': selectedRange === 14, 'text-white-50': selectedRange !== 14}">14 Days</button>
-          <button type="button" ng-click="setRange(30)" class="btn btn-sm rounded-pill px-3 px-md-4 fw-medium border-0"
-            ng-class="{'bg-white shadow-sm text-dark': selectedRange === 30, 'text-white-50': selectedRange !== 30}">30 Days</button>
-        </div>
+  <!-- PERIOD FILTER -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-surface">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div>
+        <h2 class="fw-bold mb-1 text-body" style="font-size: 1.25rem;">{{'dash.overview' | tr}}</h2>
+        <p class="text-muted mb-0" style="font-size: 13px;">{{'dash.overviewHint' | tr}}</p>
       </div>
-
-      <!-- Live Operations Overview -->
-      <div class="mt-4 pt-4 border-top border-white border-opacity-25" ng-if="!loading && summary">
-        <div class="row g-4">
-          <div class="col-6 col-md-3 border-end border-white border-opacity-25">
-            <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Live Status</div>
-            <div class="fs-4 fw-bold text-white d-flex align-items-center mt-1">
-              <span class="bg-success rounded-circle me-2"
-                style="width: 10px; height: 10px; box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25);"></span> Operational
-            </div>
-          </div>
-          <div class="col-6 col-md-3 border-end border-white border-opacity-25">
-            <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Today's OPD</div>
-            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_opd || 0}} <span
-                class="fs-6 text-white-50 fw-normal">{{summary.todays_opd === 1 ? 'visit' : 'visits'}}</span></div>
-          </div>
-          <div class="col-6 col-md-3 border-end border-white border-opacity-25">
-            <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Today's Admissions</div>
-            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_admissions || 0}} <span
-                class="fs-6 text-white-50 fw-normal">{{summary.todays_admissions === 1 ? 'patient' : 'patients'}}</span></div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 1px;">Today's Discharges</div>
-            <div class="fs-4 fw-bold text-white mt-1">{{summary.todays_discharges || 0}} <span
-                class="fs-6 text-white-50 fw-normal">{{summary.todays_discharges === 1 ? 'patient' : 'patients'}}</span></div>
-          </div>
-        </div>
+      <div class="d-flex flex-wrap gap-2" role="group" aria-label="{{'dash.period' | tr}}">
+        <button type="button" ng-click="setRange('Today')" class="btn btn-sm px-3 text-nowrap rounded-pill"
+          ng-class="selectedRange === 'Today' ? 'btn-primary' : 'btn-outline-secondary'">{{'dash.today' | tr}}</button>
+        <button type="button" ng-click="setRange(7)" class="btn btn-sm px-3 text-nowrap rounded-pill"
+          ng-class="selectedRange === 7 ? 'btn-primary' : 'btn-outline-secondary'">{{'dash.days7' | tr}}</button>
+        <button type="button" ng-click="setRange(14)" class="btn btn-sm px-3 text-nowrap rounded-pill"
+          ng-class="selectedRange === 14 ? 'btn-primary' : 'btn-outline-secondary'">{{'dash.days14' | tr}}</button>
+        <button type="button" ng-click="setRange(30)" class="btn btn-sm px-3 text-nowrap rounded-pill"
+          ng-class="selectedRange === 30 ? 'btn-primary' : 'btn-outline-secondary'">{{'dash.days30' | tr}}</button>
       </div>
     </div>
   </div>
@@ -120,7 +73,7 @@
       <!-- 1. Total Patients -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Total Patients</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.totalPatients' | tr}}</div>
           <div class="kpi-icon bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-users"></i></div>
         </div>
@@ -130,16 +83,16 @@
             ng-class="trends.patients.direction === 'up' ? 'text-success' : (trends.patients.direction === 'down' ? 'text-danger' : 'text-muted')">
             <i class="fa-solid me-1"
               ng-class="trends.patients.direction === 'up' ? 'fa-arrow-trend-up' : (trends.patients.direction === 'down' ? 'fa-arrow-trend-down' : 'fa-minus')"></i>
-            {{trends.patients.label}} vs yesterday
+            {{trends.patients.label}} {{'dash.vsYesterday' | tr}}
           </span>
-          <span ng-if="!trends.patients" class="text-muted">Registered patients</span>
+          
         </div>
       </div>
 
       <!-- 2. Today's OPD Visits -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's OPD Visits</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.opdToday' | tr}}</div>
           <div class="kpi-icon bg-info bg-opacity-10 text-info rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-stethoscope"></i></div>
         </div>
@@ -149,38 +102,38 @@
             ng-class="trends.opd.direction === 'up' ? 'text-success' : (trends.opd.direction === 'down' ? 'text-danger' : 'text-muted')">
             <i class="fa-solid me-1"
               ng-class="trends.opd.direction === 'up' ? 'fa-arrow-trend-up' : (trends.opd.direction === 'down' ? 'fa-arrow-trend-down' : 'fa-minus')"></i>
-            {{trends.opd.label}} vs yesterday
+            {{trends.opd.label}} {{'dash.vsYesterday' | tr}}
           </span>
-          <span ng-if="!trends.opd" class="text-muted">Outpatient visits today</span>
+          
         </div>
       </div>
 
       <!-- 3. Currently Admitted -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Currently Admitted</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.admitted' | tr}}</div>
           <div class="kpi-icon bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-bed-pulse"></i></div>
         </div>
         <div class="kpi-value fw-bold text-body" style="font-size: 2.2rem; line-height: 1;">{{summary.currently_admitted}}</div>
-        <div class="text-muted mt-2" style="font-size: 13px;">Active inpatients in wards</div>
+        <div class="text-muted mt-2" style="font-size: 13px;">{{'dash.cap.inpatients' | tr}}</div>
       </div>
 
       <!-- 4. Emergency Cases -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Emergency Cases</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.emergency' | tr}}</div>
           <div class="kpi-icon bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-truck-medical"></i></div>
         </div>
         <div class="kpi-value fw-bold text-body" style="font-size: 2.2rem; line-height: 1;">{{summary.emergency_cases}}</div>
-        <div class="text-muted mt-2" style="font-size: 13px;">Active emergency patients</div>
+        <div class="text-muted mt-2" style="font-size: 13px;">{{'dash.cap.emergency' | tr}}</div>
       </div>
 
       <!-- 5. Today's Admissions -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's Admissions</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.admissionsToday' | tr}}</div>
           <div class="kpi-icon bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-hospital-user"></i></div>
         </div>
@@ -190,16 +143,16 @@
             ng-class="trends.admissions.direction === 'up' ? 'text-success' : (trends.admissions.direction === 'down' ? 'text-danger' : 'text-muted')">
             <i class="fa-solid me-1"
               ng-class="trends.admissions.direction === 'up' ? 'fa-arrow-trend-up' : (trends.admissions.direction === 'down' ? 'fa-arrow-trend-down' : 'fa-minus')"></i>
-            {{trends.admissions.label}} vs yesterday
+            {{trends.admissions.label}} {{'dash.vsYesterday' | tr}}
           </span>
-          <span ng-if="!trends.admissions" class="text-muted">Admitted today</span>
+          
         </div>
       </div>
 
       <!-- 6. Today's Discharges -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Today's Discharges</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.dischargesToday' | tr}}</div>
           <div class="kpi-icon bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
         </div>
@@ -209,39 +162,39 @@
             ng-class="trends.discharges.direction === 'up' ? 'text-success' : (trends.discharges.direction === 'down' ? 'text-danger' : 'text-muted')">
             <i class="fa-solid me-1"
               ng-class="trends.discharges.direction === 'up' ? 'fa-arrow-trend-up' : (trends.discharges.direction === 'down' ? 'fa-arrow-trend-down' : 'fa-minus')"></i>
-            {{trends.discharges.label}} vs yesterday
+            {{trends.discharges.label}} {{'dash.vsYesterday' | tr}}
           </span>
-          <span ng-if="!trends.discharges" class="text-muted">Discharged today</span>
+          
         </div>
       </div>
 
       <!-- 7. Available Beds -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Available Beds</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.availableBeds' | tr}}</div>
           <div class="kpi-icon bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-bed"></i></div>
         </div>
         <div class="kpi-value fw-bold text-body" style="font-size: 2.2rem; line-height: 1;">{{summary.available_beds}}</div>
-        <div class="text-muted mt-2" style="font-size: 13px;">Ready for allocation</div>
+        <div class="text-muted mt-2" style="font-size: 13px;">{{'dash.cap.free' | tr}}</div>
       </div>
 
       <!-- 8. Occupied Beds -->
       <div class="card kpi-card border-0 shadow-sm rounded-4 p-4 bg-surface">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Occupied Beds</div>
+          <div class="kpi-label text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">{{'dash.kpi.occupiedBeds' | tr}}</div>
           <div class="kpi-icon bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center"
             style="width: 42px; height: 42px; font-size: 1.15rem;"><i class="fa-solid fa-bed"></i></div>
         </div>
         <div class="kpi-value fw-bold text-body" style="font-size: 2.2rem; line-height: 1;">{{summary.occupied_beds}}</div>
-        <div class="text-muted mt-2" style="font-size: 13px;">Currently in use</div>
+        <div class="text-muted mt-2" style="font-size: 13px;">{{'dash.cap.inUse' | tr}}</div>
       </div>
 
     </div>
 
     <!-- HOSPITAL INTELLIGENCE & CHARTS -->
     <div ng-if="selectedRange !== 'Today'">
-      <h3 class="fw-bold mb-4 text-body section-title">Operational Intelligence</h3>
+      <h3 class="fw-bold mb-4 text-body section-title">{{'dash.section.trends' | tr}}</h3>
       
       <!-- 1. Daily Patient Trend (Full width, 320px chart) -->
       <div class="row g-4 mb-4">
@@ -263,8 +216,8 @@
                 <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
                   <i class="fa-solid fa-chart-area text-muted opacity-50 fs-4"></i>
                 </div>
-                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No patient visits or registrations in this range</p>
-                <span class="text-muted small opacity-75" style="font-size: 12px;">Data will appear here as soon as visits are logged.</span>
+                <p class="text-muted fw-medium mb-0" style="font-size: 14px;">{{'dash.empty.visits' | tr}}</p>
+                
               </div>
             </div>
           </div>
@@ -272,7 +225,7 @@
       </div>
 
       <!-- 2. Ward Bed Occupancy Breakdown -->
-      <h3 class="fw-bold mb-4 text-body mt-5 section-title">Bed Intelligence</h3>
+      <h3 class="fw-bold mb-4 text-body mt-5 section-title">{{'dash.section.beds' | tr}}</h3>
       <div class="row g-4 mb-4">
         <div class="col-12">
           <div class="card border-0 shadow-sm rounded-4 h-100 bg-surface">
@@ -342,8 +295,8 @@
                 <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
                   <i class="fa-solid fa-bed text-muted opacity-50 fs-4"></i>
                 </div>
-                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No ward bed occupancy data available</p>
-                <span class="text-muted small opacity-75" style="font-size: 12px;">Ward configuration and allocations will be shown here.</span>
+                <p class="text-muted fw-medium mb-0" style="font-size: 14px;">{{'dash.empty.beds' | tr}}</p>
+                
               </div>
             </div>
           </div>
@@ -351,7 +304,7 @@
       </div>
 
       <!-- 3. Analytics & Insights Row (Three equal 320px chart cards) -->
-      <h3 class="fw-bold mb-4 text-body mt-5 section-title">Analytics &amp; Insights</h3>
+      <h3 class="fw-bold mb-4 text-body mt-5 section-title">{{'dash.section.flow' | tr}}</h3>
       <div class="row g-4 mb-4">
         
         <!-- Flow Analytics -->
@@ -370,8 +323,8 @@
                 <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
                   <i class="fa-solid fa-chart-line text-muted opacity-50 fs-4"></i>
                 </div>
-                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No admissions or discharges in this range</p>
-                <span class="text-muted small opacity-75" style="font-size: 12px;">Admissions and discharges will appear here once recorded.</span>
+                <p class="text-muted fw-medium mb-0" style="font-size: 14px;">{{'dash.empty.flow' | tr}}</p>
+                
               </div>
             </div>
           </div>
@@ -417,8 +370,8 @@
                 <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
                   <i class="fa-solid fa-chart-pie text-muted opacity-50 fs-4"></i>
                 </div>
-                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No patient demographic data available</p>
-                <span class="text-muted small opacity-75" style="font-size: 12px;">Patient categories will appear once registered.</span>
+                <p class="text-muted fw-medium mb-0" style="font-size: 14px;">{{'dash.empty.patients' | tr}}</p>
+                
               </div>
             </div>
           </div>
@@ -440,8 +393,8 @@
                 <div class="empty-icon-wrap rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px;">
                   <i class="fa-solid fa-chart-bar text-muted opacity-50 fs-4"></i>
                 </div>
-                <p class="text-muted fw-medium mb-1" style="font-size: 14px;">No speciality visits in this range</p>
-                <span class="text-muted small opacity-75" style="font-size: 12px;">Doctor consultations will appear categorized by speciality.</span>
+                <p class="text-muted fw-medium mb-0" style="font-size: 14px;">{{'dash.empty.specs' | tr}}</p>
+                
               </div>
             </div>
           </div>

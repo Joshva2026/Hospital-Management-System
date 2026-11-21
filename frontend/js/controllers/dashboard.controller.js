@@ -6,6 +6,7 @@
     function ($scope, $timeout, $q, ApiService, ToastService) {
       $scope.summary = null;
       $scope.loading = true;
+      $scope.today = new Date();
       $scope.selectedRange = 14;
       $scope.trends = {};
       $scope.wardStats = [];
