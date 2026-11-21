@@ -63,7 +63,7 @@
         <div class="ref-kpi h-100">
           <div class="ref-kpi-top">
             <span class="ref-kpi-icon ref-tone-blue"><i class="fa-solid fa-users"></i></span>
-            <span class="ref-pill" ng-if="trends.patients" ng-class="{'ref-pill-up': trends.patients.direction==='up', 'ref-pill-down': trends.patients.direction==='down'}">{{trends.patients.label}} {{'dash.vsYesterday' | tr}}</span>
+            <span class="ref-pill" ng-if="trends.patients" ng-class="{'ref-pill-up': trends.patients.direction==='up', 'ref-pill-down': trends.patients.direction==='down'}">{{trends.patients.label}} {{'dash.newLabel' | tr}} {{'dash.vsYesterday' | tr}}</span>
           </div>
           <div class="ref-kpi-value">{{summary.total_patients}}</div>
           <div class="ref-kpi-label">{{'dash.kpi.totalPatients' | tr}}</div>
